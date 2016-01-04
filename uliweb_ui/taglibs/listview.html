@@ -1,0 +1,86 @@
+{%##
+<t:listview id="table_id" tree="true|false" download="true" url="xxx">
+  <pagination limit="10" limitList="[10, 20, 30]"></pagination>
+</t:listview>
+
+==>
+
+##%}
+
+{%table_id = _attrs.get('id') or 'table_id'
+tree = _attrs.get('tree') == 'true'
+if tree:
+  deps = "mmtreegrid"
+else:
+  deps = "mmgrid"
+pass
+pagination = defined('pagination')
+url = _attrs.get('url', '{{=request.path}}')
+%}
+<div class="query">
+    {{<< query_form}}
+</div>
+
+<table id="{%=table_id%}"></table>
+
+<script type="text/javascript">
+require(["{%=deps%}", "mmpaginator"], function(mmgrid){
+    var query_string = new QueryString("{%=url%}")
+    query_string.set('data', '').toString();
+
+    var settings = {
+        multiSelect: false,
+        nowrap: true,
+        indexCol: true,
+        method:'get',
+        nameField:'field',
+        root: 'rows',
+        width:'auto',
+        height:'auto',
+        checkCol:false,
+        url:"{%=url%}" + query_string,
+        remoteSort:true,
+        cols:{{if defined('view'):}}
+            {{=json_dumps(view.get_columns(False))}}
+        {{else:}}
+            {{=json_dumps(table.get_columns(False))}}
+        {{pass}},
+        idField:'id',
+        filename: 'download.xls',
+        filename_alt: 'download.xls'
+    }
+    {% singleSelect = _attrs.get('singleSelect', 'true') %}
+    {% options = ['nowrap', 'indexCol', 'width', 'height', 'checkCol',
+      'filename', 'filename_alt', 'fullWidthRows'] %}
+    {% for name, value in _attrs.items(): %}
+      {% if name in options: %}
+        settings.{%=name%} = {%=value%};
+      {% pass %}
+    {% pass %}
+
+    {%if pagination:%}
+      var pageopts = {
+          totalCountName: 'total',
+          limitParamName: 'limit'
+      }
+
+      {%
+      limit = pagination['_attrs'].get('limit')
+      limitList = pagination['_attrs'].get('limitList')
+      %}
+      {%if limit:%}
+        pageopts.limit = {%=limit%}
+      {%pass%}
+      {%if limitList:%}
+        pageopts.limitList = {%=limitList%}
+      {%pass%}
+      var pg;
+      pg = $('<div class="mm-pagination" style="text-align: left;"></div>');
+      $('#{%=table_id%}').after(pg);
+      settings.plugins = [pg.mmPaginator(pageopts)];
+    {%pass%}
+
+    var mmg = $('#{%=table_id%}').mmGrid(settings);
+});
+
+</script>

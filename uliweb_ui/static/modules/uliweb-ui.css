@@ -1,0 +1,41 @@
+/*.skin-blue-light .sidebar-menu>li.active>a {
+    color: #000;
+    background: rgba(60, 141, 188, 0.38);
+}*/
+/*.skin-blue-light .treeview-menu>li.active>a {
+    border-left:2px solid #3c8dbc;
+}*/
+
+
+/* form related */
+.field_required {color:red;}
+.form-group {margin-bottom:10px;}
+.form-group .field_required{color:red;}
+
+/* bs3 form helper */
+.table-bordered { border: 1px solid #ddd;}
+.table-bordered > thead > tr > th,
+.table-bordered > tbody > tr > th,
+.table-bordered > tfoot > tr > th,
+.table-bordered > thead > tr > td,
+.table-bordered > tbody > tr > td,
+.table-bordered > tfoot > tr > td {
+  border: 1px solid #ccc;
+}
+.table-field-label {min-width: 150px;display: table-cell;text-align: right;margin-right: 10px;
+    vertical-align:top;
+    font-weight:bold;margin-bottom:0;padding-right:10px;}
+.table-layout .form-control-static  {display:inline-block;vertical-align:top;padding-top:0;padding-bottom:0;}
+.table-layout .form-control  {display:table-cell;vertical-align:top;}
+.table-field-row {display:table-row;width:100%;min-height:34px;line-height:34px;}
+.table-field-col {display:table-cell; width:2000px;}
+input[type="checkbox"].checkbox {height: 34px;padding-top: 7px;margin:0;}
+input[type="checkbox"].checkbox-inline {height: 34px;}
+.table-layout .checkbox input[type=checkbox],
+    .table-layout .checkbox-inline input[type=checkbox],
+    .table-layout .radio input[type=radio],
+    .table-layout .radio-inline input[type=radio] {position:initial;margin-right:5px;}
+.table-field-col .radio, .table-field-col .checkbox {margin-top:0;margin-bottom:0;}
+input[type="file"].form-control {border:none;background-color:transparent;line-height:1;padding:8px 1px; }
+.input-group-btn button{height:34px;}
+legend {margin-bottom:0; border-bottom:none;}
