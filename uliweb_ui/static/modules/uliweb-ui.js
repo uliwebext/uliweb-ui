@@ -172,9 +172,11 @@ function validate_submit(target, options) {
 
 var widgets_mapping = {
     date: function(el, options){
-        var opts = {dateFormat: 'yy-mm-dd'};
-        $.extend(true, opts, options || {});
-        $(el).datepicker(opts);
+        require(['moment', 'pikaday.jquery'], function(){
+            var opts = {format: 'YYYY-MM-DD', showTime:false};
+            $.extend(true, opts, options || {});
+            $(el).pikaday(opts);
+        })
     },
     select: function(el, options){
         require(['select2'], function(select2){
@@ -184,11 +186,11 @@ var widgets_mapping = {
         });
     },
     datetime: function(el, options){
-        require(['jqtimepicker'], function(datetimepicker){
-            var opts = {dateFormat: 'yy-mm-dd'};
+        require(['moment', 'pikaday.jquery'], function(){
+            var opts = {format: 'YYYY-MM-DD hh:mm:ss', showTime:true, use24hour:true};
             $.extend(true, opts, options || {});
-            $(el).datetimepicker(opts);
-        });
+            $(el).pikaday(opts);
+        })
     },
     file: function(el, options){
         require(['bootstrap-filestyle'], function(filestyle){

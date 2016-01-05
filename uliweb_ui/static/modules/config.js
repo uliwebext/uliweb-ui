@@ -26,6 +26,7 @@ requirejs.config({
 "jquery.validation":"modules/jquery.validation/jquery.validate.min",
 "moment":"modules/moment-with-locales.min",
 "pikaday":"modules/pikaday/pikaday",
+"pikaday.jquery":"modules/pikaday/plugins/pikaday.jquery",
 "handsontable":"modules/handsontable/handsontable.full.min",
 "toastr":"modules/jquery.toastr/toastr.min"
 },
@@ -41,6 +42,7 @@ map: {
 "mmpaginator":{"exports":"jQuery.fn.mmPaginator","deps":["css!modules/mmgrid/mmPaginator"]},
 "mmtreegrid":{"exports":"jQuery.fn.mmGrid","deps":["mmgrid","css!modules/mmgrid/mmTreeGrid"]},
 "pikaday":{"deps":["css!modules/pikaday/pikaday"]},
+"pikaday.jquery":{"deps":["pikaday"]},
 "handsontable":{"deps":["css!modules/handsontable/handsontable.full.min"]},
 "toastr":{"deps":["css!modules/jquery.toastr/toastr.min"]}
 },
