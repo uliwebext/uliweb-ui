@@ -39,3 +39,17 @@ input[type="checkbox"].checkbox-inline {height: 34px;}
 input[type="file"].form-control {border:none;background-color:transparent;line-height:1;padding:8px 1px; }
 .input-group-btn button{height:34px;}
 legend {margin-bottom:0; border-bottom:none;}
+
+@media (max-width: 767px) {
+    .table-field-label {
+        display: block;
+        text-align:left;
+    }
+    .table-field-col {
+        display: block;
+        width: 100%;
+    }
+    .table-field-row {
+        display: initial;
+    }
+}
