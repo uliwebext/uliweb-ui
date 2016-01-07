@@ -33,7 +33,7 @@ requirejs.config({
     },
     map: {
       '*': {
-        'css': 'modules/requirejs/plugins/css'
+        'css': 'modules/requirejs/plugins/css.min'
       }
     },
     "shim": {
