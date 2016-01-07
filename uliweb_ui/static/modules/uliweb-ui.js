@@ -266,6 +266,52 @@ function form_widgets(target, options){
     }
 
     /*
+     * create_table
+     */
+
+    function _create_tbody(data){
+        var buf = [];
+        $.each(data, function(index, v){
+            tr = ['<tr>'];
+            $.each(v, function(index, x){
+                tr.push('<td>'+x+'</td>');
+            });
+            tr.push('</tr>');
+            buf.push(tr.join(''));
+        });
+        return buf.join('\n');
+    }
+
+    function create_table(field, readonly){
+        var buf = [],
+            fields = this.fields,
+            f, id='table_'+field.name, tr;
+        if (!readonly){
+            buf.push('<a class="btn btn-primary btn-flat btn-xs"><i class="fa fa-plus"></i> 增加</a>');
+        }
+        buf.push('<table id="'+id+'" class="'+this.options.table_class+'">');
+        buf.push('<thead><tr>');
+        $.each(field.fields, function(index, v){
+            f = fields[v];
+            buf.push('<th>'+f.label+'</th>');
+        });
+        buf.push('</tr></thead><tbody>');
+        //如果不是数组,表示是URL
+        if (field.data){
+            if (!$.isArray(field.data)){
+                buf.push(_create_tbody(field.data));
+            }else{ //按URL进行处理
+                $.get(field.data).success(function(r){
+                    var tbody = _create_tbody(r);
+                    $(id).find('tbody').append(tbody);
+                })
+            }
+        }
+        buf.push('</tbody></table>');
+        return buf.join('\n');
+    }
+
+    /*
      * converter
      */
     function str_convert(field, attrs, readonly, table_cell){
@@ -318,6 +364,15 @@ function form_widgets(target, options){
             return '<input type="hidden" ' + to_attrs(attrs) + '>';
         } else
             return '';
+    }
+    /*
+     * 表格处理
+     */
+    function table_convert(field, attrs, readonly, table_cell){
+        var cls = '';
+
+        readonly = readonly || field.static || false;
+        return create_table.call(this, field, readonly);
     }
     function checkbox_convert(field, attrs, readonly, table_cell){
         var cls = '', inline=field.inline, static_value;
@@ -466,7 +521,9 @@ function form_widgets(target, options){
             messages: {},
             data: {},
             js_form: true,
-            buttons_class: 'form-actions'
+            buttons_class: 'form-actions',
+            create_table: create_table,
+            table_class: 'table table-bordered'
         },
         this.options = $.extend(true, {}, this.defaults, options),
         this.buf = [],
@@ -784,6 +841,7 @@ function form_widgets(target, options){
         date:'date',
         time:'str',
         datetime:'datetime',
+        table:'table'
     }
     $.fn.formb.converters = {
         str: str_convert,
@@ -794,7 +852,8 @@ function form_widgets(target, options){
         select: select_convert,
         text: text_convert,
         radios: radios_convert,
-        checkboxes: checkboxes_convert
+        checkboxes: checkboxes_convert,
+        table: table_convert
     }
 })(jQuery, window, document);
 
