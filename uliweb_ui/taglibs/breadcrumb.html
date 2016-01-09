@@ -2,7 +2,7 @@
 <t:breadcrumb>
     <a href="#" title="Home"></a>
     <a href="#" title="Library"></a>
-    <a active="active" title="Data"></a>
+    <a title="Data"></a>
 </t:breadcrumb>
 
 ==>
@@ -18,7 +18,7 @@
         active = li['_attrs'].get('active')
         title = li['_attrs'].get('title')
         href = li['_attrs'].get('href')%}
-        {%if active:%}
+        {%if i == len(a)-1:%}
         <li class="{%=active%}">{%=title%}</li>
         {%else:%}
         <li><a href="{%=href%}">{%=title%}</a></li>

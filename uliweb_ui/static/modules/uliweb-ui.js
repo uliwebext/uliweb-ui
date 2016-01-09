@@ -672,7 +672,7 @@ function form_widgets(target, options){
         field_to_label: function(field, readonly, table_cell){
             if(!!field.hide_label_grid) { return ''}
             var attrs = {}, buf=[];
-            if (table_cell) attrs.class = 'table-field-label';
+            if (table_cell) attrs['class'] = 'table-field-label';
             attrs['for'] = field.id
             buf.push('<label ' + to_attrs(attrs) + '>');
             if (!field.hide_label) {
