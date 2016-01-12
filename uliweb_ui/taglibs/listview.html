@@ -25,8 +25,9 @@ url = _attrs.get('url', '{{=request.path}}')
 
 <script type="text/javascript">
 require(["{%=deps%}", "mmpaginator"], function(mmgrid){
-    var query_string = new QueryString("{%=url%}")
-    query_string.set('data', '').toString();
+    <!--var query_string = new QueryString("{%=url%}")-->
+    <!--query_string.set('data', '').toString();-->
+    var query_string = $.query_string.set('data', '').toString();
 
     var settings = {
         multiSelect: false,

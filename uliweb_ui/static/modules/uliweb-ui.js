@@ -882,7 +882,8 @@ function form_widgets(target, options){
                 i = param.indexOf('?');
                 if (i>-1){
                     param = param.substring(i+1);
-                }
+                }else
+                    param = '';
             }
             while (e = r.exec(param)){
                 k = d(e[1]);

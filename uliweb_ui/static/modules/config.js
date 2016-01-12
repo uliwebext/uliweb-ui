@@ -28,11 +28,12 @@ requirejs.config({
 "pikaday":"modules/pikaday/pikaday",
 "pikaday.jquery":"modules/pikaday/plugins/pikaday.jquery",
 "handsontable":"modules/handsontable/handsontable.full.min",
-"toastr":"modules/jquery.toastr/toastr.min"
+"toastr":"modules/jquery.toastr/toastr.min",
+"jquery.form":"modules/jquery.form"
 },
 map: {
 '*': {
-'css': 'modules/requirejs/plugins/css'
+'css': 'modules/requirejs/plugins/css.min'
 }
 },
 "shim": {
