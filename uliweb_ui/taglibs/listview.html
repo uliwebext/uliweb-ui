@@ -1,6 +1,8 @@
 {%##
 <t:listview id="table_id" tree="true|false" download="true" url="xxx">
-  <pagination limit="10" limitList="[10, 20, 30]"></pagination>
+  <pagination limit="10" limitList="[10, 20, 30]">
+    <button title="Download" icon="download" id="btnDownload" label="Download"></button>
+  </pagination>
 </t:listview>
 
 ==>
@@ -79,9 +81,26 @@ require(["{%=deps%}", "mmpaginator"], function(mmgrid){
       pg = $('<div class="mm-pagination" style="text-align: left;"></div>');
       $('#{%=table_id%}').after(pg);
       settings.plugins = [pg.mmPaginator(pageopts)];
+
+      var mmg = $('#{%=table_id%}').mmGrid(settings);
+
+      var b;
+      //get default btnClass
+      {%options = get_options(pagination.get('option'))%}
+      {%default_class=options.get('btnClass', 'pull-right btn btn-flat btn-xs btn-default')%}
+      //process buttons
+      {%button = pagination.get('button', [])%}
+      {%for btn in get_list(button):%}
+        b = $('<button {%=to_attrs(get_attr(btn), {'class':btn['_attrs'].get('class', default_class)})%}>' +
+        {%if has_attr(btn, 'icon'):%}
+          '<i class="fa fa-{%=get_attr(btn, 'icon')%}"></i>' +
+        {%pass%}
+        '{%=get_text(btn)%}' +
+        '</button>');
+        pg.append(b);
+      {%pass%}
     {%pass%}
 
-    var mmg = $('#{%=table_id%}').mmGrid(settings);
 });
 
 </script>

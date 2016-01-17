@@ -110,7 +110,6 @@
     *display: inline;
     *zoom: 1;
     line-height: 1.5;
-    vertical-align: top;
 }
 
 .mmPaginator .limit select{
@@ -121,6 +120,10 @@
     margin: 0;
     line-height: 1.5;
     font-size: 1em;
+}
+
+.mmPaginator .btn {
+    margin-right:4px;
 }
 
 .mmPaginator .mmBtn {

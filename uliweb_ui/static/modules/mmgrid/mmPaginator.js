@@ -77,7 +77,7 @@
                 page = 1;
             }
             //
-            var $prev = $('<li class="prev"><a>«</a></li>');
+            var $prev = $('<li class="prev"><a>'+that.opts.prev+'</a></li>');
             if(page<=1){
                 $prev.addClass('disable');
             }else{
@@ -119,7 +119,7 @@
                 $pageList.append($li);
             });
             //
-            var $next = $('<li class="next"><a title="下一页">»</a></li>');
+            var $next = $('<li class="next"><a>'+that.opts.next+'</a></li>');
             if(page>=totalPage){
                 $next.addClass('disable');
             }else{
@@ -272,6 +272,8 @@
          style: 'plain'
         , totalCountName: 'totalCount'
         , page: 1
+        , prev: '上一页'
+        , next: '下一页'
         , pageParamName: 'page'
         , limitParamName: 'limit'
         , limitLabel: '每页{0}条'

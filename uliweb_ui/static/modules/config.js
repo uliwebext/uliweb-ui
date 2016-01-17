@@ -29,7 +29,9 @@ requirejs.config({
 "pikaday.jquery":"modules/pikaday/plugins/pikaday.jquery",
 "handsontable":"modules/handsontable/handsontable.full.min",
 "toastr":"modules/jquery.toastr/toastr.min",
-"jquery.form":"modules/jquery.form"
+"jquery.form":"modules/jquery.form",
+"popover":"modules/webui_popover/jquery.webui-popover.min",
+"jquery.confirm":"modules/jquery-confirm/jquery-confirm.min"
 },
 map: {
 '*': {
@@ -45,7 +47,9 @@ map: {
 "pikaday":{"deps":["css!modules/pikaday/pikaday"]},
 "pikaday.jquery":{"deps":["pikaday"]},
 "handsontable":{"deps":["css!modules/handsontable/handsontable.full.min"]},
-"toastr":{"deps":["css!modules/jquery.toastr/toastr.min"]}
+"toastr":{"deps":["css!modules/jquery.toastr/toastr.min"]},
+"popover":{"deps":["css!modules/webui_popover/jquery.webui-popover.min"]},
+"jquery.confirm":{"deps":["css!modules/jquery-confirm/jquery-confirm.min"]}
 },
 urlArgs: get_static_version()
 });

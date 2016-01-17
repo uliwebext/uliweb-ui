@@ -503,7 +503,10 @@ function form_widgets(target, options){
         }
     }
     var FormBuilder = function(ele, options) {
-        this.element = $(ele);
+        if (ele)
+            this.element = $(ele);
+        else
+            this.element = null;
         this.defaults = {
             attrs: {role:'form', method:'POST'},
             layout_class: 'bs3t',
@@ -534,7 +537,7 @@ function form_widgets(target, options){
         this.rows = [];
     }
     FormBuilder.prototype = {
-        init: function() {
+        html: function() {
             var form;
             this._init_fields();
             this._init_layout();
@@ -542,7 +545,11 @@ function form_widgets(target, options){
             this.body();
             this.buttons();
             this.end();
-            this.element.append(this.buf.join(''));
+            return this.buf.join('');
+        },
+        init: function() {
+            var html = this.html();
+            this.element.append(html);
             form = this.element.find('form');
             if(!this.options.readonly && !$.isEmptyObject(this.options.rules)){
                 validate_submit(form, {
@@ -821,6 +828,10 @@ function form_widgets(target, options){
     $.fn.formb = function(options) {
         var builder = new FormBuilder(this, options);
         return builder.init();
+    }
+    $.fn.formb_html = function(options) {
+        var builder = new FormBuilder(this, options);
+        return builder.html();
     }
     $.fn.formb.type_mapping = {
         str:'str',
