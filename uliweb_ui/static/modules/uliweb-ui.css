@@ -53,3 +53,8 @@ legend {margin-bottom:0; border-bottom:none;}
         display: initial;
     }
 }
+
+/* fix AdminLTE */
+.modal-content {
+    border-radius: 4px;
+}

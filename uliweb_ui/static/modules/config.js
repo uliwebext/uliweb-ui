@@ -1,6 +1,12 @@
 define('jquery', function(){
 return window.jQuery;
 });
+define('jquery.ui.widget', function(){
+// return window.jQuery;
+});
+define('bootstrap', function(){
+// return window.jQuery;
+});
 function get_static_version() {
 var scripts = document.getElementsByTagName('scripts'),
 ver = '';
@@ -31,7 +37,10 @@ requirejs.config({
 "toastr":"modules/jquery.toastr/toastr.min",
 "jquery.form":"modules/jquery.form",
 "popover":"modules/webui_popover/jquery.webui-popover.min",
-"jquery.confirm":"modules/jquery-confirm/jquery-confirm.min"
+"jquery.confirm":"modules/jquery-confirm/jquery-confirm.min",
+"bootstrap-dialog":"modules/bootstrap-dialog/bootstrap-dialog.min",
+"jquery.dialog2":"modules/jquery.dialog2/jquery.dialog2",
+"jquery.fileupload":"modules/jquery.fileupload/jquery.fileupload"
 },
 map: {
 '*': {
@@ -49,7 +58,10 @@ map: {
 "handsontable":{"deps":["css!modules/handsontable/handsontable.full.min"]},
 "toastr":{"deps":["css!modules/jquery.toastr/toastr.min"]},
 "popover":{"deps":["css!modules/webui_popover/jquery.webui-popover.min"]},
-"jquery.confirm":{"deps":["css!modules/jquery-confirm/jquery-confirm.min"]}
+"jquery.confirm":{"deps":["css!modules/jquery-confirm/jquery-confirm.min"]},
+"bootstrap-dialog":{"deps":["css!modules/bootstrap-dialog/bootstrap-dialog.min"]},
+"jquery.dialog2":{"exports":"jQuery.fn.dialog2","deps":["modules/jquery.dialog2/jquery.controls","css!modules/jquery.dialog2/jquery.dialog2"]},
+"jquery.fileupload":{"deps":["css!modules/jquery.fileupload/jquery.fileupload","modules/jquery.fileupload/jquery.iframe-transport"]}
 },
 urlArgs: get_static_version()
 });

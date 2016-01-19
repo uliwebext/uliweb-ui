@@ -1,6 +1,12 @@
 define('jquery', function(){
     return window.jQuery;
 });
+define('jquery.ui.widget', function(){
+//    return window.jQuery;
+});
+define('bootstrap', function(){
+//    return window.jQuery;
+});
 
 function get_static_version() {
     var scripts = document.getElementsByTagName('scripts'),
