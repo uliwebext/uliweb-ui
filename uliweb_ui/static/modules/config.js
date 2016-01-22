@@ -19,8 +19,13 @@ return ver;
 return ver
 }
 requirejs.config({
-"baseUrl": "/static",
-"paths": {
+baseUrl: "/static",
+paths: {
+css: 'modules/requirejs/plugins/css',
+text: 'modules/requirejs/plugins/text',
+domReady: 'modules/requirejs/plugins/domReady',
+json: 'modules/requirejs/plugins/json',
+image: 'modules/requirejs/plugins/image',
 //--------------------------------------
 
 "select2":"modules/select2/select2",
@@ -40,14 +45,10 @@ requirejs.config({
 "jquery.confirm":"modules/jquery-confirm/jquery-confirm.min",
 "bootstrap-dialog":"modules/bootstrap-dialog/bootstrap-dialog.min",
 "jquery.dialog2":"modules/jquery.dialog2/jquery.dialog2",
-"jquery.fileupload":"modules/jquery.fileupload/jquery.fileupload"
+"jquery.fileupload":"modules/jquery.fileupload/jquery.fileupload",
+"avalon":"modules/avalon/1.4.7.1/avalon.shim"
 },
-map: {
-'*': {
-'css': 'modules/requirejs/plugins/css.min'
-}
-},
-"shim": {
+shim: {
 
 "select2":{"exports":"jQuery.fn.select2","deps":["css!modules/select2/select2","css!modules/select2/select2-bootstrap3"]},
 "mmgrid":{"exports":"jQuery.fn.mmGrid","deps":["css!modules/mmgrid/mmGrid","mmpaginator","scrolling"]},

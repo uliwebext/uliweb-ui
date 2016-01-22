@@ -21,9 +21,13 @@ function get_static_version() {
 }
 
 requirejs.config({
-    "baseUrl": "/static",
-    "paths": {
-
+    baseUrl: "/static",
+    paths: {
+        css: 'modules/requirejs/plugins/css',
+        text: 'modules/requirejs/plugins/text',
+        domReady: 'modules/requirejs/plugins/domReady',
+        json: 'modules/requirejs/plugins/json',
+        image: 'modules/requirejs/plugins/image',
         //--------------------------------------
         {{
         import os
@@ -37,12 +41,7 @@ requirejs.config({
         pass}}
         {{=',\n'.join(s)}}
     },
-    map: {
-      '*': {
-        'css': 'modules/requirejs/plugins/css.min'
-      }
-    },
-    "shim": {
+    shim: {
         {{s = []
         for _name, _v in modules.items():
             if 'shim' in _v:
