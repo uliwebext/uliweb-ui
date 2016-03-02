@@ -952,3 +952,18 @@ function form_widgets(target, options){
     }
     $.query_string = new QueryString();
 })(jQuery);
+
+(function($){
+    $(function(){
+        jQuery('<iframe src="" style="display:none" id="ajaxiframedownload"></iframe>')
+        .appendTo('body');
+    });
+    $.download = function(url){
+    	//url and data options required
+    	if(url){
+    		//send request
+            var el = $('#ajaxiframedownload');
+            el.attr('src', url);
+    	};
+    };
+})(jQuery);

@@ -1,7 +1,7 @@
 {%##
-<t:listview id="table_id" tree="true|false" download="true" url="xxx">
+<t:listview id="table_id" tree="true|false" url="xxx">
   <pagination limit="10" limitList="[10, 20, 30]">
-    <button title="Download" icon="download" id="btnDownload" label="Download"></button>
+    <button title="Download" icon="download" id="btnDownload" label="Download" action="download"></button>
   </pagination>
 </t:listview>
 
@@ -53,12 +53,8 @@ require(["{%=deps%}", "mmpaginator"], function(mmgrid){
         filename_alt: 'download.xls'
     }
     {% singleSelect = _attrs.get('singleSelect', 'true') %}
-    {% options = ['nowrap', 'indexCol', 'width', 'height', 'checkCol',
-      'filename', 'filename_alt', 'fullWidthRows'] %}
     {% for name, value in _attrs.items(): %}
-      {% if name in options: %}
         settings.{%=name%} = {%=value%};
-      {% pass %}
     {% pass %}
 
     {%if pagination:%}
@@ -90,7 +86,7 @@ require(["{%=deps%}", "mmpaginator"], function(mmgrid){
       {%default_class=options.get('btnClass', 'pull-right btn btn-flat btn-xs btn-default')%}
       //process buttons
       {%button = pagination.get('button', [])%}
-      {%for btn in get_list(button):%}
+      {%for btn in reversed(get_list(button)):%}
         b = $('<button {%=to_attrs(get_attr(btn), {'class':btn['_attrs'].get('class', default_class)})%}>' +
         {%if has_attr(btn, 'icon'):%}
           '<i class="fa fa-{%=get_attr(btn, 'icon')%}"></i>' +
@@ -101,6 +97,10 @@ require(["{%=deps%}", "mmpaginator"], function(mmgrid){
       {%pass%}
     {%pass%}
 
+    $('button[action="download"]').click(function(e){
+      var query_string = $.query_string.remove('data').set('download', '').toString();
+      $.download('{%=url%}' + query_string);
+    });
 });
 
 </script>
