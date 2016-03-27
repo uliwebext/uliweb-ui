@@ -1,5 +1,5 @@
 {%##
-<t:listview id="table_id" tree="true|false" url="xxx">
+<t:listview id="table_id" tree="true|false" url="'xxx'">
   <pagination limit="10" limitList="[10, 20, 30]">
     <button title="Download" icon="download" id="btnDownload" label="Download" action="download"></button>
   </pagination>
@@ -16,8 +16,8 @@ if tree:
 else:
   deps = "mmgrid"
 pass
-pagination = defined('pagination')
-url = _attrs.get('url', '{{=request.path}}')
+pagination = defined('pagination');
+url = _attrs.pop('url', "'{{=request.path}}'");
 %}
 <div class="query">
     {{<< query_form}}
@@ -27,9 +27,8 @@ url = _attrs.get('url', '{{=request.path}}')
 
 <script type="text/javascript">
 require(["{%=deps%}", "mmpaginator"], function(mmgrid){
-    <!--var query_string = new QueryString("{%=url%}")-->
-    <!--query_string.set('data', '').toString();-->
-    var query_string = $.query_string.set('data', '').toString();
+    var query = new QueryString({%=url%});
+    var query_string = query.set('data', '').toString();
 
     var settings = {
         multiSelect: false,
@@ -41,7 +40,7 @@ require(["{%=deps%}", "mmpaginator"], function(mmgrid){
         width:'auto',
         height:'auto',
         checkCol:false,
-        url:"{%=url%}" + query_string,
+        url:query.url + query_string,
         remoteSort:true,
         cols:{{if defined('view'):}}
             {{=json_dumps(view.get_columns(False))}}
@@ -78,8 +77,6 @@ require(["{%=deps%}", "mmpaginator"], function(mmgrid){
       $('#{%=table_id%}').after(pg);
       settings.plugins = [pg.mmPaginator(pageopts)];
 
-      var mmg = $('#{%=table_id%}').mmGrid(settings);
-
       var b;
       //get default btnClass
       {%options = get_options(pagination.get('option'))%}
@@ -97,9 +94,11 @@ require(["{%=deps%}", "mmpaginator"], function(mmgrid){
       {%pass%}
     {%pass%}
 
+    var mmg = $('#{%=table_id%}').mmGrid(settings);
+
     $('button[action="download"]').click(function(e){
-      var query_string = $.query_string.remove('data').set('download', '').toString();
-      $.download('{%=url%}' + query_string);
+      query_string = $.query.remove('data').set('download', '').toString();
+      $.download(query.url + query_string);
     });
 });
 
