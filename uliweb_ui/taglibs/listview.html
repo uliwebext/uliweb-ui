@@ -17,7 +17,7 @@ else:
   deps = "mmgrid"
 pass
 pagination = defined('pagination');
-url = _attrs.pop('url', "'{{=request.path}}'");
+url = _attrs.pop('url', '{{<<request.url}}');
 %}
 <div class="query">
     {{<< query_form}}
@@ -27,7 +27,7 @@ url = _attrs.pop('url', "'{{=request.path}}'");
 
 <script type="text/javascript">
 require(["{%=deps%}", "mmpaginator"], function(mmgrid){
-    var query = new QueryString({%=url%});
+    var query = new QueryString('{%<<url%}');
     var query_string = query.set('data', '').toString();
 
     var settings = {
