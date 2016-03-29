@@ -20,7 +20,11 @@ pagination = defined('pagination');
 url = _attrs.pop('url', '{{<<request.url}}');
 %}
 <div class="query">
-    {{<< query_form}}
+  <form class="form form-query" method="GET" action="{%<<url%}">
+  {{build = query_form.build}}
+  {{<< build.body}}
+  {{<< build.buttons_line}}
+  </form>
 </div>
 
 <table id="{%=table_id%}"></table>
