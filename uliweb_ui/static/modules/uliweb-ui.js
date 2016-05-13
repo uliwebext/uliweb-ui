@@ -879,7 +879,8 @@ function form_widgets(target, options){
     }
     QueryString.prototype = {
         load: function(param){
-            this.urlParams = {}
+            this.urlParams = {};
+            this.url = param;
             var e,k,v,i,
                 a = /\+/g,  // Regex for replacing addition symbol with a space
                 r = /([^&=]+)=?([^&]*)/g,
@@ -889,9 +890,11 @@ function form_widgets(target, options){
             }
             if (param.charAt(0) == '?'){
                 param = param.substring(1);
+                this.url = '';
             }else{
                 i = param.indexOf('?');
                 if (i>-1){
+                    this.url = param.substring(0, i);
                     param = param.substring(i+1);
                 }else
                     param = '';

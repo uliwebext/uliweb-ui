@@ -3,7 +3,7 @@ def call(*args, **kwargs):
     
     a = []
     b = []
-    version = settings.UI_VERSION.jquery
+    version = settings.UI_VERSION.jQuery
     if version:
         a.append('modules/jquery/{0}/jquery.min.js'.format(version))
         _v = map(int, version.split('.'))
