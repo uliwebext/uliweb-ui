@@ -99,7 +99,10 @@ function show_popup_url(target, options, title, callback){
  */
 
 function common_ajax_submit(target, validator){
+
+
     require(['jquery.form'], function(){
+
         var el = $(target);
         el.ajaxSubmit({
             beforeSubmit:function(){
@@ -970,3 +973,23 @@ function form_widgets(target, options){
     	};
     };
 })(jQuery);
+
+//jquery init
+$( document ).ajaxError(function( event, jqxhr, settings, thrownError ) {
+    var m = $.parseJSON(jqxhr.responseText);
+    if (m && !m.success && m.redirect){
+        var login = /\/login\b/;
+        var url = m.redirect;
+        //Test if login, then replace next parameter
+        if (login.test(m.redirect)){
+            url = updateURLParameter(m.redirect, 'next', window.location.href);
+        }
+        window.location.href = url;
+    }
+});
+
+
+$.ajaxSetup({
+    cache:false,
+    traditional:true
+});
