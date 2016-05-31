@@ -46,7 +46,9 @@ image: 'modules/requirejs/plugins/image',
 "bootstrap-dialog":"modules/bootstrap-dialog/bootstrap-dialog.min",
 "jquery.dialog2":"modules/jquery.dialog2/jquery.dialog2",
 "jquery.fileupload":"modules/jquery.fileupload/jquery.fileupload",
-"avalon":"modules/avalon/1.4.7.1/avalon.shim"
+"bootstrap-multiselect":"modules/bootstrap-multiselect/bootstrap-multiselect.min",
+"vis":"modules/vis/vis.min",
+"ag-grid":"modules/ag-grid/4.2.5/ag-grid.min"
 },
 shim: {
 
@@ -62,7 +64,8 @@ shim: {
 "jquery.confirm":{"deps":["css!modules/jquery-confirm/jquery-confirm.min"]},
 "bootstrap-dialog":{"deps":["css!modules/bootstrap-dialog/bootstrap-dialog.min"]},
 "jquery.dialog2":{"exports":"jQuery.fn.dialog2","deps":["modules/jquery.dialog2/jquery.controls","css!modules/jquery.dialog2/jquery.dialog2"]},
-"jquery.fileupload":{"deps":["css!modules/jquery.fileupload/jquery.fileupload","modules/jquery.fileupload/jquery.iframe-transport"]}
+"jquery.fileupload":{"deps":["css!modules/jquery.fileupload/jquery.fileupload","modules/jquery.fileupload/jquery.iframe-transport"]},
+"bootstrap-multiselect":{"deps":["css!modules/bootstrap-multiselect/bootstrap-multiselect.min"]}
 },
 urlArgs: get_static_version()
 });

@@ -7,6 +7,18 @@
  */
 function show_message(message, category){
 
+    requirejs.config({
+        baseUrl: "/static",
+        paths: {
+            css: 'modules/requirejs/plugins/css',
+            text: 'modules/requirejs/plugins/text',
+            domReady: 'modules/requirejs/plugins/domReady',
+            json: 'modules/requirejs/plugins/json',
+            image: 'modules/requirejs/plugins/image',
+            toastr:"modules/jquery.toastr/toastr.min"
+        }
+    });
+
     require(["toastr"], function(toastr){
         category = category || "success"
 
