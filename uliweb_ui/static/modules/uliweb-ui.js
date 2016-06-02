@@ -7,19 +7,8 @@
  */
 function show_message(message, category){
 
-    requirejs.config({
-        baseUrl: "/static",
-        paths: {
-            css: 'modules/requirejs/plugins/css',
-            text: 'modules/requirejs/plugins/text',
-            domReady: 'modules/requirejs/plugins/domReady',
-            json: 'modules/requirejs/plugins/json',
-            image: 'modules/requirejs/plugins/image',
-            toastr:"modules/jquery.toastr/toastr.min"
-        }
-    });
-
-    require(["toastr"], function(toastr){
+    head.load(["/static/modules/jquery.toastr/toastr.min.css",
+        "/static/modules/jquery.toastr/toastr.min.js"], function(){
         category = category || "success"
 
         var config = {
