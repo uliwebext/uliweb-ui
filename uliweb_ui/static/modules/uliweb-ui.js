@@ -1,14 +1,27 @@
 /*
+ * use head.load to load js files
+ *
+ * options:
+ *    module is configed in /static/jsmodules.js
+ *           and jsmodules.js can be created via `uliweb jsmodule -a uliweb_ui`
+ */
+
+function load(module, callback){
+    head.load(["/static/jsmodules.js"], function(){
+        head.load(jsmodules[module].slice(), callback);
+    });
+
+}
+/*
  * show message on top center of window
  *
  * options:
  *    message
- *    category
+ *    category: success, error, info, warning
  */
 function show_message(message, category){
 
-    head.load(["/static/modules/jquery.toastr/toastr.min.css",
-        "/static/modules/jquery.toastr/toastr.min.js"], function(){
+    load('ui.toastr', function(){
         category = category || "success"
 
         var config = {
