@@ -49,9 +49,9 @@ class JsmoduleCommand(Command):
             x = app.settings
 
         if options.dest:
-            filename = pkg.resource_filename(options.dest, '/static/jsmodule.js')
+            filename = pkg.resource_filename(options.dest, '/static/jsmodules.js')
         else:
-            filename = pkg.resource_filename(options.app, '/static/jsmodule.js')
+            filename = pkg.resource_filename(options.app, '/static/jsmodules.js')
 
         d = {}
         for name in x.get('TEMPLATE_USE', {}).keys():
@@ -59,8 +59,7 @@ class JsmoduleCommand(Command):
             m = s[0] + s[1]
             d[name] = [url_for_static(i) for i in m if not i.startswith('<!--')]
 
-        print 'jsmodule.js is saved in {} please check'.format(filename)
-        print d
+        print 'jsmodules.js is saved in {} please check'.format(filename)
         with open(filename, 'wb') as f:
             f.write('var jsmodules = ')
             f.write(json_dumps(d))

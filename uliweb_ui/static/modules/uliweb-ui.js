@@ -8,7 +8,13 @@
 
 function load(module, callback){
     head.load(["/static/jsmodules.js"], function(){
-        head.load(jsmodules[module].slice(), callback);
+        var modules = [];
+        if ($.isArray(module)) {
+            module.forEach(function(v){
+                $.merge(modules, jsmodules[v])
+            })
+        } else modules = jsmodules[module].slice()
+        head.load(modules, callback);
     });
 
 }
@@ -26,7 +32,7 @@ function show_message(message, category){
 
         var config = {
             "closeButton": true,
-            "positionClass": "toast-top-center"   
+            "positionClass": "toast-top-center"
         }
         var title = ""
 
@@ -91,7 +97,7 @@ function popup_url(target, options, title, callback){
         delay:50
     };
 
-    require(['popover'], function(){
+    load('ui.popover', function(){
         var o = $.extend({}, d, opts);
         $(target).webuiPopover(o);
         if (o.show)
@@ -115,7 +121,7 @@ function show_popup_url(target, options, title, callback){
 function common_ajax_submit(target, validator){
 
 
-    require(['jquery.form'], function(){
+    load('ui.jquery.form', function(){
 
         var el = $(target);
         el.ajaxSubmit({
@@ -152,7 +158,7 @@ function validate_submit(target, options) {
 
     var opts = $.extend(true, {}, default_options, options);
 
-    require(['modules/jquery.validation/localization/messages_zh.min'], function(){
+    load(['modules/jquery.validation/localization/messages_zh.min'], function(){
         var form = $(target);
         var validator = form.validate({
             errorElement : 'span',
@@ -189,35 +195,35 @@ function validate_submit(target, options) {
 
 var widgets_mapping = {
     date: function(el, options){
-        require(['moment', 'pikaday.jquery'], function(){
+        load(['ui.moment', 'ui.pikaday'], function(){
             var opts = {format: 'YYYY-MM-DD', showTime:false};
             $.extend(true, opts, options || {});
             $(el).pikaday(opts);
         })
     },
     select: function(el, options){
-        require(['select2'], function(select2){
+        load(['ui.select2'], function(select2){
             var opts = {width:'resolve'};
             $.extend(true, opts, options || {});
             $(el).select2(opts);
         });
     },
     datetime: function(el, options){
-        require(['moment', 'pikaday.jquery'], function(){
+        load(['ui.moment', 'ui.pikaday'], function(){
             var opts = {format: 'YYYY-MM-DD hh:mm:ss', showTime:true, use24hour:true};
             $.extend(true, opts, options || {});
             $(el).pikaday(opts);
         })
     },
     file: function(el, options){
-        require(['bootstrap-filestyle'], function(filestyle){
+        load(['ui.bootstrap-filestyle'], function(filestyle){
             var opts = {buttonText:'', buttonName:'btn-primary'};
             $.extend(true, opts, options || {});
             $(el).filestyle(opts);
         });
     },
     image: function(el, options){
-        require(['bootstrap-filestyle'], function(filestyle){
+        load(['ui.bootstrap-filestyle'], function(filestyle){
             var opts = {buttonText:'', buttonName:'btn-primary',
                 iconName:'glyphicon-picture'};
             $.extend(true, opts, options || {});
@@ -840,7 +846,7 @@ function form_widgets(target, options){
                 return [col_width, buf.join('')];
             }
         }
-        
+
     }
     $.fn.formb = function(options) {
         var builder = new FormBuilder(this, options);
