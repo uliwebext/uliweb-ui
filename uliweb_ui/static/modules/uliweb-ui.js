@@ -158,7 +158,7 @@ function validate_submit(target, options) {
 
     var opts = $.extend(true, {}, default_options, options);
 
-    load(['modules/jquery.validation/localization/messages_zh.min'], function(){
+    load(['ui.jquery.validation'], function(){
         var form = $(target);
         var validator = form.validate({
             errorElement : 'span',
