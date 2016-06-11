@@ -52,6 +52,9 @@ function DataSet(data, options) {
   this._ids = {};
   this.length = 0; // number of items in the DataSet
   this._fieldId = this._options.fieldId || 'id'; // name of the field containing id
+  this._parentFieldId = this._options.parentFieldId || '_parent'; //name of the parent field containing id
+  this._childFieldId = this._options.childFieldId || 'nodes';
+  this._orderFieldId = this._options.orderFieldId || 'order';
   this._type = {}; // internal field types (NOTE: this can differ from this._options.type)
 
   // all variants of a Date are internally stored as Date, so we can convert
@@ -144,10 +147,10 @@ DataSet.prototype._trigger = function (event, params, senderId) {
  * Add data.
  * Adding an item will fail when there already is an item with the same id.
  * @param {Object | Array} data
- * @param {String} [senderId] Optional sender id
+ * @param {String} [parentId] Optional parent id
  * @return {Array} addedIds      Array with the ids of the added items
  */
-DataSet.prototype.add = function (data, senderId) {
+DataSet.prototype.add = function (data, parentId) {
   var addedIds = [],
       id,
       me = this;
@@ -155,19 +158,25 @@ DataSet.prototype.add = function (data, senderId) {
   if (Array.isArray(data)) {
     // Array
     for (var i = 0, len = data.length; i < len; i++) {
-      id = me._addItem(data[i]);
+      id = me._addItem(data[i], parentId);
       addedIds.push(id);
+      if (data[i][me._childFieldId] && data[i][me._childFieldId].length > 0) {
+        addedIds.concat(me.add(data[i][me._childFieldId], data[i][me._fieldId]))
+      }
     }
   } else if (data instanceof Object) {
     // Single item
-    id = me._addItem(data);
+    id = me._addItem(data, parentId);
     addedIds.push(id);
+    if (data[me._childFieldId] && data[me._childFieldId].length > 0) {
+      addedIds.concat(me.add(data[me._childFieldId], data[me._fieldId]))
+    }
   } else {
     throw new Error('Unknown dataType');
   }
 
   if (addedIds.length) {
-    this._trigger('add', { items: addedIds }, senderId);
+    this._trigger('add', { items: addedIds });
   }
 
   return addedIds;
@@ -349,6 +358,36 @@ DataSet.prototype.get = function (args) {
     }
   }
 };
+
+
+DataSet.prototype.tree = function (options) {
+  var me = this;
+
+  // parse the arguments
+  var id, item, itemx, ids={}, data=[], parentId, parent;
+  var items = this.get({order:[me._parentFieldId, me._orderFieldId]})
+  for (var i=0, len=items.length; i<len; i++) {
+    item = {}
+    itemx = items[i]
+    for (k in itemx) {
+      item[k] = itemx[k]
+    }
+    id = item[me._fieldId]
+    parentId = item[me._parentFieldId] || 0
+    if (parentId) {
+      parent = ids[parentId]
+      if (parent.hasOwnProperty(me._childFieldId)) {
+        parent[me._childFieldId].push(item)
+      } else {
+        parent[me._childFieldId] = [item]
+      }
+    } else {
+      data.push(item)
+    }
+    ids[id] = item
+  }
+  return data
+}
 
 /**
  * Get ids of all items or from a filtered set of items.
@@ -559,10 +598,12 @@ DataSet.prototype._by = function (name, desc, minor) {
               else
                   return a < b ? -1 : 1;
           }
-          if (desc)
-              return typeof a < typeof b ? 1 : -1;
-          else
-              return typeof a < typeof b ? -1 : 1;
+          // different type then return 0
+          return 0
+          // if (desc)
+          //     return typeof a < typeof b ? 1 : -1;
+          // else
+          //     return typeof a < typeof b ? -1 : 1;
       }
       else {
           throw ("error");
@@ -600,7 +641,7 @@ DataSet.prototype._sort = function (items, order) {
     return items.sort(f);
   } else if (typeof order === 'function') {
     // order by sort function
-    items.sort(order);
+    return items.sort(order);
   }
   // TODO: extend order by an Object {field:String, direction:String}
   //       where direction can be 'asc' or 'desc'
@@ -665,7 +706,6 @@ DataSet.prototype._remove = function (id) {
       for(var i=0, len=this.length; i<len; i++) {
         this._ids[this._data[i][this._fieldId]] = i
       }
-      console.log(this._ids)
       return id;
     }
   }
@@ -695,7 +735,7 @@ DataSet.prototype.clear = function (senderId) {
  * @return {String} id
  * @private
  */
-DataSet.prototype._addItem = function (item) {
+DataSet.prototype._addItem = function (item, parentId) {
   var id = item[this._fieldId];
 
   if (id != undefined) {
@@ -717,6 +757,8 @@ DataSet.prototype._addItem = function (item) {
       d[field] = util.convert(item[field], fieldType);
     }
   }
+  if (parentId)
+    d[this._parentFieldId] = parentId
   this._data.push(d);
   this.length++;
   this._ids[id] = this.length-1;
@@ -795,11 +837,9 @@ DataSet.prototype._updateItem = function (item) {
 
   // merge with current item
   // according d property
-  for (var field in d) {
-    if (item.hasOwnProperty(field)) {
-      var fieldType = this._type[field]; // type may be undefined
-      d[field] = util.convert(item[field], fieldType);
-    }
+  for (var field in item) {
+    var fieldType = this._type[field]; // type may be undefined
+    d[field] = util.convert(item[field], fieldType);
   }
 
   return id;
