@@ -1033,12 +1033,14 @@ function($) {
       this.btnPrev = this.options.prev ? $('<li class="prev"><a href="#">' + this.options.prev + '</a></li>') : '';
       this.btnNext = this.options.next ? $('<li class="next"><a href="#">' + this.options.next + '</a></li>') : '';
       this.btnLast = this.options.last ? $('<li class="last"><a href="#">' + this.options.last + '</a></li>') : '';
+      this.btnRefresh = this.options.last ? $('<li class="refresh"><a href="#">' + this.options.refresh + '</a></li>') : '';
 
       if (this.totalMessage) list.append(this.totalMessage);
       if (this.btnFirst && this.options.total>this.options.pageRows) list.append(this.btnFirst);
       if (this.btnPrev && this.options.total>this.options.pageRows) list.append(this.btnPrev);
       if (this.btnNext && this.options.total>this.options.pageRows) list.append(this.btnNext);
       if (this.btnLast && this.options.total>this.options.pageRows) list.append(this.btnLast);
+      if (this.btnRefresh) list.append(this.btnRefresh);
 
       this.$element.on('click.pagination', 'li:enabled, li', function(e) {
 
@@ -1055,6 +1057,8 @@ function($) {
           that.currentPage = 1;
         } else if ($this.hasClass('last')) {
           that.currentPage = that.totalPages;
+        } else if ($this.hasClass('refresh')) {
+          that.currentPage = parseInt(list.find('li.active a').text());
         } else {
           that.currentPage = parseInt($this.text());
         }

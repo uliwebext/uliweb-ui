@@ -53,10 +53,10 @@
     //self.options.headerCellRenderer = headerCellRendererFunc
 
     //处理URL，在url上添加 data=
-    var query = new QueryString(self.options.url);
-    var query_string = query.set('data', '').toString();
-    self.options.url = query.url + query_string
-    console.log(self.options.url)
+    //var query = new QueryString(self.options.url);
+    //var query_string = query.set('data', '').toString();
+    //self.options.url = query.url + query_string
+    //console.log(self.options.url)
 
 
     for(var i=0, len=self.options.columnDefs.length; i<len; i++) {
@@ -126,6 +126,7 @@
       , prev: '上一页'
       , first: '首页'
       , last: '尾页'
+      , refresh: '<i class="fa fa-refresh" title="刷新"></i>'
       , totalMessage: '共 $pages 页 / $records 条' //if not then doesn't display at all
     }
     if (p.size() > 0) {

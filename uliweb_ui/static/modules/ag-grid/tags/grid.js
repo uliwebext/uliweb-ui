@@ -17,11 +17,6 @@ riot.tag2('ag-grid', '<div style="height: 300px;" class="grid ag-fresh"></div>',
     var new_columns = []
     var names = {}
 
-    var query = new QueryString(self.options.url);
-    var query_string = query.set('data', '').toString();
-    self.options.url = query.url + query_string
-    console.log(self.options.url)
-
     for(var i=0, len=self.options.columnDefs.length; i<len; i++) {
       var col = $.extend({}, self.options.columnDefs[i])
       if (col.verbose_name)
@@ -88,6 +83,7 @@ riot.tag2('ag-grid', '<div style="height: 300px;" class="grid ag-fresh"></div>',
       , prev: '上一页'
       , first: '首页'
       , last: '尾页'
+      , refresh: '<i class="fa fa-refresh" title="刷新"></i>'
       , totalMessage: '共 $pages 页 / $records 条'
     }
     if (p.size() > 0) {
