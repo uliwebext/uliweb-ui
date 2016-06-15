@@ -28,47 +28,44 @@ requirejs.config({
         image: 'modules/requirejs/plugins/image',
 //--------------------------------------
 
-        "select2": "modules/select2/select2",
-        "scrolling": "modules/mmgrid/scrolling",
-        "mmgrid": "modules/mmgrid/mmGrid",
-        "mmpaginator": "modules/mmgrid/mmPaginator",
-        "mmtreegrid": "modules/mmgrid/mmTreeGrid",
-        "pjax": "modules/jquery.pjax",
-        "jquery.validation": "modules/jquery.validation/jquery.validate.min",
-        "moment": "modules/moment-with-locales.min",
-        "pikaday": "modules/pikaday/pikaday",
-        "pikaday.jquery": "modules/pikaday/plugins/pikaday.jquery",
-        "handsontable": "modules/handsontable/handsontable.full.min",
-        "toastr": "modules/jquery.toastr/toastr.min",
-        "jquery.form": "modules/jquery.form",
-        "popover": "modules/webui_popover/jquery.webui-popover.min",
-        "jquery.confirm": "modules/jquery-confirm/jquery-confirm.min",
-        "bootstrap-dialog": "modules/bootstrap-dialog/bootstrap-dialog.min",
-        "jquery.dialog2": "modules/jquery.dialog2/jquery.dialog2",
-        "jquery.fileupload": "modules/jquery.fileupload/jquery.fileupload",
-        "avalon": "modules/avalon/1.4.7.1/avalon.shim"
-    },
-    shim: {
+"select2":"modules/select2/select2",
+"scrolling":"modules/mmgrid/scrolling",
+"mmgrid":"modules/mmgrid/mmGrid",
+"mmpaginator":"modules/mmgrid/mmPaginator",
+"mmtreegrid":"modules/mmgrid/mmTreeGrid",
+"pjax":"modules/jquery.pjax",
+"jquery.validation":"modules/jquery.validation/jquery.validate.min",
+"moment":"modules/moment-with-locales.min",
+"pikaday":"modules/pikaday/pikaday",
+"pikaday.jquery":"modules/pikaday/plugins/pikaday.jquery",
+"handsontable":"modules/handsontable/handsontable.full.min",
+"toastr":"modules/jquery.toastr/toastr.min",
+"jquery.form":"modules/jquery.form",
+"popover":"modules/webui_popover/jquery.webui-popover.min",
+"jquery.confirm":"modules/jquery-confirm/jquery-confirm.min",
+"bootstrap-dialog":"modules/bootstrap-dialog/bootstrap-dialog.min",
+"jquery.dialog2":"modules/jquery.dialog2/jquery.dialog2",
+"jquery.fileupload":"modules/jquery.fileupload/jquery.fileupload",
+"bootstrap-multiselect":"modules/bootstrap-multiselect/bootstrap-multiselect.min",
+"vis":"modules/vis/vis.min",
+"ag-grid":"modules/ag-grid/4.2.5/ag-grid.min"
+},
+shim: {
 
-        "select2": {
-            "exports": "jQuery.fn.select2",
-            "deps": ["css!modules/select2/select2", "css!modules/select2/select2-bootstrap3"]
-        },
-        "mmgrid": {"exports": "jQuery.fn.mmGrid", "deps": ["css!modules/mmgrid/mmGrid", "mmpaginator", "scrolling"]},
-        "mmpaginator": {"exports": "jQuery.fn.mmPaginator", "deps": ["css!modules/mmgrid/mmPaginator"]},
-        "mmtreegrid": {"exports": "jQuery.fn.mmGrid", "deps": ["mmgrid", "css!modules/mmgrid/mmTreeGrid"]},
-        "pikaday": {"deps": ["css!modules/pikaday/pikaday"]},
-        "pikaday.jquery": {"deps": ["pikaday"]},
-        "handsontable": {"deps": ["css!modules/handsontable/handsontable.full.min"]},
-        "toastr": {"deps": ["css!modules/jquery.toastr/toastr.min"]},
-        "popover": {"deps": ["css!modules/webui_popover/jquery.webui-popover.min"]},
-        "jquery.confirm": {"deps": ["css!modules/jquery-confirm/jquery-confirm.min"]},
-        "bootstrap-dialog": {"deps": ["css!modules/bootstrap-dialog/bootstrap-dialog.min"]},
-        "jquery.dialog2": {
-            "exports": "jQuery.fn.dialog2",
-            "deps": ["modules/jquery.dialog2/jquery.controls", "css!modules/jquery.dialog2/jquery.dialog2"]
-        },
-        "jquery.fileupload": {"deps": ["css!modules/jquery.fileupload/jquery.fileupload", "modules/jquery.fileupload/jquery.iframe-transport"]}
-    },
-    urlArgs: get_static_version()
+"select2":{"exports":"jQuery.fn.select2","deps":["css!modules/select2/select2","css!modules/select2/select2-bootstrap3"]},
+"mmgrid":{"exports":"jQuery.fn.mmGrid","deps":["css!modules/mmgrid/mmGrid","mmpaginator","scrolling"]},
+"mmpaginator":{"exports":"jQuery.fn.mmPaginator","deps":["css!modules/mmgrid/mmPaginator"]},
+"mmtreegrid":{"exports":"jQuery.fn.mmGrid","deps":["mmgrid","css!modules/mmgrid/mmTreeGrid"]},
+"pikaday":{"deps":["css!modules/pikaday/pikaday"]},
+"pikaday.jquery":{"deps":["pikaday"]},
+"handsontable":{"deps":["css!modules/handsontable/handsontable.full.min"]},
+"toastr":{"deps":["css!modules/jquery.toastr/toastr.min"]},
+"popover":{"deps":["css!modules/webui_popover/jquery.webui-popover.min"]},
+"jquery.confirm":{"deps":["css!modules/jquery-confirm/jquery-confirm.min"]},
+"bootstrap-dialog":{"deps":["css!modules/bootstrap-dialog/bootstrap-dialog.min"]},
+"jquery.dialog2":{"exports":"jQuery.fn.dialog2","deps":["modules/jquery.dialog2/jquery.controls","css!modules/jquery.dialog2/jquery.dialog2"]},
+"jquery.fileupload":{"deps":["css!modules/jquery.fileupload/jquery.fileupload","modules/jquery.fileupload/jquery.iframe-transport"]},
+"bootstrap-multiselect":{"deps":["css!modules/bootstrap-multiselect/bootstrap-multiselect.min"]}
+},
+urlArgs: get_static_version()
 });
