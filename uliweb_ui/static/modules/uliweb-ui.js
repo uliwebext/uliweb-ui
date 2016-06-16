@@ -5,18 +5,18 @@
  *    message
  *    category
  */
-function show_message(message, category){
+function show_message(message, category) {
 
-    require(["toastr"], function(toastr){
+    require(["toastr"], function (toastr) {
         category = category || "success"
 
         var config = {
             "closeButton": true,
-            "positionClass": "toast-top-center"   
+            "positionClass": "toast-top-center"
         }
         var title = ""
 
-        if(category == "success") {
+        if (category == "success") {
             toastr.success(message, title, config)
         } else if (category == "error") {
             toastr.error(message, title, config)
@@ -36,48 +36,48 @@ function show_message(message, category){
 
 /* popup dialog
 
-   @param target: target element
-   @param options: could be url or plain object
+ @param target: target element
+ @param options: could be url or plain object
 
-   async content sould fire 'success.form' event, it'll hide the popup by default
-*/
-function popup_url(target, options, title, callback){
+ async content sould fire 'success.form' event, it'll hide the popup by default
+ */
+function popup_url(target, options, title, callback) {
     var opts;
-    if (typeof options === 'string'){
-        opts = {url:options, title:title || ''};
-    }else opts = options;
+    if (typeof options === 'string') {
+        opts = {url: options, title: title || ''};
+    } else opts = options;
     callback = callback || options.callback;
 
     var d = {
-        content:function(data){
+        content: function (data) {
             var begin, end;
             begin = data.indexOf('<!-- form -->')
             end = data.indexOf('<!-- end form -->')
-            if (begin > -1 && end > -1){
+            if (begin > -1 && end > -1) {
                 return data.substring(begin, end);
             }
             return data;
         },
         async: {
-            success: function(that){
-                that.getContentElement().on('success.form', function(e, data){
+            success: function (that) {
+                that.getContentElement().on('success.form', function (e, data) {
                     that.hide();
                     if (callback) callback(data);
                 });
             }
         },
         title: 'Popup',
-        width:400,
-        cache:false,
-        height:'auto',
-        padding:true,
-        closeable:true,
-        type:'async',
-        url:'example',
-        delay:50
+        width: 400,
+        cache: false,
+        height: 'auto',
+        padding: true,
+        closeable: true,
+        type: 'async',
+        url: 'example',
+        delay: 50
     };
 
-    require(['popover'], function(){
+    require(['popover'], function () {
         var o = $.extend({}, d, opts);
         $(target).webuiPopover(o);
         if (o.show)
@@ -85,11 +85,11 @@ function popup_url(target, options, title, callback){
     });
 }
 
-function show_popup_url(target, options, title, callback){
+function show_popup_url(target, options, title, callback) {
     var opts;
-    if (typeof options === 'string'){
-        opts = {url:options, title:title || ''};
-    }else opts = options;
+    if (typeof options === 'string') {
+        opts = {url: options, title: title || ''};
+    } else opts = options;
     opts.show = true;
     popup_url(target, opts, title, callback);
 }
@@ -98,25 +98,25 @@ function show_popup_url(target, options, title, callback){
  * process ajax request and jquery.validation
  */
 
-function common_ajax_submit(target, validator){
+function common_ajax_submit(target, validator) {
 
 
-    require(['jquery.form'], function(){
+    require(['jquery.form'], function () {
 
         var el = $(target);
         el.ajaxSubmit({
-            beforeSubmit:function(){
+            beforeSubmit: function () {
                 el.find(':submit').prop('disabled', true);
             },
-            success:function(data){
-                if (data.success){
+            success: function (data) {
+                if (data.success) {
                     el.trigger('success.form', data);
-                }else{
+                } else {
                     validator.showErrors(data.errors);
                 }
                 el.find(':submit').prop('disabled', false);
             },
-            error:function(){
+            error: function () {
                 el.find(':submit').prop('disabled', false);
             }
         });
@@ -131,35 +131,35 @@ function common_ajax_submit(target, validator){
  */
 function validate_submit(target, options) {
     var default_options = {
-        rules:{},
-        messages:{},
-        ajax_submit:common_ajax_submit
+        rules: {},
+        messages: {},
+        ajax_submit: common_ajax_submit
     }
 
     var opts = $.extend(true, {}, default_options, options);
 
-    require(['modules/jquery.validation/localization/messages_zh.min'], function(){
+    require(['modules/jquery.validation/localization/messages_zh.min'], function () {
         var form = $(target);
         var validator = form.validate({
-            errorElement : 'span',
-            errorClass : 'help-block',
-            focusInvalid : true,
-            rules : opts.rules,
-            messages : opts.messages,
-            highlight : function(element) {
+            errorElement: 'span',
+            errorClass: 'help-block',
+            focusInvalid: true,
+            rules: opts.rules,
+            messages: opts.messages,
+            highlight: function (element) {
                 $(element).closest('.form-group, .table-field-row').addClass('has-error');
             },
 
-            success : function(label) {
+            success: function (label) {
                 label.closest('.form-group, .table-field-row').removeClass('has-error');
                 label.remove();
             },
 
-            errorPlacement : function(error, element) {
+            errorPlacement: function (error, element) {
                 element.parent('div').append(error);
             },
 
-            submitHandler : function(form) {
+            submitHandler: function (form) {
                 opts.ajax_submit(form, validator);
             }
         });
@@ -174,54 +174,56 @@ function validate_submit(target, options) {
  */
 
 var widgets_mapping = {
-    date: function(el, options){
-        require(['moment', 'pikaday.jquery'], function(){
-            var opts = {format: 'YYYY-MM-DD', showTime:false};
+    date: function (el, options) {
+        require(['moment', 'pikaday.jquery'], function () {
+            var opts = {format: 'YYYY-MM-DD', showTime: false};
             $.extend(true, opts, options || {});
             $(el).pikaday(opts);
         })
     },
-    select: function(el, options){
-        require(['select2'], function(select2){
-            var opts = {width:'resolve'};
+    select: function (el, options) {
+        require(['select2'], function (select2) {
+            var opts = {width: 'resolve'};
             $.extend(true, opts, options || {});
             $(el).select2(opts);
         });
     },
-    datetime: function(el, options){
-        require(['moment', 'pikaday.jquery'], function(){
-            var opts = {format: 'YYYY-MM-DD hh:mm:ss', showTime:true, use24hour:true};
+    datetime: function (el, options) {
+        require(['moment', 'pikaday.jquery'], function () {
+            var opts = {format: 'YYYY-MM-DD hh:mm:ss', showTime: true, use24hour: true};
             $.extend(true, opts, options || {});
             $(el).pikaday(opts);
         })
     },
-    file: function(el, options){
-        require(['bootstrap-filestyle'], function(filestyle){
-            var opts = {buttonText:'', buttonName:'btn-primary'};
+    file: function (el, options) {
+        require(['bootstrap-filestyle'], function (filestyle) {
+            var opts = {buttonText: '', buttonName: 'btn-primary'};
             $.extend(true, opts, options || {});
             $(el).filestyle(opts);
         });
     },
-    image: function(el, options){
-        require(['bootstrap-filestyle'], function(filestyle){
-            var opts = {buttonText:'', buttonName:'btn-primary',
-                iconName:'glyphicon-picture'};
+    image: function (el, options) {
+        require(['bootstrap-filestyle'], function (filestyle) {
+            var opts = {
+                buttonText: '', buttonName: 'btn-primary',
+                iconName: 'glyphicon-picture'
+            };
             $.extend(true, opts, options || {});
             $(el).filestyle(opts);
         });
     }
 }
 
-function form_widgets(target, options){
+function form_widgets(target, options) {
     var form = $(target);
     var _type, element, opts, func, param;
-    opts = $.extend(true, {}, widgets_mapping, options||{});
-    form.find('[widget]').each(function(index, el){
+    opts = $.extend(true, {}, widgets_mapping, options || {});
+    form.find('[widget]').each(function (index, el) {
         element = $(el);
         _type = element.attr('widget');
-        param = eval('('+element.attr('options')+')');
+        param = eval('(' + element.attr('options') + ')');
         func = opts[_type];
-        if (func){
+        if (func) {
             func(element, param);
         }
     });
@@ -239,25 +241,26 @@ function form_widgets(target, options){
  *
  *    }
  */
-;(function($, window, document,undefined) {
+;
+(function ($, window, document, undefined) {
     /* convert plainobject to k="value" format */
-    function to_attrs(opt){
+    function to_attrs(opt) {
         var buf = [];
         if (opt) {
-            $.each(opt, function(k, v){
-                buf.push(k+'="'+v+'"');
+            $.each(opt, function (k, v) {
+                buf.push(k + '="' + v + '"');
             });
             return buf.join(' ');
-        }else return '';
+        } else return '';
     }
 
-    function to_choices_static(field){
+    function to_choices_static(field) {
         var buf = [], choice;
-        if (field.choices && field.choices.length > 0){
-            for(var i=0, _len=field.choices.length; i<_len; i++) {
+        if (field.choices && field.choices.length > 0) {
+            for (var i = 0, _len = field.choices.length; i < _len; i++) {
                 choice = field.choices[i];
                 if (field.multiple) {
-                    selected = field.value.indexOf(choice[0]) > -1? true : false;
+                    selected = field.value.indexOf(choice[0]) > -1 ? true : false;
                 } else {
                     selected = field.value == choice[0] ? true : false;
                 }
@@ -272,12 +275,12 @@ function form_widgets(target, options){
      * create_table
      */
 
-    function _create_tbody(data){
+    function _create_tbody(data) {
         var buf = [];
-        $.each(data, function(index, v){
+        $.each(data, function (index, v) {
             tr = ['<tr>'];
-            $.each(v, function(index, x){
-                tr.push('<td>'+x+'</td>');
+            $.each(v, function (index, x) {
+                tr.push('<td>' + x + '</td>');
             });
             tr.push('</tr>');
             buf.push(tr.join(''));
@@ -285,26 +288,26 @@ function form_widgets(target, options){
         return buf.join('\n');
     }
 
-    function create_table(field, readonly){
+    function create_table(field, readonly) {
         var buf = [],
             fields = this.fields,
-            f, id='table_'+field.name, tr;
-        if (!readonly){
+            f, id = 'table_' + field.name, tr;
+        if (!readonly) {
             buf.push('<a class="btn btn-primary btn-flat btn-xs"><i class="fa fa-plus"></i> 增加</a>');
         }
-        buf.push('<table id="'+id+'" class="'+this.options.table_class+'">');
+        buf.push('<table id="' + id + '" class="' + this.options.table_class + '">');
         buf.push('<thead><tr>');
-        $.each(field.fields, function(index, v){
+        $.each(field.fields, function (index, v) {
             f = fields[v];
-            buf.push('<th>'+f.label+'</th>');
+            buf.push('<th>' + f.label + '</th>');
         });
         buf.push('</tr></thead><tbody>');
         //如果不是数组,表示是URL
-        if (field.data){
-            if (!$.isArray(field.data)){
+        if (field.data) {
+            if (!$.isArray(field.data)) {
                 buf.push(_create_tbody(field.data));
-            }else{ //按URL进行处理
-                $.get(field.data).success(function(r){
+            } else { //按URL进行处理
+                $.get(field.data).success(function (r) {
                     var tbody = _create_tbody(r);
                     $(id).find('tbody').append(tbody);
                 })
@@ -317,33 +320,33 @@ function form_widgets(target, options){
     /*
      * converter
      */
-    function str_convert(field, attrs, readonly, table_cell){
+    function str_convert(field, attrs, readonly, table_cell) {
         var cls = '';
 
         readonly = readonly || field.static || false;
         if (!readonly) {
             attrs['value'] = field.value;
             return '<input type="text" ' + to_attrs(attrs) + ' class="form-control">';
-        } else
-            if (table_cell) cls = ' table-field-content';
-            return '<div class="form-control-static' + cls + '">' +
-                this.field_to_static(field) + '</div>';
+        } else if (table_cell) cls = ' table-field-content';
+        return '<div class="form-control-static' + cls + '">' +
+            this.field_to_static(field) + '</div>';
 
     }
-    function password_convert(field, attrs, readonly, table_cell){
+
+    function password_convert(field, attrs, readonly, table_cell) {
         var cls = '';
 
         readonly = readonly || field.static || false;
         if (!readonly) {
             attrs['value'] = field.value;
             return '<input type="password" ' + to_attrs(attrs) + ' class="form-control">';
-        } else
-            if (table_cell) cls = ' table-field-content';
-            return '<div class="form-control-static' + cls + '">' +
-                this.field_to_static(field, '******') + '</div>';
+        } else if (table_cell) cls = ' table-field-content';
+        return '<div class="form-control-static' + cls + '">' +
+            this.field_to_static(field, '******') + '</div>';
 
     }
-    function text_convert(field, attrs, readonly, table_cell){
+
+    function text_convert(field, attrs, readonly, table_cell) {
         var cls = '';
 
         readonly = readonly || field.static || false;
@@ -352,13 +355,13 @@ function form_widgets(target, options){
             return '<textarea ' + to_attrs(attrs) + ' class="form-control">' +
                 field.value +
                 '</textarea>';
-        } else
-            if (table_cell) cls = ' table-field-content';
-            return '<div class="form-control-static' + cls + '">' +
-                this.field_to_static(field) + '</div>';
+        } else if (table_cell) cls = ' table-field-content';
+        return '<div class="form-control-static' + cls + '">' +
+            this.field_to_static(field) + '</div>';
 
     }
-    function hidden_convert(field, attrs, readonly, table_cell){
+
+    function hidden_convert(field, attrs, readonly, table_cell) {
         var cls = '';
 
         readonly = readonly || field.static || false;
@@ -368,17 +371,19 @@ function form_widgets(target, options){
         } else
             return '';
     }
+
     /*
      * 表格处理
      */
-    function table_convert(field, attrs, readonly, table_cell){
+    function table_convert(field, attrs, readonly, table_cell) {
         var cls = '';
 
         readonly = readonly || field.static || false;
         return create_table.call(this, field, readonly);
     }
-    function checkbox_convert(field, attrs, readonly, table_cell){
-        var cls = '', inline=field.inline, static_value;
+
+    function checkbox_convert(field, attrs, readonly, table_cell) {
+        var cls = '', inline = field.inline, static_value;
 
         if (field.value === '') field.value = false;
         readonly = readonly || field.static || false;
@@ -402,8 +407,9 @@ function form_widgets(target, options){
                     this.field_to_static(field, static_value) + '</div>';
         }
     }
-    function file_convert(field, attrs, readonly, table_cell){
-        var cls = '', inline=field.inline;
+
+    function file_convert(field, attrs, readonly, table_cell) {
+        var cls = '', inline = field.inline;
 
         readonly = readonly || field.static || false;
         if (!readonly) {
@@ -414,24 +420,25 @@ function form_widgets(target, options){
                 this.field_to_static(field) + '</div>';
         }
     }
-    function select_convert(field, attrs, readonly, table_cell){
+
+    function select_convert(field, attrs, readonly, table_cell) {
         var cls = '';
-        var buf=[], multiple=field.multiple ? ' multiple="multiple"' : '',
+        var buf = [], multiple = field.multiple ? ' multiple="multiple"' : '',
             choice, checked;
 
         readonly = readonly || field.static || false;
         if (!readonly) {
             buf.push('<select ' + to_attrs(attrs) + multiple + ' class="form-control">');
-            if (field.choices){
-                for(var i=0, _len=field.choices.length; i<_len; i++) {
+            if (field.choices) {
+                for (var i = 0, _len = field.choices.length; i < _len; i++) {
                     choice = field.choices[i];
                     if (field.multiple) {
-                        selected = field.value.indexOf(choice[0]) > -1? 'selected="selected"' : '';
+                        selected = field.value.indexOf(choice[0]) > -1 ? 'selected="selected"' : '';
                     } else {
                         selected = field.value == choice[0] ? 'selected="selected"' : '';
                     }
                     buf.push('<option ' + selected + 'value="' + choice[0] + '">' +
-                        choice[1] + '</option>');
+                    choice[1] + '</option>');
                 }
             }
             buf.push('</select>');
@@ -444,18 +451,18 @@ function form_widgets(target, options){
         }
     }
 
-    function radios_convert(field, attrs, readonly, table_cell){
-        var buf=[], selected, choice;
+    function radios_convert(field, attrs, readonly, table_cell) {
+        var buf = [], selected, choice;
 
         readonly = readonly || field.static || false;
         if (!readonly) {
-            for(var i=0, _len=field.choices.length; i<_len; i++) {
+            for (var i = 0, _len = field.choices.length; i < _len; i++) {
                 choice = field.choices[i];
                 delete attrs['class'];
-                attrs.id = attrs.id + (i+1);
+                attrs.id = attrs.id + (i + 1);
                 attrs.name = field.name;
                 selected = field.value == choice[0] ? 'checked="checked"' : '';
-                if (field.inline){
+                if (field.inline) {
                     buf.push('<label class="radio-inline">');
                     buf.push('<input type="radio" ' + to_attrs(attrs) + selected + 'value="' + choice[0] + '">');
                     buf.push(choice[1]);
@@ -475,17 +482,18 @@ function form_widgets(target, options){
                 this.field_to_static(field, to_choices_static(field)) + '</div>';
         }
     }
-    function checkboxes_convert(field, attrs, readonly, table_cell){
-        var buf=[], selected, choice;
+
+    function checkboxes_convert(field, attrs, readonly, table_cell) {
+        var buf = [], selected, choice;
 
         readonly = readonly || field.static || false;
         field.multiple = true;
         if (!readonly) {
-            for(var i=0, _len=field.choices.length; i<_len; i++) {
+            for (var i = 0, _len = field.choices.length; i < _len; i++) {
                 choice = field.choices[i];
                 attrs.name = field.name;
-                selected = field.value.indexOf(choice[0])>-1 ? 'checked="checked"' : '';
-                if (field.inline){
+                selected = field.value.indexOf(choice[0]) > -1 ? 'checked="checked"' : '';
+                if (field.inline) {
                     buf.push('<label class="checkbox-inline">');
                     buf.push('<input type="checkbox" ' + to_attrs(attrs) + selected + 'value="' + choice[0] + '">');
                     buf.push(choice[1]);
@@ -505,13 +513,14 @@ function form_widgets(target, options){
                 this.field_to_static(field, to_choices_static(field)) + '</div>';
         }
     }
-    var FormBuilder = function(ele, options) {
+
+    var FormBuilder = function (ele, options) {
         if (ele)
             this.element = $(ele);
         else
             this.element = null;
         this.defaults = {
-            attrs: {role:'form', method:'POST'},
+            attrs: {role: 'form', method: 'POST'},
             layout_class: 'bs3t',
             layout: {
                 table_class: 'table table-hover table-layout',
@@ -531,16 +540,16 @@ function form_widgets(target, options){
             create_table: create_table,
             table_class: 'table table-bordered'
         },
-        this.options = $.extend(true, {}, this.defaults, options),
-        this.buf = [],
-        this.fields = {},
-        this.fields_list = [],
-        this.hidden_fields = [],
-        this.has_file = false,
-        this.rows = [];
+            this.options = $.extend(true, {}, this.defaults, options),
+            this.buf = [],
+            this.fields = {},
+            this.fields_list = [],
+            this.hidden_fields = [],
+            this.has_file = false,
+            this.rows = [];
     }
     FormBuilder.prototype = {
-        html: function() {
+        html: function () {
             var form;
             this._init_fields();
             this._init_layout();
@@ -550,11 +559,11 @@ function form_widgets(target, options){
             this.end();
             return this.buf.join('');
         },
-        init: function() {
+        init: function () {
             var html = this.html();
             this.element.append(html);
             form = this.element.find('form');
-            if(!this.options.readonly && !$.isEmptyObject(this.options.rules)){
+            if (!this.options.readonly && !$.isEmptyObject(this.options.rules)) {
                 validate_submit(form, {
                     rules: this.options.rules,
                     messages: this.options.messages,
@@ -564,7 +573,7 @@ function form_widgets(target, options){
             if (this.options.js_form)
                 form_widgets(form);
         },
-        begin: function(){
+        begin: function () {
             if (this.has_file)
                 this.options.attrs['enctype'] = 'multipart/form-data';
             var attr = to_attrs(this.options.attrs);
@@ -572,32 +581,32 @@ function form_widgets(target, options){
             this.buf.push(attr);
             this.buf.push('>');
         },
-        body: function(){
+        body: function () {
             this._process_hidden();
             var layout_class = this.options.layout_class || 'bs3v';
             if (layout_class === 'bs3v') this.v_layout();
             else this.v_layout(true);
         },
-        buttons: function(){
+        buttons: function () {
             var buttons, b, btn, btn_offset, text;
 
             if (this.options.layout.buttons) {
                 buttons = this.options.layout.buttons;
-                this.buf.push('<div class="form-group '+this.options.buttons_class+'">');
+                this.buf.push('<div class="form-group ' + this.options.buttons_class + '">');
                 if (this.options.layout.button_offset) {
                     btn_offset = this.options.layout.button_offset;
                     this.buf.push('<div style="padding-left:' + btn_offset + '">');
                 }
-                for(var i=0, _len=buttons.length; i<_len; i++) {
+                for (var i = 0, _len = buttons.length; i < _len; i++) {
                     b = buttons[i];
                     //test if a button type
                     if ($.isPlainObject(b)) {
                         btn = $.extend({}, b);
                         text = btn.text;
                         delete btn.text;
-                        this.buf.push('<button '+to_attrs(b)+'>'+text+'</button>\n');
+                        this.buf.push('<button ' + to_attrs(b) + '>' + text + '</button>\n');
                     } else {
-                        this.buf.push(b+"\n");
+                        this.buf.push(b + "\n");
                     }
                 }
                 if (this.options.layout.button_offset)
@@ -605,9 +614,9 @@ function form_widgets(target, options){
                 this.buf.push('</div>');
             }
         },
-        _init_fields: function(){
+        _init_fields: function () {
             var fields = this.options.fields, field, rules;
-            for(var i=0, _len=fields.length; i<_len; i++){
+            for (var i = 0, _len = fields.length; i < _len; i++) {
                 field = fields[i];
                 this.fields[field.name] = field;
                 field.id = 'field_' + field.name;
@@ -626,7 +635,7 @@ function form_widgets(target, options){
                 if (field.type === 'hidden')
                     this.hidden_fields.push(field);
                 else {
-                    if(field.type === 'file' || field.type === 'image')
+                    if (field.type === 'file' || field.type === 'image')
                         this.has_file = true;
                     this.fields_list.push(field.name);
                 }
@@ -635,39 +644,39 @@ function form_widgets(target, options){
         /*
          * combine layout.fields and fields
          */
-        _init_layout: function(){
+        _init_layout: function () {
             var fields, field;
-            if (this.options.layout){
-                if (this.options.layout.fields){
+            if (this.options.layout) {
+                if (this.options.layout.fields) {
                     fields = this.options.layout.fields;
-                    for(var i=0, _len=fields.length; i<_len; i++){
+                    for (var i = 0, _len = fields.length; i < _len; i++) {
                         field = fields[i];
                         if (this.fields.hasOwnProperty(field.name))
                             $.extend(true, this.fields[field.name], field);
                         else this.fields[field.name] = field;
                     }
                 }
-                if (this.options.layout.rows){
+                if (this.options.layout.rows) {
                     this.rows = this.options.layout.rows;
                 } else this.rows = this.fields_list;
             }
         },
-        _process_hidden: function(){
+        _process_hidden: function () {
             var fields = this.hidden_fields;
-            for(var i=0, _len=fields.length; i<_len; i++){
+            for (var i = 0, _len = fields.length; i < _len; i++) {
                 this.buf.push(this.field_to_html(fields[i]));
             }
         },
-        end: function(){
+        end: function () {
             this.buf.push('</form>');
         },
-        _get_widget: function(type){
+        _get_widget: function (type) {
             var widget = $.fn.formb.type_mapping[type];
             if (!widget) widget = 'str';
             return widget;
         },
         /* convert field to html */
-        field_to_html: function(field, readonly, table_cell){
+        field_to_html: function (field, readonly, table_cell) {
             var attrs = {};
             if (field.name) attrs.name = field.name;
             if (field.placeholder) attrs.placeholder = field.placeholder;
@@ -679,9 +688,11 @@ function form_widgets(target, options){
             return converter.call(this, field, attrs, readonly, table_cell);
         },
         /* convert field to label */
-        field_to_label: function(field, readonly, table_cell){
-            if(!!field.hide_label_grid) { return ''}
-            var attrs = {}, buf=[];
+        field_to_label: function (field, readonly, table_cell) {
+            if (!!field.hide_label_grid) {
+                return ''
+            }
+            var attrs = {}, buf = [];
             if (table_cell) attrs['class'] = 'table-field-label';
             attrs['for'] = field.id
             buf.push('<label ' + to_attrs(attrs) + '>');
@@ -695,7 +706,7 @@ function form_widgets(target, options){
             return buf.join('');
         },
         /* static formatter */
-        field_to_static: function (field, default_value){
+        field_to_static: function (field, default_value) {
             default_value = default_value || field.value;
             var render = field.render;
             if (render) {
@@ -703,38 +714,38 @@ function form_widgets(target, options){
             } else return default_value;
         },
         /* help string */
-        field_to_help_string: function(field){
+        field_to_help_string: function (field) {
             if (field.help_string)
-                return '<p class="help-block">'+field.help_string+'</p>';
+                return '<p class="help-block">' + field.help_string + '</p>';
             return '';
         },
-        v_layout: function(use_table){
-            var row, col, cols_num, fields_set=false,
-                first=true, title, table=false,
-                table_class=this.options.layout.table_class;
-            for(var i=0, _len=this.rows.length; i<_len; i++){
+        v_layout: function (use_table) {
+            var row, col, cols_num, fields_set = false,
+                first = true, title, table = false,
+                table_class = this.options.layout.table_class;
+            for (var i = 0, _len = this.rows.length; i < _len; i++) {
                 row = this.rows[i];
-                if (!$.isArray(row)){
-                    if (row.substr(0,3) == '-- ' && row.substr(row.length-3, 3) == ' --'){
+                if (!$.isArray(row)) {
+                    if (row.substr(0, 3) == '-- ' && row.substr(row.length - 3, 3) == ' --') {
                         fields_set = true;
-                        title = row.substring(3, row.length-3).trim();
+                        title = row.substring(3, row.length - 3).trim();
                         if (first) {
-                            this.buf.push('<fieldset><legend>'+title+'</legend>');
+                            this.buf.push('<fieldset><legend>' + title + '</legend>');
                             first = false;
                         } else {
                             if (table) {
                                 this.buf.push('</table>');
                             }
-                            this.buf.push('</fieldset><fieldset><legend>'+title+'</legend>');
+                            this.buf.push('</fieldset><fieldset><legend>' + title + '</legend>');
                         }
                         if (use_table) {
-                            this.buf.push('<table class="'+table_class+'">');
+                            this.buf.push('<table class="' + table_class + '">');
                             table = true;
                         }
                         continue;
                     } else {
                         if (use_table && !table) {
-                            this.buf.push('<table class="'+table_class+'">');
+                            this.buf.push('<table class="' + table_class + '">');
                             table = true;
                         }
 
@@ -742,7 +753,7 @@ function form_widgets(target, options){
                     }
                 } else {
                     if (use_table && !table) {
-                        this.buf.push('<table class="'+table_class+'">');
+                        this.buf.push('<table class="' + table_class + '">');
                         table = true;
                     }
                 }
@@ -752,11 +763,11 @@ function form_widgets(target, options){
             if (table) this.buf.push('</table>');
             if (fields_set) this.buf.push('</fieldset>');
         },
-        _process_line: function(cols, use_table){
-            var cols_num=cols.length, total_width=0,
+        _process_line: function (cols, use_table) {
+            var cols_num = cols.length, total_width = 0,
                 result = [], buf = [], i, width, content, r, span;
 
-            for(var j=0; j<cols_num; j++){
+            for (var j = 0; j < cols_num; j++) {
                 r = this._process_column(cols[j], cols_num, use_table);
                 result.push(r);
                 total_width += r[0];
@@ -773,17 +784,17 @@ function form_widgets(target, options){
             } else {
                 if (use_table) {
                     buf.push('<tr>');
-                    for (i=0, _len=result.length; i<_len; i++) {
+                    for (i = 0, _len = result.length; i < _len; i++) {
                         width = result[i][0];
                         content = result[i][1];
-                        span = width*12/total_width;
+                        span = width * 12 / total_width;
                         buf.push('<td colspan="' + span +
-                            '" width="' + span*100/12 + '%">' + content + '</td>');
+                        '" width="' + span * 100 / 12 + '%">' + content + '</td>');
                     }
                     buf.push('</tr>');
                 } else {
                     buf.push('<div class="row">');
-                    for(i=0, _len=result.length; i<_len; i++) {
+                    for (i = 0, _len = result.length; i < _len; i++) {
                         width = result[i][0];
                         content = result[i][1];
                         buf.push('<div class="col-sm-' + width * 12 / total_width + '">');
@@ -795,30 +806,30 @@ function form_widgets(target, options){
             }
             this.buf.push(buf.join(''));
         },
-        _process_column: function(col, cols_num, use_table){
+        _process_column: function (col, cols_num, use_table) {
 
             if (col == "<empty>") {
-                return [12/cols_num, ""];
+                return [12 / cols_num, ""];
             }
 
             var field = this.fields[col];
             if (!field) throw 'Field ' + col + ' if not found';
             var col_w = field.colspan || 1;
-            var col_width = col_w*12/cols_num;
+            var col_width = col_w * 12 / cols_num;
             var div_attrs = {};
             var buf = [];
 
             if (use_table) {
                 return [col_width, '<div class="table-field-row">' +
-                    this.field_to_label(field, this.options.readonly, use_table) +
-                    '<div class="table-field-col">' +
-                    this.field_to_html(field, this.options.readonly, use_table) +
-                    this.field_to_help_string(field) +
-                    '</div></div>']
+                this.field_to_label(field, this.options.readonly, use_table) +
+                '<div class="table-field-col">' +
+                this.field_to_html(field, this.options.readonly, use_table) +
+                this.field_to_help_string(field) +
+                '</div></div>']
             } else {
                 div_attrs['class'] = this.options.layout.column_class;
                 div_attrs['id'] = 'div_' + field.id;
-                buf.push('<div '  + to_attrs(div_attrs) + '>');
+                buf.push('<div ' + to_attrs(div_attrs) + '>');
                 buf.push(this.field_to_label(field, this.options.readonly, use_table));
                 buf.push(this.field_to_html(field, this.options.readonly, use_table));
                 buf.push(this.field_to_help_string(field));
@@ -826,36 +837,36 @@ function form_widgets(target, options){
                 return [col_width, buf.join('')];
             }
         }
-        
+
     }
-    $.fn.formb = function(options) {
+    $.fn.formb = function (options) {
         var builder = new FormBuilder(this, options);
         return builder.init();
     }
-    $.fn.formb_html = function(options) {
+    $.fn.formb_html = function (options) {
         var builder = new FormBuilder(this, options);
         return builder.html();
     }
     $.fn.formb.type_mapping = {
-        str:'str',
-        unicode:'str',
-        select:'select',
-        text:'text',
-        lines:'text',
-        password:'password',
-        hidden:'hidden',
-        int:'str',
-        list:'str',
-        radios:'radios',
-        image:'file',
-        float:'str',
-        file:'file',
-        bool:'checkbox',
-        checkboxes:'checkboxes',
-        date:'date',
-        time:'str',
-        datetime:'datetime',
-        table:'table'
+        str: 'str',
+        unicode: 'str',
+        select: 'select',
+        text: 'text',
+        lines: 'text',
+        password: 'password',
+        hidden: 'hidden',
+        int: 'str',
+        list: 'str',
+        radios: 'radios',
+        image: 'file',
+        float: 'str',
+        file: 'file',
+        bool: 'checkbox',
+        checkboxes: 'checkboxes',
+        date: 'date',
+        time: 'str',
+        datetime: 'datetime',
+        table: 'table'
     }
     $.fn.formb.converters = {
         str: str_convert,
@@ -875,47 +886,49 @@ function form_widgets(target, options){
  * $.query_string
  */
 
-(function($){
-    QueryString = function(url){
+(function ($) {
+    QueryString = function (url) {
         this.urlParams = {};
         this.load(url);
     }
     QueryString.prototype = {
-        load: function(param){
+        load: function (param) {
             this.urlParams = {};
             this.url = param;
-            var e,k,v,i,
+            var e, k, v, i,
                 a = /\+/g,  // Regex for replacing addition symbol with a space
                 r = /([^&=]+)=?([^&]*)/g,
-                d = function (s) { return decodeURIComponent(s.replace(a, " ")); }
-            if(!param){
+                d = function (s) {
+                    return decodeURIComponent(s.replace(a, " "));
+                }
+            if (!param) {
                 param = window.location.search;
             }
-            if (param.charAt(0) == '?'){
+            if (param.charAt(0) == '?') {
                 param = param.substring(1);
                 this.url = '';
-            }else{
+            } else {
                 i = param.indexOf('?');
-                if (i>-1){
+                if (i > -1) {
                     this.url = param.substring(0, i);
-                    param = param.substring(i+1);
-                }else
+                    param = param.substring(i + 1);
+                } else
                     param = '';
             }
-            while (e = r.exec(param)){
+            while (e = r.exec(param)) {
                 k = d(e[1]);
                 v = d(e[2]);
                 this.set(k, v, false);
             }
             return this;
         },
-        toString:function(options){
+        toString: function (options) {
             var settings = {
-                'hash' : false,
-                'traditional' : true
+                'hash': false,
+                'traditional': true
             };
-            if ( options ) {
-              $.extend( settings, options );
+            if (options) {
+                $.extend(settings, options);
             }
             var old = jQuery.ajaxSettings.traditional;
             jQuery.ajaxSettings.traditional = settings.traditional;
@@ -925,16 +938,16 @@ function form_widgets(target, options){
                 result = result + window.location.hash;
             return result;
         },
-        set:function(k, v, replace){
+        set: function (k, v, replace) {
             replace = replace || false;
             if (replace)
                 this.urlParams[k] = v;
-            else{
-                if (k in this.urlParams){
-                    if ($.type(this.urlParams[k]) === 'array'){
+            else {
+                if (k in this.urlParams) {
+                    if ($.type(this.urlParams[k]) === 'array') {
                         this.urlParams[k].push(v);
                     }
-                    else{
+                    else {
                         if (this.urlParams[k] == '')
                             this.urlParams[k] = v;
                         else
@@ -946,11 +959,11 @@ function form_widgets(target, options){
             }
             return this;
         },
-        get:function(k){
+        get: function (k) {
             return this.urlParams[k];
         },
-        remove:function(k){
-            if (k in this.urlParams){
+        remove: function (k) {
+            if (k in this.urlParams) {
                 delete this.urlParams[k];
             }
             return this;
@@ -959,29 +972,30 @@ function form_widgets(target, options){
     $.query_string = new QueryString();
 })(jQuery);
 
-(function($){
-    $(function(){
+(function ($) {
+    $(function () {
         jQuery('<iframe src="" style="display:none" id="ajaxiframedownload"></iframe>')
-        .appendTo('body');
+            .appendTo('body');
     });
-    $.download = function(url){
-    	//url and data options required
-    	if(url){
-    		//send request
+    $.download = function (url) {
+        //url and data options required
+        if (url) {
+            //send request
             var el = $('#ajaxiframedownload');
             el.attr('src', url);
-    	};
+        }
+        ;
     };
 })(jQuery);
 
 //jquery init
-$( document ).ajaxError(function( event, jqxhr, settings, thrownError ) {
+$(document).ajaxError(function (event, jqxhr, settings, thrownError) {
     var m = $.parseJSON(jqxhr.responseText);
-    if (m && !m.success && m.redirect){
+    if (m && !m.success && m.redirect) {
         var login = /\/login\b/;
         var url = m.redirect;
         //Test if login, then replace next parameter
-        if (login.test(m.redirect)){
+        if (login.test(m.redirect)) {
             url = updateURLParameter(m.redirect, 'next', window.location.href);
         }
         window.location.href = url;
@@ -990,6 +1004,6 @@ $( document ).ajaxError(function( event, jqxhr, settings, thrownError ) {
 
 
 $.ajaxSetup({
-    cache:false,
-    traditional:true
+    cache: false,
+    traditional: true
 });
