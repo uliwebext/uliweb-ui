@@ -28,6 +28,7 @@ requirejs.config({
         image: 'modules/requirejs/plugins/image',
 //--------------------------------------
 
+<<<<<<< HEAD
         "select2":"modules/select2/select2",
         "scrolling":"modules/mmgrid/scrolling",
         "mmgrid":"modules/mmgrid/mmGrid",
@@ -55,7 +56,10 @@ requirejs.config({
         "prgressbar":"modules/bootstrap-progressbar/bootstrap-progressbar.min",
         "tagsinput":"modules/bootstrap-tagsinput/bootstrap-tagsinput",
         "combotree":"modules/combotree/combotree",
-        "Chart":"modules/Chart.js/Chart.min"
+        "Chart":"modules/Chart.js/Chart.min",
+        "bootstrap-multiselect":"modules/bootstrap-multiselect/bootstrap-multiselect.min",
+		"vis":"modules/vis/vis.min",
+		"ag-grid":"modules/ag-grid/4.2.5/ag-grid.min"
     },
     shim: {
         "select2":{"exports":"jQuery.fn.select2","deps":["css!modules/select2/select2","css!modules/select2/select2-bootstrap3"]},
@@ -76,7 +80,8 @@ requirejs.config({
         "codemirror":{"deps":["modules/codemirror/mode/xml/xml","modules/codemirror/addon/selection/active-line","css!modules/codemirror/codemirror"]},
         "prgressbar":{"deps":["css!modules/bootstrap-progressbar/bootstrap-progressbar-3.3.0.min"]},
         "tagsinput":{"exports":"jQuery.fn.tagsinput","deps":["css!tagsinput"]},
-        "combotree":{"export":"jQuery.fn.combotree","deps":["jstree","tagsinput"]}
+        "combotree":{"export":"jQuery.fn.combotree","deps":["jstree","tagsinput"]},
+        "bootstrap-multiselect":{"deps":["css!modules/bootstrap-multiselect/bootstrap-multiselect.min"]}
     },
     urlArgs: get_static_version()
 });

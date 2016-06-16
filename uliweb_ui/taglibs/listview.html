@@ -9,6 +9,8 @@
 
 ##%}
 
+{{use "ui.mmgrid"}}
+
 {%table_id = _attrs.get('id') or 'table_id'
 tree = _attrs.get('tree') == 'true'
 if tree:
@@ -32,7 +34,7 @@ url = _attrs.pop('url', '{{<<request.url}}');
 <table id="{%=table_id%}"></table>
 
 <script type="text/javascript">
-require(["{%=deps%}", "mmpaginator"], function(mmgrid){
+
     var query = new QueryString('{%<<url%}');
     var query_string = query.set('data', '').toString();
 
@@ -106,6 +108,5 @@ require(["{%=deps%}", "mmpaginator"], function(mmgrid){
       query_string = $.query.remove('data').set('download', '').toString();
       $.download(query.url + query_string);
     });
-});
 
 </script>
