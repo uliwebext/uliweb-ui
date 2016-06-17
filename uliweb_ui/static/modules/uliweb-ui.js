@@ -27,11 +27,7 @@ function load(module, callback){
  */
 function show_message(message, category) {
 
-<<<<<<< HEAD
-    require(["toastr"], function (toastr) {
-=======
     load('ui.toastr', function(){
->>>>>>> origin/master
         category = category || "success"
 
         var config = {
@@ -101,11 +97,7 @@ function popup_url(target, options, title, callback) {
         delay: 50
     };
 
-<<<<<<< HEAD
-    require(['popover'], function () {
-=======
     load('ui.popover', function(){
->>>>>>> origin/master
         var o = $.extend({}, d, opts);
         $(target).webuiPopover(o);
         if (o.show)
@@ -129,11 +121,7 @@ function show_popup_url(target, options, title, callback) {
 function common_ajax_submit(target, validator) {
 
 
-<<<<<<< HEAD
-    require(['jquery.form'], function () {
-=======
     load('ui.jquery.form', function(){
->>>>>>> origin/master
 
         var el = $(target);
         el.ajaxSubmit({
@@ -170,11 +158,7 @@ function validate_submit(target, options) {
 
     var opts = $.extend(true, {}, default_options, options);
 
-<<<<<<< HEAD
-    require(['modules/jquery.validation/localization/messages_zh.min'], function () {
-=======
     load(['ui.jquery.validation'], function(){
->>>>>>> origin/master
         var form = $(target);
         var validator = form.validate({
             errorElement: 'span',
@@ -210,71 +194,38 @@ function validate_submit(target, options) {
  */
 
 var widgets_mapping = {
-<<<<<<< HEAD
-    date: function (el, options) {
-        require(['moment', 'pikaday.jquery'], function () {
-            var opts = {format: 'YYYY-MM-DD', showTime: false};
-=======
     date: function(el, options){
         load(['ui.moment', 'ui.pikaday'], function(){
             var opts = {format: 'YYYY-MM-DD', showTime:false};
->>>>>>> origin/master
             $.extend(true, opts, options || {});
             $(el).pikaday(opts);
         })
     },
-<<<<<<< HEAD
-    select: function (el, options) {
-        require(['select2'], function (select2) {
-            var opts = {width: 'resolve'};
-=======
     select: function(el, options){
         load(['ui.select2'], function(select2){
             var opts = {width:'resolve'};
->>>>>>> origin/master
             $.extend(true, opts, options || {});
             $(el).select2(opts);
         });
     },
-<<<<<<< HEAD
-    datetime: function (el, options) {
-        require(['moment', 'pikaday.jquery'], function () {
-            var opts = {format: 'YYYY-MM-DD hh:mm:ss', showTime: true, use24hour: true};
-=======
     datetime: function(el, options){
         load(['ui.moment', 'ui.pikaday'], function(){
             var opts = {format: 'YYYY-MM-DD hh:mm:ss', showTime:true, use24hour:true};
->>>>>>> origin/master
             $.extend(true, opts, options || {});
             $(el).pikaday(opts);
         })
     },
-<<<<<<< HEAD
-    file: function (el, options) {
-        require(['bootstrap-filestyle'], function (filestyle) {
-            var opts = {buttonText: '', buttonName: 'btn-primary'};
-=======
     file: function(el, options){
         load(['ui.bootstrap-filestyle'], function(filestyle){
             var opts = {buttonText:'', buttonName:'btn-primary'};
->>>>>>> origin/master
             $.extend(true, opts, options || {});
             $(el).filestyle(opts);
         });
     },
-<<<<<<< HEAD
-    image: function (el, options) {
-        require(['bootstrap-filestyle'], function (filestyle) {
-            var opts = {
-                buttonText: '', buttonName: 'btn-primary',
-                iconName: 'glyphicon-picture'
-            };
-=======
     image: function(el, options){
         load(['ui.bootstrap-filestyle'], function(filestyle){
             var opts = {buttonText:'', buttonName:'btn-primary',
                 iconName:'glyphicon-picture'};
->>>>>>> origin/master
             $.extend(true, opts, options || {});
             $(el).filestyle(opts);
         });
