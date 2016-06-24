@@ -120,7 +120,6 @@ function show_popup_url(target, options, title, callback) {
 
 function common_ajax_submit(target, validator) {
 
-
     load('ui.jquery.form', function(){
 
         var el = $(target);
@@ -157,7 +156,6 @@ function validate_submit(target, options) {
     }
 
     var opts = $.extend(true, {}, default_options, options);
-
     load(['ui.jquery.validation'], function(){
         var form = $(target);
         var validator = form.validate({
