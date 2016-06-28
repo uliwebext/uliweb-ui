@@ -1211,6 +1211,23 @@ function($) {
 
 }(window.jQuery);
 
+function block_message(message, options) {
+    load('ui.blockUI', function() {
+        var df = { css: {
+               border: 'none',
+               padding: '15px',
+               backgroundColor: '#000',
+               '-webkit-border-radius': '5px',
+               '-moz-border-radius': '5px',
+               opacity: .5,
+               color: '#fff'
+              }
+        }
+        var opts = $.extend({}, df, options, {message:message})
+        $.blockUI(opts);
+    });
+}
+
 //jquery init
 $(document).ajaxError(function (event, jqxhr, settings, thrownError) {
     var m = $.parseJSON(jqxhr.responseText);
