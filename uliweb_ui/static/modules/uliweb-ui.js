@@ -1319,10 +1319,21 @@ function dialog_ajax_submit(dialog, validator) {
             success: function (data) {
                 if (data.success) {
                     el.trigger('success.form', data);
+                    if (data.message)
+                      show_message(data.message)
                     dialog.close();
+
+                    //处理成功事件
+                    if (dialog.options.onSuccess) {
+                      dialog.options.onSuccess(dialog, data)
+                    }
                 } else {
                     show_message(data.message, 'error')
                     validator.showErrors(data.errors);
+                    //处理成功事件
+                    if (dialog.options.onFail) {
+                      dialog.options.onFail(dialog, data)
+                    }
                 }
                 dialog.enableButtons(true);
                 dialog.setClosable(true);
