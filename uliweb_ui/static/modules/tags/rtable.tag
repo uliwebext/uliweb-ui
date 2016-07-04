@@ -2,21 +2,31 @@
 
   <style scoped>
     rcol {display: none}
+    .table {margin-bottom:0px;}
   </style>
 
   <yield/>
 
   <table class="{opts.class}">
     <th each="{ c in cols }" riot-style="{c.style}">{c.name}</th>
-    <tr each="{ row in rows.get() }" >
-      <td each="{ col, colval in parent.cols }"><raw content={parent.row[col.name]}></raw></td>
+    <tr each="{ row, index in rows.get() }">
+      <td each="{ col, colval in parent.cols }">
+        <raw content={parent.parent.get_col_data(parent.row, parent.index, col, colval)}></raw>
+        <!-- {parent.parent.get_col_data(parent.row, parent.index, col, colval)}-->
+      </td>
     </tr>
   </table>
 
   var self = this
   var EL = self.root
   this.cols = []
-  this.rows = new DataSet()
+  if (Array.isArray(opts.rows)) {
+    this.rows = new DataSet()
+    this.rows.add(opts.rows)
+  } else if (opts.rows)
+    this.rows = opts.rows
+  else
+    this.rows = new DataSet()
 
   this.on('mount', function() {
       for(var c=0; c<EL.children.length; c++){
@@ -47,14 +57,40 @@
     self.update()
   }.bind(this);
 
-  EL.update = function(newrows){
+  EL.change = function(newrows){
     self.rows.add(newrows)
     self.update()
   }.bind(this);
 
+  EL.setData = function(dataset){
+    self.rows = dataset
+    self.update()
+  }.bind(this);
+
+  this.get_col_data = function(row, index, col, colval) {
+    //console.log(index, row, col, colval)
+    var value
+    if (col.name == '#') value = index + 1
+    else value = row[col.name]
+    //console.log(this.root)
+    if (value == undefined)
+      value = col.inner
+    return value
+  }
+
+  this.edit = function (e) {
+    console.log(e)
+  }
+
+  this.remove = function (e) {
+    console.log(e)
+  }
+
 </rtable>
 
-<rcol></rcol>
+<rcol>
+  <yield/>
+</rcol>
 
 <raw>
   <span></span>

@@ -8,7 +8,8 @@ riot.tag2('query-condition', '<div class="query-condition"> <form method="get" a
         self.fields[v['name']] = v
       })
       this.show = false
-      this.data = opts.data || {}
+
+      this.data = $.extend({}, $.query_string.urlParams, opts.data)
 
       if (!this.layout) {
           this.layout = []
@@ -43,6 +44,14 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
 
     this.on('mount', function(){
 
+      var i18n = {
+        previousMonth	: '上个月',
+        nextMonth		: '下个月',
+        months			: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+        weekdays		: ['周日','周一','周二','周三','周四','周五','周六'],
+        weekdaysShort	: ['日','一','二','三','四','五','六']
+      }
+
       if (opts.type == 'select') {
         var _opts = $.extend({}, {
             includeSelectAllOption: true,
@@ -61,12 +70,12 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
           return
         })
       } else if (opts.type == 'date') {
-        var _opts = {format: 'YYYY-MM-DD', showTime:false};
+        var _opts = {format: 'YYYY-MM-DD', showTime:false, i18n:i18n};
         load('ui.pikaday', function(){
           $('[name='+opts.field.name+']').pikaday(_opts);
         })
       } else if (opts.type == 'datetime') {
-        var _opts = {format: 'YYYY-MM-DD hh:mm:ss', showTime:true, use24hour:true}
+        var _opts = {format: 'YYYY-MM-DD hh:mm:ss', showTime:true, use24hour:true, i18n:i18n}
         load('ui.pikaday', function(){
           $('[name='+opts.field.name+']').pikaday(_opts);
         })
