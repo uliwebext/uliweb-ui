@@ -74,6 +74,9 @@ function DataSet(data, options) {
 
   this._subscribers = {}; // event subscribers
 
+  //init async function
+  this.remove = this.async_call(remove);
+
   // add initial data when provided
   if (data) {
     this.add(data);
@@ -141,6 +144,32 @@ DataSet.prototype._trigger = function (event, params, senderId) {
       subscriber.callback(event, params, senderId || null);
     }
   }
+};
+
+DataSet.prototype.async_call = function (f) {
+  var self = this
+  var _f = function (id, url) {
+    var func
+
+    if (url) {
+      if (typeof url === 'string') {
+        func = function(){
+          return $.post(url)
+        }
+      } else if (typeof url === 'function') {
+        func = url
+      } else {
+        throw new Error("url should be string or function type")
+      }
+      return $.when(func()).done(function(data){
+        ret = f.call(self, data.data)
+        return ret
+      })
+    } else {
+      return f.call(self, id)
+    }
+  }
+  return _f
 };
 
 /**
@@ -667,10 +696,11 @@ DataSet.prototype._sort = function (items, order) {
  * Remove an object by pointer or by id
  * @param {String | Number | Object | Array} id Object or id, or an array with
  *                                              objects or ids to be removed
- * @param {String} [senderId] Optional sender id
+ * @param {String|Function} [url] Optional url, it'll be remote url or just callback
+ *      return value should be {success:true|false, }
  * @return {Array} removedIds
  */
-DataSet.prototype.remove = function (id, senderId) {
+remove = function (id) {
   var removedIds = [],
       i,
       len,
@@ -691,10 +721,10 @@ DataSet.prototype.remove = function (id, senderId) {
   }
 
   if (removedIds.length) {
-    this._trigger('remove', { items: removedIds }, senderId);
+    this._trigger('remove', { items: removedIds });
   }
-
   return removedIds;
+
 };
 
 /**

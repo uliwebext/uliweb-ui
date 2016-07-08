@@ -1,78 +1,76 @@
-riot.tag2('rtable', '<yield></yield> <table class="{opts.class}"> <th each="{c in cols}" riot-style="{c.style}">{c.name}</th> <tr each="{row, index in rows.get()}"> <td each="{col, colval in parent.cols}"> <raw content="{parent.parent.get_col_data(parent.row, parent.index, col, colval)}"></raw> </td> </tr> </table>', 'rtable rcol,[riot-tag="rtable"] rcol,[data-is="rtable"] rcol{display: none} rtable .table,[riot-tag="rtable"] .table,[data-is="rtable"] .table{margin-bottom:0px;}', '', function(opts) {
+riot.tag2('rtable', '<yield></yield> <table class="{options.tableClass}"> <thead> <tr> <th each="{c in cols}" riot-style="{c.style}">{c.label || c.name}</th> </tr> </thead> <tbody> <tr each="{row, index in rows.get()}"> <td each="{col, colval in parent.cols}"> <raw if="{!col.buttons}" content="{parent.parent.get_col_data(parent.row, parent.index, col, colval)}"></raw> <virtual if="{col.buttons}" each="{btn in col.buttons}"> <i if="{btn.icon}" class="fa fa-{btn.icon} action" title="{btn.title}" onclick="{parent.parent.action_click(parent.parent.row, btn)}"></i> <a if="{btn.label}" class="action" title="{btn.title}" href="{btn.href || \'#\'}" onclick="{parent.parent.action_click(parent.parent.row, btn)}">{btn.label}</a> </virtual> </td> </tr> </tbody> </table>', 'rtable rcol,[riot-tag="rtable"] rcol,[data-is="rtable"] rcol{display: none} rtable .table,[riot-tag="rtable"] .table,[data-is="rtable"] .table{margin-bottom:0px;} rtable .action,[riot-tag="rtable"] .action,[data-is="rtable"] .action{cursor:pointer;}', '', function(opts) {
 
   var self = this
   var EL = self.root
-  this.cols = []
-  if (Array.isArray(opts.rows)) {
+  this.cols = opts.cols
+  this.options = opts.options || {}
+  if (opts.data) {
+    if (Array.isArray(opts.data)) {
+      this.rows = new DataSet()
+      this.rows.add(opts.data)
+    }
+    else
+      this.rows = opts.data
+  } else {
     this.rows = new DataSet()
-    this.rows.add(opts.rows)
-  } else if (opts.rows)
-    this.rows = opts.rows
-  else
-    this.rows = new DataSet()
+  }
 
-  this.on('mount', function() {
-      for(var c=0; c<EL.children.length; c++){
-          var child = EL.children[c]
-          if(child.localName == 'rcol'){
-            var col_style = ''
-            if(child.attributes['width'] != undefined)
-              col_style='width: '+ child.attributes['width'].value
+  this.bind = function (dataset) {
 
-            self.cols.push({name:child.attributes['name'].value,
-                inner:child.innerHTML,
-                style:col_style
-            })
-          }
+    dataset.on('*', function(r, d){
+      if (self.options.onUpdate) {
+        self.options.onUpdate(dataset)
       }
-
-      if(opts.ongetdata){
-        self.rows.add(window[opts.ongetdata]()) ;
-      }
-
       self.update()
     })
+  }
+
+  this.on('mount', function() {
+    for(var i=0, len=self.cols.length; i<len; i++) {
+      var col = self.cols[i]
+      col.style = ''
+      if (col.width) col.style = 'width:'+col.width
+    }
+    self.bind(self.rows)
+  })
 
   EL.load = function(newrows){
     self.rows.clear()
     self.rows.add(newrows)
-    self.update()
   }.bind(this);
 
   EL.change = function(newrows){
-    self.rows.add(newrows)
-    self.update()
+    self.rows.update(newrows)
   }.bind(this);
 
   EL.setData = function(dataset){
     self.rows = dataset
-    self.update()
+    self.bind(self.rows)
   }.bind(this);
 
-  this.get_col_data = function(row, index, col, colval) {
-
-    var value
+  this.get_col_data = function(row, index, col, col_index) {
+    var value = ''
+    if (col.render && typeof col.render === 'function') {
+      return col.render(row, index, col, col_index)
+    }
     if (col.name == '#') value = index + 1
     else value = row[col.name]
-
-    if (value == undefined)
-      value = col.inner
     return value
   }
 
-  this.edit = function (e) {
-    console.log(e)
+  this.action_click = function (row, btn) {
+    return function (e) {
+      if (btn.onclick && typeof btn.onclick === 'function') {
+
+        btn.onclick.call(e.target, row)
+      }
+    }
   }
 
-  this.remove = function (e) {
-    console.log(e)
-  }
-
-});
-
-riot.tag2('rcol', '<yield></yield>', '', '', function(opts) {
 });
 
 riot.tag2('raw', '<span></span>', '', '', function(opts) {
-  this.root.innerHTML = opts.content
+  this.on('update', function () {
+    this.root.innerHTML = opts.content
+  })
 });
