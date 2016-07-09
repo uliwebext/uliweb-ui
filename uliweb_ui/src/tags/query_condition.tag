@@ -201,7 +201,7 @@
           return
         })
       } else if (opts.type == 'date') {
-        var _opts = {format: 'YYYY-MM-DD', showTime:false, i18n};
+        var _opts = {format: 'YYYY-MM-DD', showTime:false, i18n:i18n};
         load('ui.pikaday', function(){
           $('[name='+opts.field.name+']').pikaday(_opts);
         })
