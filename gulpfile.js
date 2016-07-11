@@ -47,16 +47,13 @@ gulp.task('tags', function() {
     // .pipe(notify({ message: 'js-rest task complete' }));
 });
 
-gulp.task('clean', function(cb) {
-
-});
-
 gulp.task('watch', function() {
-  // Watch .scss files
+  gulp.watch('uliweb_ui/src/tags/*.tags', ['tags']);
+  // Watch .css files
   gulp.watch('uliweb_ui/src/utils/css/*.css', ['css']);
   // Watch .js files
   gulp.watch('uliweb_ui/src/utils/js/*.js', ['js']);
-  gulp.watch('uliweb_ui/src/utils/tags/*.tags', ['tags']);
+
 });
 
 gulp.task('default', function() {

@@ -219,6 +219,7 @@ DataSet.prototype.add = function (data, parentId) {
 DataSet.prototype.load = function (url, callback) {
   var self = this
   return $.getJSON(url || this._options.url).done(function(r) {
+      self.clear()
       if (callback) self.update(callback(r))
       else self.update(r)
     })

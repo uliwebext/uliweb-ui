@@ -159,6 +159,8 @@ function block_message(message, options) {
     });
 }
 
+/* bootstrap model fix for select2 */
+$.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
 /* jquery init function
 */

@@ -55,6 +55,9 @@
                 result = result + window.location.hash;
             return result;
         },
+        merge: function (data) {
+          $.extend(this.urlParams, data)
+        },
         set: function (k, v, replace) {
             replace = replace || false;
             if (replace)
@@ -88,3 +91,9 @@
     }
     $.query_string = new QueryString();
 })(jQuery);
+
+function get_url(url, data) {
+  var query = new QueryString(url)
+  query.merge(data)
+  return query.toString()
+}

@@ -11,7 +11,7 @@
   <table class="{options.tableClass}">
     <thead>
       <tr>
-        <th each="{ c in cols }" style="{c.style}">{c.label || c.name}</th>
+        <th each="{ c in cols }" style="{c.style}">{c.title || c.name}</th>
       </tr>
     </thead>
     <tbody>
@@ -36,6 +36,9 @@
   var self = this
   var EL = self.root
   this.cols = opts.cols
+  this.nameField = opts.nameField || 'name'
+  this.labelField = opts.labelField || 'title'
+  this.start = 0          //起始序号与#显示相匹配
   this.options = opts.options || {}
   if (opts.data) {
     if (Array.isArray(opts.data)) {
@@ -61,8 +64,15 @@
   this.on('mount', function() {
     for(var i=0, len=self.cols.length; i<len; i++) {
       var col = self.cols[i]
+      var width = col.width
       col.style = ''
-      if (col.width) col.style = 'width:'+col.width
+      if (width) {
+        if (typeof width === 'number')
+          width = width + 'px'
+        col.style = 'width:'+width
+      }
+      col.name = col[self.nameField]
+      col.title = col[self.labelField]
     }
     self.bind(self.rows)
   })
@@ -83,12 +93,12 @@
   }.bind(this);
 
   this.get_col_data = function(row, index, col, col_index) {
-    var value = ''
+    var value
     if (col.render && typeof col.render === 'function') {
       return col.render(row, index, col, col_index)
     }
-    if (col.name == '#') value = index + 1
-    else value = row[col.name]
+    if (col.name == '#') value = self.start + index + 1
+    else value = row[col.name] || ''
     return value
   }
 
@@ -96,7 +106,7 @@
     return function (e) {
       if (btn.onclick && typeof btn.onclick === 'function') {
         //绑定this为e.target，即当前dom元素
-        btn.onclick.call(e.target, row)
+        btn.onclick.call(e.target, row, self)
       }
     }
   }

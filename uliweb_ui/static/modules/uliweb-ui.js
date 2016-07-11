@@ -159,6 +159,8 @@ function block_message(message, options) {
     });
 }
 
+/* bootstrap model fix for select2 */
+$.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
 /* jquery init function
 */
@@ -1415,6 +1417,9 @@ function($) {
                 result = result + window.location.hash;
             return result;
         },
+        merge: function (data) {
+          $.extend(this.urlParams, data)
+        },
         set: function (k, v, replace) {
             replace = replace || false;
             if (replace)
@@ -1448,3 +1453,9 @@ function($) {
     }
     $.query_string = new QueryString();
 })(jQuery);
+
+function get_url(url, data) {
+  var query = new QueryString(url)
+  query.merge(data)
+  return query.toString()
+}
