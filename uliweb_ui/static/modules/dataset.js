@@ -183,6 +183,19 @@ DataSet.prototype.add = function (data, parentId) {
 };
 
 /**
+ * Update existing items via ajax request
+ * @param {String} url if no url then it'll use options.url
+ *                 require jquery
+ */
+DataSet.prototype.load = function (url, callback) {
+  var self = this
+  return $.getJSON(url || this._options.url).done(function(r) {
+      if (callback) self.update(callback(r))
+      else self.update(r)
+    })
+}
+
+/**
  * Update existing items. When an item does not exist, it will be created
  * @param {Object | Array} data
  * @param {String} [senderId] Optional sender id
