@@ -38,7 +38,6 @@
   this.cols = opts.cols
   this.nameField = opts.nameField || 'name'
   this.labelField = opts.labelField || 'title'
-  this.start = 0          //起始序号与#显示相匹配
   this.options = opts.options || {}
   if (opts.data) {
     if (Array.isArray(opts.data)) {
@@ -77,6 +76,9 @@
     self.bind(self.rows)
   })
 
+  this.on('update', function(){
+    this.start = opts.start || 0
+  })
 
   EL.load = function(newrows){
     self.rows.clear()

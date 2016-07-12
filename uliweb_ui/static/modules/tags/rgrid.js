@@ -1,16 +1,21 @@
-riot.tag2('rgrid', '<query-condition rules="{query_rules}" fields="{query_fields}" layout="{query_layout}"></query-condition> <rtable cols="{cols}" options="{rtable_options}" data="{data}"></rtable> <div class="clearfix tools"> <pagination if="{pagination}" data="{data}" url="{url}" page="{page}" total="{total}"></pagination> <div if="{!pagination}" id="pagination" class="pull-left"></div> </div>', '', '', function(opts) {
+riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" fields="{query_fields}" layout="{query_layout}"></query-condition> <rtable cols="{cols}" options="{rtable_options}" data="{data}" start="{start}"></rtable> <div class="clearfix tools"> <pagination if="{pagination}" data="{data}" url="{url}" page="{page}" total="{total}" limit="{limit}" onpagechanged="{onpagechanged}"></pagination> <div if="{!pagination}" id="pagination" class="pull-left"></div> </div>', '', '', function(opts) {
 
 
   self = this
+
   this.data = new DataSet()
   this.cols = opts.cols
   this.url = opts.url
   this.page = opts.page || 1
+  this.limit = opts.limit || 10
   this.total = opts.total || 0
-  this.pagination = opts.pagination || true
-  this.query_rules = opts.query.rules
-  this.query_fields = opts.query.fields
-  this.query_layout = opts.query.layout
+  this.pagination = opts.pagination == undefined ? true : opts.pagination
+  this.has_query = opts.query !== undefined
+  this.query = opts.query || {}
+  this.query_rules = this.query.rules || {}
+  this.query_fields = this.query.fields || []
+  this.query_layout = this.query.layout || []
+  this.start = (this.page - 1) * this.limit
 
   this.rtable_options = {
     tableClass : opts.tableClass || 'table table-bordered',
@@ -19,6 +24,11 @@ riot.tag2('rgrid', '<query-condition rules="{query_rules}" fields="{query_fields
     onUpdate: opts.onupdate || function(data){
       $('#pagination').text('共 ' + data.length + ' 条记录')
     }
+  }
+
+  this.onpagechanged = function (page) {
+    self.start = (page - 1) * self.limit
+    self.update()
   }
 
   this.on('mount', function(){

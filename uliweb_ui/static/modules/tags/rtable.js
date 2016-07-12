@@ -5,7 +5,6 @@ riot.tag2('rtable', '<yield></yield> <table class="{options.tableClass}"> <thead
   this.cols = opts.cols
   this.nameField = opts.nameField || 'name'
   this.labelField = opts.labelField || 'title'
-  this.start = 0
   this.options = opts.options || {}
   if (opts.data) {
     if (Array.isArray(opts.data)) {
@@ -42,6 +41,10 @@ riot.tag2('rtable', '<yield></yield> <table class="{options.tableClass}"> <thead
       col.title = col[self.labelField]
     }
     self.bind(self.rows)
+  })
+
+  this.on('update', function(){
+    this.start = opts.start || 0
   })
 
   EL.load = function(newrows){

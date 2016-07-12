@@ -17,6 +17,7 @@ riot.tag2('pagination', '<ul class="pagination"> <li if="{totalMessage}" class="
       return data.rows
     })
   }
+  this.onpagechanged = opts.onpagechanged
 
   this._totalMessage = opts.totalMessage || '共 $pages 页 / $records 条记录'
   this.prev = opts.prev || '上一页'
@@ -43,6 +44,9 @@ riot.tag2('pagination', '<ul class="pagination"> <li if="{totalMessage}" class="
       if (self.onpage && typeof self.onpage === 'function') {
         $.when(self.onpage.call(self, page)).done(function(data){
           self.show(page)
+          if (self.onpagechanged) {
+            self.onpagechanged(page)
+          }
         })
       } else {
         self.show()

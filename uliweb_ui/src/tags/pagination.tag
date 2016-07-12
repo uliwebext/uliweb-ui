@@ -27,6 +27,7 @@
       return data.rows
     })
   }    //页面事件回调,缺省使用data作为数据源
+  this.onpagechanged = opts.onpagechanged
 
   this._totalMessage = opts.totalMessage || '共 $pages 页 / $records 条记录'  //'Total $pages pages / $records records'
   this.prev = opts.prev || '上一页'
@@ -63,6 +64,9 @@
       if (self.onpage && typeof self.onpage === 'function') {
         $.when(self.onpage.call(self, page)).done(function(data){
           self.show(page)
+          if (self.onpagechanged) {
+            self.onpagechanged(page)
+          }
         })
       } else {
         self.show()

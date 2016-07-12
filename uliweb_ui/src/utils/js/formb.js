@@ -86,9 +86,11 @@ var widgets_mapping = {
     },
     select: function(el, options){
         load(['ui.select2'], function(select2){
-            var opts = {width:'resolve'};
+/*            var opts = {width:'resolve'};
             $.extend(true, opts, options || {});
             $(el).select2(opts);
+            */
+            simple_select2(el)
         });
     },
     datetime: function(el, options){
@@ -484,7 +486,7 @@ function form_widgets(target, options) {
         },
         body: function () {
             this._process_hidden();
-            var layout_class = this.options.layout_class || 'bs3v';
+            var layout_class = this.options.layout_class || 'bs3h';
             if (layout_class === 'bs3v') this.v_layout();
             else this.v_layout(true);
         },

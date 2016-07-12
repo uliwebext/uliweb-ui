@@ -7,6 +7,7 @@ function getId(){
    return '_'+S4()+S4();
 }
 
+/*
 function common_ajaxForm_success(options) {
     return function(r){
         var opts = {
@@ -44,6 +45,7 @@ function common_ajaxForm_success(options) {
         }
     };
 }
+*/
 
 /*
  * process ajax request and jquery.validation
@@ -164,16 +166,17 @@ function dialog(url, options) {
       buttons: [{
           label: '确定',
           id: 'btnSave',
-          cssClass: 'btn-primary',
-          action: function(dialogRef){
-              var form = dialogRef.getModalBody().find('form');
+          cssClass: 'btn-primary btn-flat',
+          action: function(dialog){
+              var form = dialog.getModalBody().find('form');
               this.spin();
               form.submit();
           }
       }, {
           label: '取消',
-          action: function(dialogRef){
-              dialogRef.close();
+          cssClass: 'btn-default btn-flat',
+          action: function(dialog){
+              dialog.close();
           }
       }]
     }, opts;
