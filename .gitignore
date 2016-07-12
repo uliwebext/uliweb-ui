@@ -6,3 +6,4 @@ dist
 .idea
 _git
 uliweb_ui/static/vendor
+node_modules

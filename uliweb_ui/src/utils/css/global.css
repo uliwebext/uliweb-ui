@@ -1,0 +1,10 @@
+
+/* fix AdminLTE */
+.modal-content {
+    border-radius: 4px;
+}
+
+.tools {
+  padding-top:10px;
+  padding-bottom:10px;
+}
