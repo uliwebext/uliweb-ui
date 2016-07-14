@@ -154,6 +154,7 @@
 
     <select multiple={opts.field.multiple} if={opts.type=='select'}
       field-type="select" style="width:200px" name={opts.field.name} url={opts.field.url} placeholder={opts.field.placeholder}>
+      <option if={opts.field.placeholder && !opts.field.multiple} value="">{opts.field.placeholder}</option>
       <option each={value in opts.field.choices} value={value[0]}>
           {value[1]}
       </option>
