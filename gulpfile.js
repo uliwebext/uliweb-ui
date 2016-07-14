@@ -6,7 +6,8 @@ var gulp = require('gulp'),
     rename = require('gulp-rename'),
     notify = require('gulp-notify'),
     del = require('del'),
-    riot = require('gulp-riot');
+    riot = require('gulp-riot'),
+    livereload = require('gulp-livereload');
 
 
 gulp.task('css', function() {
@@ -48,6 +49,7 @@ gulp.task('tags', function() {
 });
 
 gulp.task('watch', function() {
+  livereload.listen();
   gulp.watch('uliweb_ui/src/tags/*.tags', ['tags']);
   // Watch .css files
   gulp.watch('uliweb_ui/src/utils/css/*.css', ['css']);

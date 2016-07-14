@@ -39,7 +39,7 @@
           border: 1px solid #ddd;
           border-top: 1px solid white;;
           margin: 0 auto;
-          padding: 4px 16px;
+          padding: 5px 16px;
           cursor: pointer;
           font-size: 8px;
         }
@@ -49,16 +49,20 @@
           min-width: 200px;
           vertical-align: middle;
         }
+        input-field {
+          display:inline-block;
+        }
+        /*
         .select2-container--bootstrap {
           display: inline-block;
         }
         .select2-container--bootstrap .select2-selection--single .select2-selection__rendered {
-          /*color: #999;*/
           padding: 0;
         }
         .select2-container--bootstrap .select2-selection--single {
           line-height: 30px;
         }
+        */
         /*隐藏单选radio按钮*/
         .multiselect-container li input[type="radio"] {margin-left:-200px;}
 
@@ -70,7 +74,8 @@
                 <div each={field in row} class="condition-cell">
                    <span class="condition-label">{ fields[this.field].label || field }</span>
                    <input-field field={ fields[field] } data={data}
-                     type={ fields[this.field].type || 'str' }></input-field>
+                     type={ fields[this.field].type || 'str' }>
+                   </input-field>
                 </div>
                 <div show={ i==0 && !show } class="condition-cell" >
                     <button class="btn btn-primary btn-flat" type="submit">查询</button>
@@ -119,7 +124,10 @@
       this.reset = function(e){
         for (k in self.fields) {
           var field = self.fields[k]
-          if (field.type == 'select') {
+          if (field.type == 'select' && field.url) {
+            $('[name='+k+']', self.root).val('').trigger('change')
+          }
+          else if (field.type == 'select') {
             // $('[name='+k+']', self.root).select2().val(null)
             $('[name='+k+']', self.root)
               .multiselect('deselectAll', false)
@@ -145,8 +153,7 @@
       if={opts.type=='password'} placeholder={opts.field.placeholder}/>
 
     <select multiple={opts.field.multiple} if={opts.type=='select'}
-      field-type="select" style="width:200px" name={opts.field.name}>
-      <option if={opts.field.placeholder && !opts.field.multiple}>{opts.field.placeholder}</option>
+      field-type="select" style="width:200px" name={opts.field.name} url={opts.field.url} placeholder={opts.field.placeholder}>
       <option each={value in opts.field.choices} value={value[0]}>
           {value[1]}
       </option>
@@ -182,7 +189,12 @@
         weekdaysShort	: ['日','一','二','三','四','五','六']
       }
 
-      if (opts.type == 'select') {
+      if (opts.type == 'select' && opts.field.url){
+        load('ui.select2', function(){
+          var el = $('[name='+opts.field.name+']', self.root);
+          simple_select2(el, {width:'resolve'})
+        })
+      }else if (opts.type == 'select') {
         var _opts = $.extend({}, {
             includeSelectAllOption: true,
             selectAllText: '全部选中',
@@ -198,7 +210,6 @@
           var el = $('[name='+opts.field.name+']', self.root).multiselect(_opts);
           if (opts.data[opts.field.name])
             el.multiselect('select', opts.data[opts.field.name])
-          return
         })
       } else if (opts.type == 'date') {
         var _opts = {format: 'YYYY-MM-DD', showTime:false, i18n:i18n};

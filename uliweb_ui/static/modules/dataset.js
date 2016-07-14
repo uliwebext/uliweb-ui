@@ -218,11 +218,18 @@ DataSet.prototype.add = function (data, parentId) {
  */
 DataSet.prototype.load = function (url, callback) {
   var self = this
-  return $.getJSON(url || this._options.url).done(function(r) {
-      self.clear()
-      if (callback) self.update(callback(r))
-      else self.update(r)
-    })
+  this._data = [];
+  this._ids = {};
+  this.length = 0;
+  if (typeof url === 'string') {
+    return $.getJSON(url || this._options.url).done(function(r) {
+        if (callback) self.add(callback(r))
+        else self.add(r)
+      })
+  } else {
+    if (callback) self.add(callback(url))
+    else self.add(url)
+  }
 }
 
 /**

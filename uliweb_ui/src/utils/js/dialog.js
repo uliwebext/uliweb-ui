@@ -139,28 +139,31 @@ function dialog(url, options) {
   load('ui.bootstrap.dialog', function(){
     var default_opts = {
       message: function(dialog) {
-          var $message = $('<div></div>');
+          var content = $('<div></div>')
           $.ajax({
-            url:url,
-            type:'GET',
-            dataType:'text',
-          }).success(function(data){
-            $message.html(data);
-            //删除按钮行，使用前端重新生成
-            $message.find('.form-actions').remove();
-            //处理标题
-            var h1 = $message.find('h1');
-            var title = h1.html();
-            dialog.setTitle(title);
-            h1.remove();
-            var form = $message.find('form');
-            if (form.size() > 0)
-              form_widgets(form)
+            url: url,
+            context: content, //document.body,
+            success: function(responseText) {
+              content.append($(responseText))
+              //content.filter("script").each(function(i) {
+              //    eval($(this).text());
+              //});
+              content.find('.form-actions').remove()
+              //处理标题
+              var h1 = content.find('h1')
+              var title = h1.html()
+              dialog.setTitle(title)
+              h1.remove()
+              var form = content.find('form')
+              if (form.size() > 0)
+                form_widgets(form)
 
-            //处理表单校验
-            dialog_validate_submit(dialog, {ajax_submit:dialog_ajax_submit})
-          });
-          return $message;
+              //处理表单校验
+              dialog_validate_submit(dialog, {ajax_submit:dialog_ajax_submit})
+            }
+          })
+
+          return content
       },
       draggable: true,
       buttons: [{

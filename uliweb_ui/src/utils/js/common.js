@@ -168,18 +168,16 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
   @param el: target element
   @param options: select2 options if options is string, then
-      it'll be {ajax:{url:options}}
+      it'll be {ajax:{url:options}} or it'll fetch from element url or data-url attribute
+      it'll also process placeholder attribute
 */
 
 function simple_select2 (el, options){
-  var url = null
+  var $el = $(el),
+    url = $el.attr('data-url') || $el.attr('url'),
+    placeholder = $el.attr('placeholder') || '请选择';
   if (typeof options === 'string') {
     url = options
-    options = {}
-  }
-  // no options passwd, it'll find el url attribute
-  else if (!options) {
-    url = $(el).attr('data-url')
     options = {}
   }
   var opts
@@ -187,6 +185,7 @@ function simple_select2 (el, options){
     opts = {
       minimumInputLength: 2,
       width: '100%',
+      placeholder:placeholder,
       allowClear:true,
       language: 'zh-CN',
       ajax: {
@@ -227,6 +226,7 @@ function simple_select2 (el, options){
     opts = {
       width: '100%',
       allowClear:true,
+      placeholder:placeholder,
       language: 'zh-CN'
     }
 

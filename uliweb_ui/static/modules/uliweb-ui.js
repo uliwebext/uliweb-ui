@@ -168,18 +168,16 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
   @param el: target element
   @param options: select2 options if options is string, then
-      it'll be {ajax:{url:options}}
+      it'll be {ajax:{url:options}} or it'll fetch from element url or data-url attribute
+      it'll also process placeholder attribute
 */
 
 function simple_select2 (el, options){
-  var url = null
+  var $el = $(el),
+    url = $el.attr('data-url') || $el.attr('url'),
+    placeholder = $el.attr('placeholder') || '请选择';
   if (typeof options === 'string') {
     url = options
-    options = {}
-  }
-  // no options passwd, it'll find el url attribute
-  else if (!options) {
-    url = $(el).attr('data-url')
     options = {}
   }
   var opts
@@ -187,6 +185,7 @@ function simple_select2 (el, options){
     opts = {
       minimumInputLength: 2,
       width: '100%',
+      placeholder:placeholder,
       allowClear:true,
       language: 'zh-CN',
       ajax: {
@@ -227,6 +226,7 @@ function simple_select2 (el, options){
     opts = {
       width: '100%',
       allowClear:true,
+      placeholder:placeholder,
       language: 'zh-CN'
     }
 
@@ -395,28 +395,31 @@ function dialog(url, options) {
   load('ui.bootstrap.dialog', function(){
     var default_opts = {
       message: function(dialog) {
-          var $message = $('<div></div>');
+          var content = $('<div></div>')
           $.ajax({
-            url:url,
-            type:'GET',
-            dataType:'text',
-          }).success(function(data){
-            $message.html(data);
-            //删除按钮行，使用前端重新生成
-            $message.find('.form-actions').remove();
-            //处理标题
-            var h1 = $message.find('h1');
-            var title = h1.html();
-            dialog.setTitle(title);
-            h1.remove();
-            var form = $message.find('form');
-            if (form.size() > 0)
-              form_widgets(form)
+            url: url,
+            context: content, //document.body,
+            success: function(responseText) {
+              content.append($(responseText))
+              //content.filter("script").each(function(i) {
+              //    eval($(this).text());
+              //});
+              content.find('.form-actions').remove()
+              //处理标题
+              var h1 = content.find('h1')
+              var title = h1.html()
+              dialog.setTitle(title)
+              h1.remove()
+              var form = content.find('form')
+              if (form.size() > 0)
+                form_widgets(form)
 
-            //处理表单校验
-            dialog_validate_submit(dialog, {ajax_submit:dialog_ajax_submit})
-          });
-          return $message;
+              //处理表单校验
+              dialog_validate_submit(dialog, {ajax_submit:dialog_ajax_submit})
+            }
+          })
+
+          return content
       },
       draggable: true,
       buttons: [{
