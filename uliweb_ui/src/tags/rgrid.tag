@@ -36,9 +36,11 @@
     tableClass : opts.tableClass || 'table table-bordered',
     nameField : opts.nameField || 'name',
     labelField : opts.labelField || 'title',
-    onUpdate: opts.onupdate || function(data){
-      $('#pagination').text('共 ' + data.length + ' 条记录')
-    }
+    indexCol: opts.indexCol,
+    height: opts.height,
+    width: opts.width,
+    rowHeight: opts.rowHeight,
+    container: $(this.root).parent()
   }
 
   this.onpagechanged = function (page) {

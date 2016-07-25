@@ -212,7 +212,7 @@ DataSet.prototype.add = function (data, parentId) {
 };
 
 /**
- * Update existing items via ajax request
+ * Update existing items via ajax request or just plain data
  * @param {String} url if no url then it'll use options.url
  *                 require jquery
  */
@@ -583,12 +583,10 @@ DataSet.prototype.map = function (callback, options) {
       item;
 
   // convert and filter items
-  for (var id in data) {
-    if (data.hasOwnProperty(id)) {
-      item = this._getItem(id, type);
-      if (!filter || filter(item)) {
-        mappedItems.push(callback(item, id));
-      }
+  for (var i, len=data.length; i<len; i++) {
+    item = data[i];
+    if (!filter || filter(item)) {
+      mappedItems.push(callback(item, id));
     }
   }
 

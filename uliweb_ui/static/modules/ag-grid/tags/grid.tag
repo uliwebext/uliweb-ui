@@ -48,7 +48,7 @@
 
   this.init = function () {
     var new_columns = []
-    var names = {} //按名字保存
+    var names = {} //按名字保存cell
 
     //self.options.headerCellRenderer = headerCellRendererFunc
 
@@ -76,7 +76,7 @@
       if (col.align == 'right')
         col.cellStyle = {'text-align': 'right'}
       //处理多级表头 '/'
-      var n = col.headerName.split('/')
+      var n = col.headerName.split('/') //行层数
       var path, index, parent, node, found;
       if (n.length > 1){
         parent = null
