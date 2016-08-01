@@ -48,6 +48,18 @@ gulp.task('tags', function() {
     // .pipe(notify({ message: 'js-rest task complete' }));
 });
 
+gulp.task('tags-js', function() {
+  return gulp.src(['uliweb_ui/src/tags/*.js'])
+    .pipe(jshint.reporter('default'))
+    .pipe(gulp.dest('uliweb_ui/static/modules/tags/'))
+    .pipe(rename({suffix: '.min'}))
+    .pipe(uglify().on('error', function(e){
+            console.log(e);
+         }))
+    .pipe(gulp.dest('uliweb_ui/static/modules/tags/'))
+    // .pipe(notify({ message: 'js-rest task complete' }));
+});
+
 gulp.task('watch', function() {
   livereload.listen();
   gulp.watch('uliweb_ui/src/tags/*.tags', ['tags']);
@@ -59,5 +71,5 @@ gulp.task('watch', function() {
 });
 
 gulp.task('default', function() {
-    gulp.start('css', 'js', 'tags');
+    gulp.start('css', 'js', 'tags', 'tags-js');
 });

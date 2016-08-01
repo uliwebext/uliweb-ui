@@ -5,7 +5,6 @@
   <div class="clearfix tools">
     <pagination if={pagination} data={data} url={url} page={page} total={total}
       limit={limit} onpagechanged={onpagechanged}></pagination>
-    <div if={!pagination} id="pagination" class="pull-left"></div>
   </div>
 
   /*
@@ -33,14 +32,24 @@
   this.start = (this.page - 1) * this.limit
 
   this.rtable_options = {
-    tableClass : opts.tableClass || 'table table-bordered',
+    theme : opts.theme,
     nameField : opts.nameField || 'name',
     labelField : opts.labelField || 'title',
     indexCol: opts.indexCol,
+    checkCol: opts.checkCol,
+    maxHeight: opts.maxHeight,
+    minHeight: opts.minHeight,
     height: opts.height,
     width: opts.width,
     rowHeight: opts.rowHeight,
-    container: $(this.root).parent()
+    container: $(this.root).parent(),
+    noData: opts.noData,
+    tree: opts.tree,
+    expanded: opts.expanded,
+    parentField: opts.parentField,
+    orderField: opts.orderField,
+    levelField: opts.levelField
+
   }
 
   this.onpagechanged = function (page) {
@@ -59,6 +68,12 @@
       return r.rows
     }).done(function(){
       self.update()
+
+      self.data.on('*', function(r, d){
+        if (r == 'remove') self.total -= d.items.length
+        else if (r == 'add') self.total += d.items.length
+        self.update()
+      })
     })
   }
 </rgrid>

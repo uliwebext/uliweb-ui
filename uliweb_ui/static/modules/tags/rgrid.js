@@ -1,4 +1,4 @@
-riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" fields="{query_fields}" layout="{query_layout}"></query-condition> <rtable cols="{cols}" options="{rtable_options}" data="{data}" start="{start}"></rtable> <div class="clearfix tools"> <pagination if="{pagination}" data="{data}" url="{url}" page="{page}" total="{total}" limit="{limit}" onpagechanged="{onpagechanged}"></pagination> <div if="{!pagination}" id="pagination" class="pull-left"></div> </div>', '', '', function(opts) {
+riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" fields="{query_fields}" layout="{query_layout}"></query-condition> <rtable cols="{cols}" options="{rtable_options}" data="{data}" start="{start}"></rtable> <div class="clearfix tools"> <pagination if="{pagination}" data="{data}" url="{url}" page="{page}" total="{total}" limit="{limit}" onpagechanged="{onpagechanged}"></pagination> </div>', '', '', function(opts) {
 
 
   self = this
@@ -18,14 +18,24 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
   this.start = (this.page - 1) * this.limit
 
   this.rtable_options = {
-    tableClass : opts.tableClass || 'table table-bordered',
+    theme : opts.theme,
     nameField : opts.nameField || 'name',
     labelField : opts.labelField || 'title',
     indexCol: opts.indexCol,
+    checkCol: opts.checkCol,
+    maxHeight: opts.maxHeight,
+    minHeight: opts.minHeight,
     height: opts.height,
     width: opts.width,
     rowHeight: opts.rowHeight,
-    container: $(this.root).parent()
+    container: $(this.root).parent(),
+    noData: opts.noData,
+    tree: opts.tree,
+    expanded: opts.expanded,
+    parentField: opts.parentField,
+    orderField: opts.orderField,
+    levelField: opts.levelField
+
   }
 
   this.onpagechanged = function (page) {
@@ -44,6 +54,12 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
       return r.rows
     }).done(function(){
       self.update()
+
+      self.data.on('*', function(r, d){
+        if (r == 'remove') self.total -= d.items.length
+        else if (r == 'add') self.total += d.items.length
+        self.update()
+      })
     })
   }
 });

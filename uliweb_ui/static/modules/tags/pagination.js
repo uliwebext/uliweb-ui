@@ -31,6 +31,7 @@ riot.tag2('pagination', '<ul class="pagination"> <li if="{totalMessage}" class="
   this.refresh = opts.refresh || '刷新'
 
   this.on('update', function(){
+    this.total = opts.total
     self.show()
   })
 
