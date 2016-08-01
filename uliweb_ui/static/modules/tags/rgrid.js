@@ -1,7 +1,7 @@
 riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" fields="{query_fields}" layout="{query_layout}"></query-condition> <rtable cols="{cols}" options="{rtable_options}" data="{data}" start="{start}"></rtable> <div class="clearfix tools"> <pagination if="{pagination}" data="{data}" url="{url}" page="{page}" total="{total}" limit="{limit}" onpagechanged="{onpagechanged}"></pagination> </div>', '', '', function(opts) {
 
 
-  self = this
+  var self = this
 
   this.data = new DataSet()
   this.cols = opts.cols

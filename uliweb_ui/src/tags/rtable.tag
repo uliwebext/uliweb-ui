@@ -76,10 +76,16 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    .rtable-cell-text-wrapper {
+      width: 100%;
+      height: 100%;
+    }
     .rtable-cell-text {
       position:relative;
       padding-left:4px;
       padding-right:4px;
+      width: 100%;
+      height: 100%;
     }
     .rtable-cell-text, .rtable-cell-text>* {
       white-space: nowrap;
@@ -223,7 +229,6 @@
             <!-- cell content -->
             <div data-is="rtable-cell" if={col.type!='check' && !col.buttons} tag={col.tag}
               value={col.__value__} row={col.row} col={col}
-              onclick={parent.click_handler} ondblclick={parent.dbclick_handler}
               style={col.indentWidth}></div>
 
             <!-- expander -->
@@ -248,7 +253,6 @@
               <!-- cell content -->
               <div data-is="rtable-cell" if={col.type!='check' && !col.buttons} tag={col.tag}
                 value={col.__value__} row={col.row} col={col}
-                onclick={parent.click_handler} ondblclick={parent.dbclick_handler}
                 style={col.indentWidth}></div>
 
               <!-- expander -->
@@ -408,6 +412,11 @@
       self.mousewheel(e)
     })
 
+    $(this.content).on('click', '.rtable-cell', this.click_handler)
+      .on('dblclick', '.rtable-cell', this.dblclick_handler)
+    $(this.content_fixed).on('click', '.rtable-cell', this.click_handler)
+      .on('dblclick', '.rtable-cell', this.dblclick_handler)
+
     this.ready_data() //prepare data
     this.calSize()
     this.calHeader()  //calculate header positions
@@ -425,39 +434,42 @@
   })
 
   this.click_handler = function(e) {
-    var ret
+    var ret, tag = e.target._tag
     if (self.editable && self.editor) {
-      e.preventUpdate = true
       return
     }
+    if (!tag) return
+    var col = tag.opts.col
     if (opts.onClick) {
-      ret = opts.onClick(e.item.col.row, e.item.col)
+      ret = opts.onClick(col.row, col)
     }
     if (!ret && $(e.target).hasClass('rtable-cell-text')) {
       e.preventDefault()
       if (self.clickSelect === 'row') {
-        self.toggle_select(e.item.col.row)
+        self.toggle_select(col.row)
+        self.update()
       } else if (self.clickSelect === 'column') {
 
       }
     }
   }
 
-  this.dbclick_handler = function(e) {
 
-    var ret, col = e.item.col
-    if (opts.onDbclick)
-      ret = opts.onDbclick(col.row, col)
+  this.dblclick_handler = function(e) {
+
+    var ret, el = $(e.target), item
+    if (el.hasClass('rtable-cell'))
+      item = e.target
+    else {
+      item = el.parents('.rtable-cell')[0]
+    }
+    var col = item._tag.opts.col
+    if (opts.onDblclick)
+      ret = opts.onDblclick(col.row, col)
     if (!ret) {
       e.preventDefault()
       if (opts.editable) {
         if (!col.editor) return
-        var el = $(e.target), item
-        if (el.hasClass('rtable-cell-text'))
-          item = e.target
-        else {
-          item = el.parents('.rtable-cell-text')[0]
-        }
         e.preventUpdate = true
         document.selection && document.selection.empty && ( document.selection.empty(), 1)
         || window.getSelection && window.getSelection().removeAllRanges();
@@ -601,7 +613,7 @@
         new_col.col = i
         new_col.width = col.width
         new_col.height = new_col.rowspan * self.headerRowHeight
-        new_col.top = (self.rowHeight) * j
+        new_col.top = (self.headerRowHeight) * j
         new_col.frozen = frozen
         new_col.buttons = col.buttons
         new_col.render = col.render
@@ -1264,7 +1276,7 @@
   }
 </rtable>
 
-<rtable-cell>
+<rtable-cell class="rtable-cell-text-wrapper">
   <div class="rtable-cell-text">
     <yield></yield>
   </div>

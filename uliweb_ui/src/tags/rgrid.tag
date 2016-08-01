@@ -15,7 +15,7 @@
      pagination:true,
      tableClass:, nameField:, labelField:, page:, total: limit:}
    */
-  self = this
+  var self = this
 
   this.data = new DataSet()
   this.cols = opts.cols
