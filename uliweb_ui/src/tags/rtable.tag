@@ -190,7 +190,7 @@
     <div class="rtable-header rtable-fixed" style="width:{fix_width}px;height:{header_height}px">
       <div each={fix_columns} no-reorder class={rtable-cell:true}
         style="width:{width}px;height:{height}px;left:{left}px;top:{top}px;line-height:{height}px;">
-        <div if={type!='check'} data-is="raw" class="rtable-cell-text" value={title} style="{sort?'padding-right:22px':''}"></div>
+        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" value={title} style="{sort?'padding-right:22px':''}"></div>
         <input if={type=='check' && parent.multiSelect} type="checkbox" onclick={checkall}
           class="rtable-check" style="margin-top:{headerRowHeight/2-7}px" checked={parent.selected_rows.length>0}></input>
         <div if={!fixed && leaf} class="rtable-resizer" onmousedown={colresize}></div>
@@ -202,7 +202,7 @@
     <div class="rtable-header rtable-main" style="width:{width-fix_width-xscroll_width}px;right:0px;height:{header_height}px;left:{fix_width}px;">
       <div each={main_columns} no-reorder class={rtable-cell:true}
         style="width:{width}px;height:{height}px;left:{left}px;top:{top}px;line-height:{height}px;">
-        <div if={type!='check'} data-is="raw" class="rtable-cell-text" value={title} style="{sort?'padding-right:22px':''}"></div>
+        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" value={title} style="{sort?'padding-right:22px':''}"></div>
         <input if={type=='check' && parent.multiSelect} type="checkbox" onclick={checkall}
           class="rtable-check" style="margin-top:{headerRowHeight/2-7}px" checked={parent.selected_rows.length>0}></input>
         <div if={!fixed && leaf} class="rtable-resizer" onmousedown={colresize}></div>
@@ -227,7 +227,7 @@
               style={col.indentWidth}></div>
 
             <!-- expander -->
-            <span if={col.expander} data-is='raw' content={col.expander} class="rtable-expander"
+            <span if={col.expander} data-is='rtable-raw' content={col.expander} class="rtable-expander"
               style="left:{col.indent-12}px;" onclick={toggle_expand}></span>
 
             <!-- display checkbox -->
@@ -252,7 +252,7 @@
                 style={col.indentWidth}></div>
 
               <!-- expander -->
-              <span if={col.expander} data-is='raw' value={col.expander} class="rtable-expander"
+              <span if={col.expander} data-is='rtable-raw' value={col.expander} class="rtable-expander"
                 style="left:{col.indent-12}px;" onclick={toggle_expand}></span>
 
               <!-- display checkbox -->
@@ -271,7 +271,7 @@
         </div>
       </div>
 
-      <div if={rows.length==0} data-is="raw" value={noData} class="rtable-nodata"
+      <div if={rows.length==0} data-is="rtable-raw" value={noData} class="rtable-nodata"
         style="top:{height/2-header_height/2+rowHeight/2}px;"></div>
 
     </div>
@@ -613,7 +613,7 @@
         new_col.sort = col.sort
         new_col.align = col.align || 'left'
         new_col.class = col.class
-        new_col.tag = col.tag || 'raw'
+        new_col.tag = col.tag || 'rtable-raw'
         new_col.editor = col.editor
 
         //查找同层最左边的结点，判断是否title和rowspan一致
@@ -1297,7 +1297,7 @@
   })
 </rtable-cell>
 
-<raw>
+<rtable-raw>
   <span></span>
   this.on('mount', function(){
     this.root.innerHTML = opts.value
@@ -1305,4 +1305,4 @@
   this.on('update', function () {
     this.root.innerHTML = opts.value
   })
-</raw>
+</rtable-raw>

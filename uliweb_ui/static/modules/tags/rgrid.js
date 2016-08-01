@@ -55,11 +55,6 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     }).done(function(){
       self.update()
 
-      self.data.on('*', function(r, d){
-        if (r == 'remove') self.total -= d.items.length
-        else if (r == 'add') self.total += d.items.length
-        self.update()
-      })
     })
   }
 });
