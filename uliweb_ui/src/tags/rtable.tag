@@ -458,10 +458,10 @@
   this.dblclick_handler = function(e) {
 
     var ret, el = $(e.target), item
-    if (el.hasClass('rtable-cell'))
+    if (el.hasClass('rtable-cell-text'))
       item = e.target
     else {
-      item = el.parents('.rtable-cell')[0]
+      item = el.parents('.rtable-cell-text')[0]
     }
     var col = item._tag.opts.col
     if (opts.onDblclick)
