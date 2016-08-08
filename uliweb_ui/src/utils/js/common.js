@@ -233,6 +233,42 @@ function simple_select2 (el, options){
   $(el).select2($.extend(true, {}, opts, options));
 }
 
+/*
+  get select options from url
+  server shoud return data just like this:
+
+    [[value1, text1], [value2, text2], ...]
+
+  or
+
+    [{value:'value1', text:'text1'}, {value:'value2', text:'text2'}...]
+*/
+function get_select(target, url, data){
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: data || {},
+        dataType: 'json',
+        success: function(data){
+            var html = "<option value=''></option>";
+            var v,k,t;
+            $.each(data, function(j, value){
+                if($.type(value) == 'array'){
+                    v = value[0];
+                    k = value[1];
+                }else{
+                    v = value.value;
+                    k = value.text;
+                }
+                html = html + '<option value=' + v + '>' + k + '</option>'
+            });
+            if (typeof target == 'string') t = $('select[name='+target+']');
+            else t = $(target);
+            t.html(html);
+        }
+    });
+};
+
 /* jquery init function
 */
 $(document).ajaxError(function (event, jqxhr, settings, thrownError) {

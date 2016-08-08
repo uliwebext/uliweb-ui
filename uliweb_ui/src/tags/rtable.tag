@@ -77,7 +77,7 @@
       text-overflow: ellipsis;
     }
     .rtable-cell-text-wrapper {
-      width: 100%;
+      /*width: 100%;*/
       height: 100%;
     }
     .rtable-cell-text {
@@ -293,9 +293,6 @@
 
   this.nameField = opts.nameField || 'name'
   this.titleField = opts.titleField || 'title'
-  this.onUpdate = opts.onUpdate || function(){}
-  this.onSort = opts.onSort || function(){}
-  this.onRowClass = opts.onRowClass || function(){}
   this.cols = opts.cols.slice()
   this.headerRowHeight = opts.headerRowHeight || 34
   this.rowHeight = opts.rowHeight || 34
@@ -308,6 +305,13 @@
   this.noData = opts.noData || 'No Data'
   this.container = opts.container || $(this.root).parent()
   this.editable = opts.editable || false
+  this.draggable = opts.draggable || false
+
+  this.onUpdate = opts.onUpdate || function(){}
+  this.onSort = opts.onSort || function(){}
+  this.onRowClass = opts.onRowClass || function(){}
+  this.onEdit = opts.onEdit || function(){}
+  this.onEdited = opts.onEdited || function(){}
 
   //tree options
   this.tree = opts.tree
@@ -405,8 +409,6 @@
       if (opts.width == 'auto' || !opts.width || !opts.height)
         self.resize()
     })
-
-
 
     this.content.addEventListener('mousewheel', function(e){
       self.mousewheel(e)
@@ -929,6 +931,7 @@
             else
               d.expander = self.closeIcon
           }
+          d.treeField = true
           indent ++
           d.indent = indent*self.indentWidth
           d.indentWidth = 'padding-left:' + d.indent + 'px'
@@ -1191,6 +1194,7 @@
   this.root.load = data_proxy('load')
   this.root.insertBefore = data_proxy('insertBefore')
   this.root.insertAfter = data_proxy('insertAfter')
+  this.root.move = data_proxy('move')
 
   <!-- this.root.load = function(newrows){
     self._data.clear()
@@ -1219,10 +1223,17 @@
   }
 
   this.get_cell_class = function (col) {
-    var klass = []
+    var klass = [], cls
     klass.push('rtable-cell')
     if (col.selected) klass.push('selected')
-    if (col['class']) klass.push(col['class'])
+    if (col['class']) {
+      if (typeof col['class'] == 'function') {
+        cls = col['class'](col.row, col, col.value)
+      } else
+        cls = col['class']
+      if (cls)
+        klass.push(cls)
+    }
     return klass.join(' ')
   }
 
@@ -1271,16 +1282,34 @@
       self.editor = null
     }
     var editor = window[name+'_editor']
-    if (editor)
-      self.editor = editor.call(self, target, row, col)
+    if (editor) {
+      $.when(self.onEdit()).then(function(r){
+        if (r)
+          self.editor = editor.call(self, target, row, col)
+      })
+    }
   }
 </rtable>
 
 <rtable-cell class="rtable-cell-text-wrapper">
-  <div class="rtable-cell-text">
+  <style scoped>
+    [draggable] {
+      -moz-user-select: none;
+      -khtml-user-select: none;
+      -webkit-user-select: none;
+      user-select: none;
+      /* Required to make elements draggable in old WebKit */
+      -khtml-user-drag: element;
+      -webkit-user-drag: element;
+    }
+  </style>
+
+  <div class="rtable-cell-text {rtable-tree-field:opts.col.treeField}"
+    draggable="{parent.draggable && (!parent.tree || parent.tree && opts.col.treeField) ? "true" : false}"
     <yield></yield>
   </div>
 
+  var self = this
   this.prevtag = null
 
   this.on('mount', function() {
@@ -1288,19 +1317,139 @@
       return
     }
     this.prevtag = opts.tag
+    if (self.parent.draggable)
+      this.dnd()
     return this.mountedTag = riot.mount(this.root.querySelector('div'), opts.tag, opts)[0]
   });
 
+  this.dnd = function () {
+    var el = this.root.querySelector('.rtable-cell-text[draggable]')
+    if (el) {
+      el.addEventListener('dragstart', this.handleDragStart, false)
+      el.addEventListener('dragover', this.handleDragOver, false)
+      el.addEventListener('dragenter', this.handleDragEnter, false)
+      el.addEventListener('dragleave', this.handleDragLeave, false)
+      el.addEventListener('drop', this.handleDrop, false)
+      el.addEventListener('dragend', this.handleDragEnd, false)
+    }
+  }
   this.on('update', function() {
     if (this.prevtag && this.prevtag !== opts.tag) {
       this.prevtag = opts.tag
       this.mountedTag.unmount(true)
+      this.dnd()
       return this.mountedTag = riot.mount(this.root.querySelector('div'), opts.tag, opts)[0]
     } else if (this.mountedTag) {
       this.mountedTag.opts = opts
       return this.mountedTag.update()
     }
   });
+
+  this.handleDragStart = function(e) {
+    var col = e.target._tag.opts.col
+    self.start_element = e.target
+    self.parent.drag_src = col.row
+    <!-- console.log('enter', col.row.id, self.parent.drag_src) -->
+  }
+
+  function in_rect(r, v) {
+    return (v.x>r.left && v.x<r.right && v.y>r.top && v.y<r.bottom)
+  }
+
+  function draw_rect(el, r, pos) {
+    el.style.width = (r.right-r.left) + 'px'
+    if (pos == 'before') {
+      el.style.left = r.left + 'px'
+      el.style.top = '0px'
+      el.style.bottom = ''
+    } else {
+      el.style.top = ''
+      el.style.left = r.left + 'px'
+      el.style.bottom = '0px'
+    }
+  }
+  this.handleDragOver = function(e) {
+    if (!e.target._tag || e.target.isSameNode(self.start_element)) return
+    var col = e.target._tag.opts.col
+    if (!col.treeField) return
+    var w = col.width,
+      h = col.height, r_up, r_d_left, r_d_right, helper = self.root.querySelector('.rtable-draggable-helper')
+
+    //test is child node
+    if (self.parent._data.isChild(col.row, self.parent.drag_src)) {
+      return
+    }
+
+    self.parent.to_item = col.row
+
+    r_up = {top:0, left:0, right:w, bottom:h/2}
+    r_d_left = {top:h/2, left:0, right:w*2/5, bottom:h}
+    r_d_right = {top:h/2, left:w*2/5, right:w, bottom:h}
+
+    var pos = {x: e.offsetX, y: e.offsetY}
+    var up = in_rect(r_up, pos), left = in_rect(r_d_left, pos), right = in_rect(r_d_right, pos)
+    if (up || left || right) {
+      if (!helper){
+        helper = document.createElement('div')
+        helper.style.position = 'absolute'
+        helper.classList.add('rtable-draggable-helper')
+        helper.style.zIndex = 1000
+        helper.style.borderTop = '2px solid green'
+        e.target.appendChild(helper)
+        if (self.parent.helper) {
+          self.parent.helper.remove()
+          self.parent.helper = null
+        }
+        self.parent.helper = helper
+      }
+      if (up && self.parent.last_pos != 'before') {
+        self.parent.last_pos = 'before'
+        draw_rect(helper, r_up, self.parent.last_pos)
+      } else if (left && self.parent.last_pos != 'after') {
+        self.parent.last_pos = 'after'
+        draw_rect(helper, r_d_left, self.parent.last_pos)
+      } else if (right) {
+        self.parent.last_pos = 'child'
+        draw_rect(helper, r_d_right, self.parent.last_pos)
+      }
+    }
+
+    <!-- if (e.preventDefault) {
+      e.preventDefault(); // Necessary. Allows us to drop.
+    } -->
+
+    col = e.target._tag.opts.col
+    e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
+
+    return false;
+  }
+
+  this.handleDragEnter = function(e) {
+  }
+
+  this.handleDragLeave = function(e) {
+  }
+
+  this.handleDragEnd = function(e) {
+    var last_pos = self.parent.last_pos
+    if (self.parent.helper) {
+      self.parent.helper.remove()
+      self.parent.helper = null
+      self.parent.last_pos = ''
+    }
+
+    var src_item = self.parent.drag_src, to_item = self.parent.to_item
+    if (self.parent.opts.onMove)
+      self.parent.opts.onMove(src_item, to_item, last_pos)
+  }
+
+  this.handleDrop = function(e) {
+    // this / e.target is the current hover target.
+    <!-- e.target.classList.add('over'); -->
+    <!-- console.log('drop', e.target) -->
+    if (!e.target._tag) return
+    var col = e.target._tag.opts.col
+  }
 
   this.on('unmount', function() {
     if (this.mountedTag) {
