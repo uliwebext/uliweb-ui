@@ -35,6 +35,7 @@ riot.tag2('query-condition', '<div class="query-condition"> <form method="get" a
             $('[name='+k+']', self.root)
               .multiselect('deselectAll', false)
               .multiselect('updateButtonText')
+              .multiselect('destory')
           } else
             $('[name='+k+']', self.root).val(null)
         }
@@ -71,6 +72,75 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
             nonSelectedText: opts.field.placeholder || '请选择',
             maxHeight: 200
             }, opts.field.opts || {})
+
+        if (opts.field.relate_from) {
+          if (!opts.field.choices_url) {
+            // 静态
+            var trigger_name = opts.field.relate_from;
+            var trigger = $($('[name="' + trigger_name + '"]')[0]);
+            var actor = $($('[name="' + opts.field.name + '"]')[0]);
+            var relation_kv = opts.field.relationship;
+            var actor_full_choices = opts.field.choices;
+
+            $('body').on('change', '[name="' + trigger_name + '"]', function(){
+              var trigger_selected = trigger.val();
+              var allow_options = [];
+              $.each(trigger_selected || [], function(){
+                if (parseInt(this) == parseInt(''+this)) { // 判断this是否是数字
+                  Array.prototype.push.apply(allow_options, relation_kv[parseInt(this)]);
+                } else {
+                  Array.prototype.push.apply(allow_options, relation_kv[this]);
+                }
+              });
+
+              opts.field.choices = [];
+              $.each(actor_full_choices, function() {
+                if (allow_options.indexOf(""+this[0]) > -1) {
+                  opts.field.choices.push(this);
+                }
+              });
+
+              self.update();
+              if ($.fn.multiselect) {
+                actor.multiselect('rebuild');
+              }
+            });
+          } else {
+            // 动态
+            var trigger_name = opts.field.relate_from;
+            var trigger = $($('[name="' + trigger_name + '"]')[0]);
+            var actor = $($('[name="' + opts.field.name + '"]')[0]);
+
+            $('body').on('change', '[name="' + trigger_name + '"]', function(){
+              var trigger_selected = trigger.val();
+              if (!!trigger_selected && typeof(trigger_selected) == 'object') {
+                if (trigger_selected.length >= 2) {
+                  trigger_selected = trigger_selected.join(',');
+                } else if (trigger_selected.length == 1) {
+                  trigger_selected = trigger_selected[0];
+                } else {
+                  trigger_selected = "";
+                }
+              } else {
+                trigger_selected = "-1";
+              }
+              $.ajax({
+                method: "post",
+                url: opts.field.choices_url + '/' + trigger_selected,
+                success: function(result) {
+                  opts.field.choices = result;
+
+                  self.update();
+                  if ($.fn.multiselect) {
+                    actor.multiselect('rebuild');
+                  }
+                }
+              }); // END OF AJAX
+            });
+          } // END OF ELSE
+          trigger.trigger("change");
+        }
+
         load('ui.bootstrap.multiselect', function(){
           var el = $('[name='+opts.field.name+']', self.root).multiselect(_opts);
           if (opts.data[opts.field.name])
