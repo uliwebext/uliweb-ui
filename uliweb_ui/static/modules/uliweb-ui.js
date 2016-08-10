@@ -173,64 +173,66 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 */
 
 function simple_select2 (el, options){
-  var $el = $(el),
-    url = $el.attr('data-url') || $el.attr('url'),
-    placeholder = $el.attr('placeholder') || '请选择';
-  if (typeof options === 'string') {
-    url = options
-    options = {}
-  }
-  var opts
-  if (url)
-    opts = {
-      minimumInputLength: 2,
-      width: '100%',
-      placeholder:placeholder,
-      allowClear:true,
-      language: 'zh-CN',
-      ajax: {
-          url: url,
-          data: function (params) {
-              return {
-                  term: params.term,
-                  label: 'text',
-                  page:params.page
-              }
-          },
-          dataType: 'json',
-          processResults: function (data, params) {
-            // parse the results into the format expected by Select2
-            // since we are using custom formatting functions we do not need to
-            // alter the remote JSON data, except to indicate that infinite
-            // scrolling can be used
-            params.page = params.page || 1;
+  load('ui.select2', function(){
+    var $el = $(el),
+      url = $el.attr('data-url') || $el.attr('url'),
+      placeholder = $el.attr('placeholder') || '请选择';
+    if (typeof options === 'string') {
+      url = options
+      options = {}
+    }
+    var opts
+    if (url)
+      opts = {
+        minimumInputLength: 2,
+        width: '100%',
+        placeholder:placeholder,
+        allowClear:true,
+        language: 'zh-CN',
+        ajax: {
+            url: url,
+            data: function (params) {
+                return {
+                    term: params.term,
+                    label: 'text',
+                    page:params.page
+                }
+            },
+            dataType: 'json',
+            processResults: function (data, params) {
+              // parse the results into the format expected by Select2
+              // since we are using custom formatting functions we do not need to
+              // alter the remote JSON data, except to indicate that infinite
+              // scrolling can be used
+              params.page = params.page || 1;
 
-            return {
-              results: data,
-              pagination: {
-                more: (params.page * 20) < data.length
+              return {
+                results: data,
+                pagination: {
+                  more: (params.page * 20) < data.length
+                }
               }
             }
-          }
+        }
       }
-    }
-      /*,
-      formatNoMatches: function () { return "找不到对应值"; },
-      formatInputTooShort: function (input, min) { return "请输入至少 " + (min - input.length) + " 个字符"; },
-      formatSelectionTooBig: function (limit) { return "你只能选 " + limit + " 条数据"; },
-      formatLoadMore: function (pageNumber) { return "装入更多数据..."; },
-      formatSearching: function () { return "搜索..."; }
-      */
+        /*,
+        formatNoMatches: function () { return "找不到对应值"; },
+        formatInputTooShort: function (input, min) { return "请输入至少 " + (min - input.length) + " 个字符"; },
+        formatSelectionTooBig: function (limit) { return "你只能选 " + limit + " 条数据"; },
+        formatLoadMore: function (pageNumber) { return "装入更多数据..."; },
+        formatSearching: function () { return "搜索..."; }
+        */
 
-  else
-    opts = {
-      width: '100%',
-      allowClear:true,
-      placeholder:placeholder,
-      language: 'zh-CN'
-    }
+    else
+      opts = {
+        width: '100%',
+        allowClear:true,
+        placeholder:placeholder,
+        language: 'zh-CN'
+      }
 
-  $(el).select2($.extend(true, {}, opts, options));
+    $(el).select2($.extend(true, {}, opts, options));    
+  })
 }
 
 /*
