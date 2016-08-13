@@ -482,6 +482,17 @@ function dialog(url, options) {
   })
 }
 
+function Confirm(message, callback) {
+  load('ui.bootstrap.dialog', function(){
+    BootstrapDialog.confirm(message, callback);
+  })
+}
+
+function Alert(message, callback) {
+  load('ui.bootstrap.dialog', function(){
+    BootstrapDialog.confirm(message, callback);
+  })
+}
 /*
  * process ajax request and jquery.validation
  */

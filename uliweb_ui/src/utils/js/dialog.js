@@ -187,3 +187,15 @@ function dialog(url, options) {
     return BootstrapDialog.show(opts);
   })
 }
+
+function Confirm(message, callback) {
+  load('ui.bootstrap.dialog', function(){
+    BootstrapDialog.confirm(message, callback);
+  })
+}
+
+function Alert(message, callback) {
+  load('ui.bootstrap.dialog', function(){
+    BootstrapDialog.confirm(message, callback);
+  })
+}
