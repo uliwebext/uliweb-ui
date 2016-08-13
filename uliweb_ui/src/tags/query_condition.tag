@@ -24,6 +24,9 @@
           display: inline-block;
           text-align: right;
         }
+        .condition-label.nomore {
+          min-width: 0px;
+        }
         .condition-cell {
           display: inline-block;
         }
@@ -52,6 +55,13 @@
         input-field {
           display:inline-block;
         }
+        .condition-row.condition-row-more.condition-buttons {
+          text-align: center;
+          margin-right: 20px;
+        }
+        .condition-row.condition-row-more.condition-buttons button{
+          margin-right: 10px;
+        }
         /*
         .select2-container--bootstrap {
           display: inline-block;
@@ -72,17 +82,17 @@
         <form method="get" action="{ opts.action }">
             <div each={row, i in layout} show={i==0 || show} class={condition-row:true, condition-row-more:i>0}>
                 <div each={field in row} class="condition-cell">
-                   <span class="condition-label">{ fields[this.field].label || field }</span>
+                   <span class="condition-label {nomore:i==0 &&!show}">{ fields[this.field].label || field }</span>
                    <input-field field={ fields[field] } data={data}
                      type={ fields[this.field].type || 'str' }>
                    </input-field>
                 </div>
-                <div show={ i==0 && !show } class="condition-cell" >
+                <div show={ i==0 && !show } class="condition-cell condition-buttons" >
                     <button class="btn btn-primary btn-flat" type="submit">查询</button>
                     <button class="btn btn-default btn-flat" type="button" onclick={parent.reset}>清除条件</button>
                 </div>
             </div>
-            <div class="condition-row condition-row-more" show={show}>
+            <div class="condition-row condition-row-more condition-buttons" show={show}>
               <button class="btn btn-primary btn-flat" type="submit">查询</button>
               <button class="btn btn-default btn-flat" type="button" onclick={reset}>清除条件</button>
             </div>

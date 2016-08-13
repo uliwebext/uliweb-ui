@@ -1,4 +1,4 @@
-riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" fields="{query_fields}" layout="{query_layout}"></query-condition> <div if="{tools}" class="rgrid-tools pull-left"> <button each="{btn in tools}" class="{btn.class}" onclick="{btn.onclick}">{btn.label}</button> </div> <rtable cols="{cols}" options="{rtable_options}" data="{data}" start="{start}"></rtable> <div class="clearfix tools"> <pagination if="{pagination}" data="{data}" url="{url}" page="{page}" total="{total}" limit="{limit}" onpagechanged="{onpagechanged}"></pagination> <div if="{footer_tools}" class="pull-right"> <button each="{btn in footer_tools}" class="btn btn-flat btn-sm btn-default" onclick="{btn.onClick}">{btn.label}</button> </div> </div>', 'rgrid .rgrid-tools,[riot-tag="rgrid"] .rgrid-tools,[data-is="rgrid"] .rgrid-tools{margin-bottom:5px;} rgrid .rgrid-tools button,[riot-tag="rgrid"] .rgrid-tools button,[data-is="rgrid"] .rgrid-tools button{margin-right:4px;}', '', function(opts) {
+riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" fields="{query_fields}" layout="{query_layout}"></query-condition> <div class="btn-toolbar"> <div if="{left_tools}" class="rgrid-tools pull-left"> <div each="{btn_group in left_tools}" class="{btn_group_class}"> <button each="{btn in btn_group}" class="{btn.class}" id="{btn.id}" __disabled="{btn.disabled()}" click="{btn.onclick}">{btn.label}</button> </div> </div> <div if="{right_tools}" class="rgrid-tools pull-right"> <div each="{btn_group in right_tools}" class="{btn_group_class}"> <button each="{btn in btn_group}" class="{btn.class}" id="{btn.id}" __disabled="{btn.disabled()}" click="{btn.onclick}">{btn.label}</button> </div> </div> </div> <rtable cols="{cols}" options="{rtable_options}" data="{data}" start="{start}"></rtable> <div class="clearfix tools"> <pagination if="{pagination}" data="{data}" url="{url}" page="{page}" total="{total}" limit="{limit}" onpagechanged="{onpagechanged}"></pagination> <div if="{footer_tools}" class="pull-right"> <button each="{btn in footer_tools}" class="btn btn-flat btn-sm btn-default" onclick="{btn.onClick}">{btn.label}</button> </div> </div>', 'rgrid .rgrid-tools,[riot-tag="rgrid"] .rgrid-tools,[data-is="rgrid"] .rgrid-tools{margin-bottom:5px;padding-left:5px;} rgrid .rgrid .btn-toolbar .btn-group,[riot-tag="rgrid"] .rgrid .btn-toolbar .btn-group,[data-is="rgrid"] .rgrid .btn-toolbar .btn-group{margin-right:5px;}', '', function(opts) {
 
 
   var self = this
@@ -17,7 +17,9 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
   this.query_layout = this.query.layout || []
   this.start = (this.page - 1) * this.limit
   this.footer_tools = opts.footer_tools || []
-  this.tools = opts.tools || []
+  this.left_tools = opts.left_tools || opts.tools || []
+  this.right_tools = opts.right_tools || []
+  this.btn_group_class = opts.btn_group_class || 'btn-group btn-group-sm'
 
   this.rtable_options = {
     theme : opts.theme,
@@ -56,16 +58,29 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
   }
 
   this.on('mount', function(){
-    var item
-    for(var i=0, len=this.tools.length; i<len; i++){
-        item = this.tools[i]
-        var action = function(btn) {
-            return function(e) {
-                return btn.onClick.call(self, e)
+    var item, items
+    var tools = this.left_tools.concat(this.right_tools)
+    for(var i=0, len=tools.length; i<len; i++){
+        items = tools[i]
+        for(var j=0, _len=items.length; j<_len; j++) {
+          item = items[j]
+          var onclick = function(btn) {
+              return function(e) {
+                if (btn.onClick)
+                  return btn.onClick.call(self, e)
+              }
+          }
+          item.onclick = onclick(item)
+
+          var ondisabled = function(btn) {
+            return function(){
+              if (btn.onDisabled)
+                return btn.onDisabled.call(self)
             }
+          }
+          item.disabled = ondisabled(item)
+          item.class = item.class || 'btn btn-flat btn-sm btn-primary'
         }
-        item.onclick = action(item)
-        item.class = item.class || 'btn btn-flat btn-sm btn-primary'
     }
     this.table = this.root.querySelector('rtable')
     this.root.add = this.table.add
@@ -84,6 +99,16 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     this.root.save = this.table.save
     this.root.diff = this.table.diff
     this.load()
+
+    self.data.on('*', function(r, d){
+      if (self.pagination) {
+        if (r == 'remove') self.total -= d.items.length
+        else if (r == 'add') self.total += d.items.length
+      } else
+        self.total = self.data.length
+      self.update()
+    })
+
   })
 
   this.load = function(url){
@@ -94,7 +119,10 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     }).done(function(){
       self.update()
       self.data.save()
-
     })
+  }
+
+  this.getButton = function(id) {
+
   }
 });
