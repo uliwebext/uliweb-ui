@@ -2,7 +2,7 @@
 
   <style scoped>
     .rgrid-tools {margin-bottom:5px;padding-left:5px;}
-    .rgrid .btn-toolbar .btn-group {margin-right:5px;}
+    .btn-toolbar .btn-group {margin-right:5px;}
   </style>
 
   <query-condition if={has_query} rules={query_ules} fields={query_fields} layout={query_layout}></query-condition>
