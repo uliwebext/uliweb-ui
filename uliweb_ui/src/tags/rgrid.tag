@@ -10,13 +10,13 @@
     <div if={left_tools} class="rgrid-tools pull-left">
       <div each={btn_group in left_tools} class={btn_group_class}>
         <button each={btn in btn_group} class="{btn.class}" id={btn.id}
-          disabled={btn.disabled()} click={btn.onclick}>{btn.label}</button>
+          disabled={btn.disabled()} onclick={btn.onclick}>{btn.label}</button>
       </div>
     </div>
     <div if={right_tools} class="rgrid-tools pull-right">
       <div each={btn_group in right_tools} class={btn_group_class}>
         <button each={btn in btn_group} class="{btn.class}" id={btn.id}
-          disabled={btn.disabled()} click={btn.onclick}>{btn.label}</button>
+          disabled={btn.disabled()} onclick={btn.onclick}>{btn.label}</button>
       </div>
     </div>
   </div>
