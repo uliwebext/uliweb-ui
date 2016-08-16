@@ -43,17 +43,17 @@ riot.tag2('query-condition', '<div class="query-condition"> <form method="get" a
 
 });
 
-riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="form-control" field-type="str" if="{opts.type==\'str\' || opts.type==\'unicode\'}" placeholder="{opts.field.placeholder}"> <input type="password" name="{opts.field.name}" class="form-control" field-type="password" if="{opts.type==\'password\'}" placeholder="{opts.field.placeholder}"> <select __multiple="{opts.field.multiple}" if="{opts.type==\'select\'}" field-type="select" style="width:200px" name="{opts.field.name}" url="{opts.field.url}" placeholder="{opts.field.placeholder}"> <option if="{opts.field.placeholder && !opts.field.multiple}" value="">{opts.field.placeholder}</option> <option each="{value in opts.field.choices}" value="{value[0]}"> {value[1]} </option> </select> <input type="text" name="{opts.field.name}" class="form-control" field-type="date" if="{opts.type==\'date\'}" placeholder="{opts.field.placeholder}"> <input type="text" name="{opts.field.name}" class="form-control" field-type="datetime" if="{opts.type==\'datetime\'}" placeholder="{opts.field.placeholder}">', '', '', function(opts) {
+riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="form-control" field-type="str" if="{opts.type==\'str\' || opts.type==\'unicode\'}" placeholder="{opts.field.placeholder}"> <input type="password" name="{opts.field.name}" class="form-control" field-type="password" if="{opts.type==\'password\'}" placeholder="{opts.field.placeholder}"> <select __multiple="{opts.field.multiple}" if="{opts.type==\'select\'}" field-type="select" style="width:200px" name="{opts.field.name}" url="{opts.field.url}" placeholder="{opts.field.placeholder}"> <option if="{opts.field.placeholder && !opts.field.multiple}" value="">{opts.field.placeholder}</option> <option each="{value in opts.field.choices}" value="{value[0]}"> {value[1]} </option> </select> <input type="text" name="{opts.field.name}" class="form-control" field-type="{opts.type}" if="{(opts.type==\'date\' || opts.type==\'datetime\')}" placeholder="{opts.field.placeholder}"> {⁗-⁗: opts.field.range} <input type="text" name="{opts.field.name}" class="form-control" field-type="{opts.type}" if="{(opts.type==\'date\' || opts.type==\'datetime\') && opts.field.range==true}" placeholder="{opts.field.placeholder}">', '', '', function(opts) {
     var self = this
 
     this.on('mount', function(){
 
       var i18n = {
-        previousMonth	: '上个月',
-        nextMonth		: '下个月',
-        months			: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
-        weekdays		: ['周日','周一','周二','周三','周四','周五','周六'],
-        weekdaysShort	: ['日','一','二','三','四','五','六']
+        previousMonth : '上个月',
+        nextMonth   : '下个月',
+        months      : ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+        weekdays    : ['周日','周一','周二','周三','周四','周五','周六'],
+        weekdaysShort : ['日','一','二','三','四','五','六']
       }
 
       if (opts.type == 'select' && opts.field.url){
@@ -75,7 +75,11 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
 
         if (opts.field.relate_from) {
           if (!opts.field.choices_url) {
+<<<<<<< HEAD
             // 静态
+=======
+
+>>>>>>> 11e565506513de99cdaa19773999fab1f47ba408
             var trigger_name = opts.field.relate_from;
             var trigger = $($('[name="' + trigger_name + '"]')[0]);
             var actor = $($('[name="' + opts.field.name + '"]')[0]);
@@ -86,10 +90,10 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
               var trigger_selected = trigger.val();
               var allow_options = [];
               $.each(trigger_selected || [], function(){
-                if (parseInt(this) == parseInt(''+this)) { // 判断this是否是数字
-                  Array.prototype.push.apply(allow_options, relation_kv[parseInt(this)]);
-                } else {
+                if (isNaN(parseInt(this))) {
                   Array.prototype.push.apply(allow_options, relation_kv[this]);
+                } else {
+                  Array.prototype.push.apply(allow_options, relation_kv[parseInt(this)]);
                 }
               });
 
@@ -106,7 +110,6 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
               }
             });
           } else {
-            // 动态
             var trigger_name = opts.field.relate_from;
             var trigger = $($('[name="' + trigger_name + '"]')[0]);
             var actor = $($('[name="' + opts.field.name + '"]')[0]);
@@ -119,7 +122,7 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
                 } else if (trigger_selected.length == 1) {
                   trigger_selected = trigger_selected[0];
                 } else {
-                  trigger_selected = "";
+                  trigger_selected = "-1";
                 }
               } else {
                 trigger_selected = "-1";
@@ -135,9 +138,9 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
                     actor.multiselect('rebuild');
                   }
                 }
-              }); // END OF AJAX
+              });
             });
-          } // END OF ELSE
+          }
           trigger.trigger("change");
         }
 
@@ -152,14 +155,18 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
           $('[name='+opts.field.name+']').pikaday(_opts);
         })
       } else if (opts.type == 'datetime') {
-        var _opts = {format: 'YYYY-MM-DD hh:mm:ss', showTime:true, use24hour:true, i18n:i18n}
+        var _opts = {format: 'YYYY-MM-DD HH:mm:ss', showTime:true, use24hour:true, i18n:i18n}
         load('ui.pikaday', function(){
           $('[name='+opts.field.name+']').pikaday(_opts);
         })
       } else {
       }
       if (opts.data[opts.field.name])
-        $('[name='+opts.field.name+']').val(opts.data[opts.field.name])
-
+        if (opts.type == "select" || typeof(opts.data[opts.field.name]) == "string") {
+          $('[name='+opts.field.name+']').val(opts.data[opts.field.name])
+        } else {
+          $($('[name='+opts.field.name+']')[0]).val(opts.data[opts.field.name][0]);
+          $($('[name='+opts.field.name+']')[1]).val(opts.data[opts.field.name][1]);
+        }
     })
 });

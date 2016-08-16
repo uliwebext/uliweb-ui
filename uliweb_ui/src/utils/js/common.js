@@ -231,7 +231,7 @@ function simple_select2 (el, options){
         language: 'zh-CN'
       }
 
-    $(el).select2($.extend(true, {}, opts, options));    
+    $(el).select2($.extend(true, {}, opts, options));
   })
 }
 
@@ -270,6 +270,15 @@ function get_select(target, url, data){
         }
     });
 };
+
+function serializeObject(el) {
+  var d = {}
+  var data = $(':input', el).serializeArray()
+  for(var i=0, len=data.length; i<len; i++) {
+    d[data[i].name] = data[i].value
+  }
+  return d
+}
 
 /* jquery init function
 */

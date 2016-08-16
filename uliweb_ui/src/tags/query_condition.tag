@@ -170,11 +170,13 @@
       </option>
     </select>
 
-    <input type="text" name={ opts.field.name} class="form-control" field-type="date"
-      if={opts.type=='date'} placeholder={opts.field.placeholder}/>
+    <input type="text" name={ opts.field.name} class="form-control" field-type="{opts.type}"
+      if={(opts.type=='date' || opts.type=='datetime')} placeholder={opts.field.placeholder}/>
 
-    <input type="text" name={ opts.field.name} class="form-control" field-type="datetime"
-      if={opts.type=='datetime'} placeholder={opts.field.placeholder}/>
+    {"-": opts.field.range}
+
+    <input type="text" name={ opts.field.name} class="form-control" field-type="{opts.type}"
+      if={(opts.type=='date' || opts.type=='datetime') && opts.field.range==true} placeholder={opts.field.placeholder}/>
 
     <script>
     var self = this
@@ -193,11 +195,11 @@
       // } else
 
       var i18n = { // 本地化
-        previousMonth	: '上个月',
-        nextMonth		: '下个月',
-        months			: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
-        weekdays		: ['周日','周一','周二','周三','周四','周五','周六'],
-        weekdaysShort	: ['日','一','二','三','四','五','六']
+        previousMonth : '上个月',
+        nextMonth   : '下个月',
+        months      : ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+        weekdays    : ['周日','周一','周二','周三','周四','周五','周六'],
+        weekdaysShort : ['日','一','二','三','四','五','六']
       }
 
       if (opts.type == 'select' && opts.field.url){
@@ -217,6 +219,75 @@
             nonSelectedText: opts.field.placeholder || '请选择',
             maxHeight: 200
             }, opts.field.opts || {})
+
+        if (opts.field.relate_from) {
+          if (!opts.field.choices_url) {
+            // 静态
+            var trigger_name = opts.field.relate_from;
+            var trigger = $($('[name="' + trigger_name + '"]')[0]);
+            var actor = $($('[name="' + opts.field.name + '"]')[0]);
+            var relation_kv = opts.field.relationship;
+            var actor_full_choices = opts.field.choices;
+
+            $('body').on('change', '[name="' + trigger_name + '"]', function(){
+              var trigger_selected = trigger.val();
+              var allow_options = [];
+              $.each(trigger_selected || [], function(){
+                if (isNaN(parseInt(this))) {
+                  Array.prototype.push.apply(allow_options, relation_kv[this]);
+                } else {
+                  Array.prototype.push.apply(allow_options, relation_kv[parseInt(this)]);
+                }
+              });
+
+              opts.field.choices = [];
+              $.each(actor_full_choices, function() {
+                if (allow_options.indexOf(""+this[0]) > -1) {
+                  opts.field.choices.push(this);
+                }
+              });
+
+              self.update();
+              if ($.fn.multiselect) {
+                actor.multiselect('rebuild');
+              }
+            });
+          } else {
+            // 动态
+            var trigger_name = opts.field.relate_from;
+            var trigger = $($('[name="' + trigger_name + '"]')[0]);
+            var actor = $($('[name="' + opts.field.name + '"]')[0]);
+
+            $('body').on('change', '[name="' + trigger_name + '"]', function(){
+              var trigger_selected = trigger.val();
+              if (!!trigger_selected && typeof(trigger_selected) == 'object') {
+                if (trigger_selected.length >= 2) {
+                  trigger_selected = trigger_selected.join(',');
+                } else if (trigger_selected.length == 1) {
+                  trigger_selected = trigger_selected[0];
+                } else {
+                  trigger_selected = "-1";
+                }
+              } else {
+                trigger_selected = "-1";
+              }
+              $.ajax({
+                method: "post",
+                url: opts.field.choices_url + '/' + trigger_selected,
+                success: function(result) {
+                  opts.field.choices = result;
+
+                  self.update();
+                  if ($.fn.multiselect) {
+                    actor.multiselect('rebuild');
+                  }
+                }
+              }); // END OF AJAX
+            });
+          } // END OF ELSE
+          trigger.trigger("change");
+        }
+
         load('ui.bootstrap.multiselect', function(){
           var el = $('[name='+opts.field.name+']', self.root).multiselect(_opts);
           if (opts.data[opts.field.name])
@@ -228,16 +299,19 @@
           $('[name='+opts.field.name+']').pikaday(_opts);
         })
       } else if (opts.type == 'datetime') {
-        var _opts = {format: 'YYYY-MM-DD hh:mm:ss', showTime:true, use24hour:true, i18n:i18n}
+        var _opts = {format: 'YYYY-MM-DD HH:mm:ss', showTime:true, use24hour:true, i18n:i18n}
         load('ui.pikaday', function(){
           $('[name='+opts.field.name+']').pikaday(_opts);
         })
       } else {
       }
       if (opts.data[opts.field.name])
-        $('[name='+opts.field.name+']').val(opts.data[opts.field.name])
-
-
+        if (opts.type == "select" || typeof(opts.data[opts.field.name]) == "string") {
+          $('[name='+opts.field.name+']').val(opts.data[opts.field.name])
+        } else {
+          $($('[name='+opts.field.name+']')[0]).val(opts.data[opts.field.name][0]);
+          $($('[name='+opts.field.name+']')[1]).val(opts.data[opts.field.name][1]);
+        }
     })
     </script>
 </input-field>
