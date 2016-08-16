@@ -75,11 +75,6 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
 
         if (opts.field.relate_from) {
           if (!opts.field.choices_url) {
-<<<<<<< HEAD
-            // 静态
-=======
-
->>>>>>> 11e565506513de99cdaa19773999fab1f47ba408
             var trigger_name = opts.field.relate_from;
             var trigger = $($('[name="' + trigger_name + '"]')[0]);
             var actor = $($('[name="' + opts.field.name + '"]')[0]);
