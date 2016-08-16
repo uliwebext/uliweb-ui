@@ -123,7 +123,11 @@ function dialog_validate_submit(dialog, options) {
             },
 
             submitHandler: function (form) {
-                opts.ajax_submit(dialog, validator);
+              if (options.onBeforeSubmit) {
+                if (options.onBeforeSubmit(dialog, form))
+                    return
+              }
+              opts.ajax_submit(dialog, validator);
             }
         });
 
@@ -136,6 +140,8 @@ function dialog_validate_submit(dialog, options) {
  */
 
 function dialog(url, options) {
+  options = options || {}
+  var onBeforeSubmit = options.onBeforeSubmit || function (dialog, form) {return false;}
   load('ui.bootstrap.dialog', function(){
     var default_opts = {
       message: function(dialog) {
@@ -159,7 +165,7 @@ function dialog(url, options) {
                 form_widgets(form)
 
               //处理表单校验
-              dialog_validate_submit(dialog, {ajax_submit:dialog_ajax_submit})
+              dialog_validate_submit(dialog, {ajax_submit:dialog_ajax_submit, onBeforeSubmit:onBeforeSubmit})
             }
           })
 
