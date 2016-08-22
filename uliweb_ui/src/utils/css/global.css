@@ -8,3 +8,35 @@
   padding-top:10px;
   padding-bottom:10px;
 }
+
+/* detail-view css */
+.view-table td:hover {
+  background-color: whitesmoke;
+}
+.view-label {
+  min-width:100px;
+  text-align: right;
+  display: inline-block;
+  padding-right:5px;
+}
+
+/* bootstrap3 table detail layout */
+.view-bs3-table .table-field-col:hover {
+  background-color: whitesmoke;
+}
+
+.view-bs3-table .view-cell {
+  padding:0;
+}
+
+.view-bs3-table .table-field-label {
+  min-width: 100px;  
+}
+
+.view-bs3-table .table-field-label, .view-bs3-table .table-field-col {
+  padding: 8px;
+}
+
+.view-bs3-table .table-field-col {
+  border-bottom: 1px solid #ccc;
+}

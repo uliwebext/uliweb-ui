@@ -1,20 +1,25 @@
 .select2-container--default .select2-selection--multiple, #layout-body .select2-container--default .select2-selection--multiple {
-  border-radius: 0px;
+  border-radius: 0px!important;
+  height:34px!important;
+  border-color: #d2d6de;
 }
 .select2-container--default .select2-selection--multiple .select2-selection__choice, #layout-body .select2-container--default .select2-selection--multiple .select2-selection__choice {
-  color: black;
+  color: black!important;
 }
 .select2-container--default .select2-selection--single, #layout-body .select2-container--default .select2-selection--single {
-  border-radius: 0px;
+  border-radius: 0px!important;
+  border-color: #d2d6de;
 }
 .select2-container .select2-selection--single, #layout-body .select2-container .select2-selection--single {
-  height:34px;
+  height:34px!important;
 }
 
 .select2-container--default .select2-selection--single .select2-selection__arrow, #layout-body .select2-container--default .select2-selection--single .select2-selection__arrow {
-  height:32px;
+  height:32px!important;
 }
 
 .select2-container--default .select2-selection--single .select2-selection__rendered, #layout-body .select2-container--default .select2-selection--single .select2-selection__rendered {
-  height:28px;
+  height:28px!important;
+  padding-right: 10px;
+  padding-left: 0px;
 }

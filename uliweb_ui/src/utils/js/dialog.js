@@ -157,9 +157,11 @@ function dialog(url, options) {
               content.find('.form-actions').remove()
               //处理标题
               var h1 = content.find('h1')
-              var title = h1.html()
-              dialog.setTitle(title)
-              h1.remove()
+              if (h1.size()>0) {
+                var title = h1.html()
+                dialog.setTitle(title)
+                h1.remove()
+              }
               var form = content.find('form')
               if (form.size() > 0)
                 form_widgets(form)

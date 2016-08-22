@@ -112,11 +112,15 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
   })
 
   this.load = function(url){
-    self.url = url || self.url
-    self.data.load(self.url, function(r){
+    var f
+    var _f = function(r){
       self.total = r.total
       return r.rows
-    }).done(function(){
+    }
+    self.url = url || self.url
+    if (opts.tree) f = self.data.load_tree(self.url, _f)
+    else f = self.data.load(self.url, _f)
+    f.done(function(){
       self.update()
       self.data.save()
     })
