@@ -34,17 +34,27 @@
           text-align: center;
           margin-top: 5px;
           margin-bottom: 10px;
+          position: relative;
+          height: 18px;
+          line-height: 18px;
         }
         .condition-more.visible {
           border-top:1px solid #ddd;
         }
         .condition-more span {
+          position: absolute;
+          left:0;
+          right:0;
+          top:-1px;
+          width:100px;
           border: 1px solid #ddd;
           border-top: 1px solid white;;
           margin: 0 auto;
-          padding: 5px 16px;
           cursor: pointer;
-          font-size: 8px;
+          font-size: 80%;
+          background-color: white;
+          line-height: 22px;
+          height:22px;
         }
         .form-control {
           display:inline-block;

@@ -176,11 +176,11 @@
     .rtable-root.zebra .rtable-row.even .rtable-cell {
       background-color: #f2f2f2;
       border-bottom:none;
-      border-right:1px dotted gray;
+      border-right:1px solid #ddd;
     }
     .rtable-root.zebra .rtable-row.odd .rtable-cell {
       border-bottom:none;
-      border-right:1px dotted gray;
+      border-right:1px solid #ddd;
     }
     .rtable-root.zebra .rtable-row.even .rtable-cell.selected {
       background-color: #ffefd5;
