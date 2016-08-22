@@ -280,6 +280,35 @@ function serializeObject(el) {
   return d
 }
 
+/* show url info
+ * depends on tooltipster
+ */
+function show_info(el, url, options) {
+  var opts = {
+    interactive: true,
+    content: 'Loading...',
+    side: 'right',
+    contentAsHTML: true,
+    theme: 'tooltipster-light',
+    // 'instance' is basically the tooltip. More details in the "Object-oriented Tooltipster" section.
+    functionBefore: function(instance, helper) {
+      var $origin = $(helper.origin);
+      // we set a variable so the data is only loaded once via Ajax, not every time the tooltip opens
+      if ($origin.data('loaded') !== true) {
+        $.get(url+'?info=1', function(data) {
+          // call the 'content' method to update the content of our tooltip with the returned data
+          instance.content(data);
+          // to remember that the data has been loaded
+          $origin.data('loaded', true);
+        });
+      }
+    }
+  }
+  load('ui.tooltipster', function(){
+    $(el).tooltipster($.extend(true, {}, opts, options));
+  })
+}
+
 /* jquery init function
 */
 $(document).ajaxError(function (event, jqxhr, settings, thrownError) {
