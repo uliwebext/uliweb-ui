@@ -35,7 +35,6 @@ riot.tag2('query-condition', '<div class="query-condition"> <form method="get" a
             $('[name='+k+']', self.root)
               .multiselect('deselectAll', false)
               .multiselect('updateButtonText')
-              .multiselect('destory')
           } else
             $('[name='+k+']', self.root).val(null)
         }
