@@ -532,16 +532,20 @@ DataSet.prototype.load_tree = function (url, callback) {
   if (typeof url === 'string') {
     return $.getJSON(url || this._options.url).done(function(r) {
         me._isTree = false
+        me.mute()
         if (callback) me.add(callback(r))
         else me.add(r)
+        me.mute(false)
         me._isTree = true
         _post()
       })
   } else {
     me._isTree = true
+    me.mute()
     if (typeof callback == 'function')
       me.add(callback(url))
     else me.add(url)
+    me.mute(false)
     me._isTree = false
     _post()
   }
