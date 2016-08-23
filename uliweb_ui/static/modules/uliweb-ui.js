@@ -63,6 +63,7 @@ function show_message(message, category) {
  */
 function popup_url(target, options, title, callback) {
     var opts;
+    options = options || {}
     if (typeof options === 'string') {
         opts = {url: options, title: title || ''};
     } else opts = options;
@@ -86,22 +87,33 @@ function popup_url(target, options, title, callback) {
                 });
             }
         },
-        title: 'Popup',
-        width: 400,
-        cache: false,
+        title: '',
+        cache: true,
+        widht: 'auto',
         height: 'auto',
+        trigger:'hover',
+        placement:'right',
         padding: true,
-        closeable: true,
+        closeable: false,
         type: 'async',
         url: 'example',
+        parameters: {info:1},
         delay: 50
     };
 
     load('ui.popover', function(){
-        var o = $.extend({}, d, opts);
-        $(target).webuiPopover(o);
+      $(target).each(function(){
+        var el = $(this);
+        var o = $.extend(true, {}, d, opts);
+        var url = el.attr('href') || el.attr('data-url') || o.url
+        var query = new QueryString()
+        query.load(url)
+        query.merge(o.parameters)
+        o.url = url + query.toString()
+        el.webuiPopover(o);
         if (o.show)
             $(target).webuiPopover('show');
+      })
     });
 }
 
@@ -112,6 +124,45 @@ function show_popup_url(target, options, title, callback) {
     } else opts = options;
     opts.show = true;
     popup_url(target, opts, title, callback);
+}
+
+/* show url info
+ * depends on tooltipster
+ */
+function popup_info(target, url, options) {
+  var opts = {
+    interactive: true,
+    content: 'Loading...',
+    side: 'right',
+    contentAsHTML: true,
+    theme: 'tooltipster-light',
+    parameters: {info:1},
+    // 'instance' is basically the tooltip. More details in the "Object-oriented Tooltipster" section.
+    functionBefore: function(instance, helper) {
+      var $origin = $(helper.origin);
+      // we set a variable so the data is only loaded once via Ajax, not every time the tooltip opens
+      if ($origin.data('loaded') !== true) {
+        $.get(instance.__options.url, function(data) {
+          // call the 'content' method to update the content of our tooltip with the returned data
+          instance.content(data);
+          // to remember that the data has been loaded
+          $origin.data('loaded', true);
+        });
+      }
+    }
+  }
+  load('ui.tooltipster', function(){
+    $(target).each(function(){
+      var el = $(this);
+      var o = $.extend(true, {}, opts, options || {});
+      var url = el.attr('href') || el.attr('data-url') || o.url
+      var query = new QueryString()
+      query.load(url)
+      query.merge(o.parameters)
+      o.url = url + query.toString()
+      el.tooltipster(o);
+    })
+  })
 }
 
 
@@ -278,35 +329,6 @@ function serializeObject(el) {
     d[data[i].name] = data[i].value
   }
   return d
-}
-
-/* show url info
- * depends on tooltipster
- */
-function show_info(el, url, options) {
-  var opts = {
-    interactive: true,
-    content: 'Loading...',
-    side: 'right',
-    contentAsHTML: true,
-    theme: 'tooltipster-light',
-    // 'instance' is basically the tooltip. More details in the "Object-oriented Tooltipster" section.
-    functionBefore: function(instance, helper) {
-      var $origin = $(helper.origin);
-      // we set a variable so the data is only loaded once via Ajax, not every time the tooltip opens
-      if ($origin.data('loaded') !== true) {
-        $.get(url+'?info=1', function(data) {
-          // call the 'content' method to update the content of our tooltip with the returned data
-          instance.content(data);
-          // to remember that the data has been loaded
-          $origin.data('loaded', true);
-        });
-      }
-    }
-  }
-  load('ui.tooltipster', function(){
-    $(el).tooltipster($.extend(true, {}, opts, options));
-  })
 }
 
 /* jquery init function
