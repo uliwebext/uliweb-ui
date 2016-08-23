@@ -123,7 +123,11 @@ function dialog_validate_submit(dialog, options) {
             },
 
             submitHandler: function (form) {
-                opts.ajax_submit(dialog, validator);
+              if (options.onBeforeSubmit) {
+                if (options.onBeforeSubmit(dialog, form))
+                    return
+              }
+              opts.ajax_submit(dialog, validator);
             }
         });
 
@@ -136,6 +140,8 @@ function dialog_validate_submit(dialog, options) {
  */
 
 function dialog(url, options) {
+  options = options || {}
+  var onBeforeSubmit = options.onBeforeSubmit || function (dialog, form) {return false;}
   load('ui.bootstrap.dialog', function(){
     var default_opts = {
       message: function(dialog) {
@@ -151,15 +157,17 @@ function dialog(url, options) {
               content.find('.form-actions').remove()
               //处理标题
               var h1 = content.find('h1')
-              var title = h1.html()
-              dialog.setTitle(title)
-              h1.remove()
+              if (h1.size()>0) {
+                var title = h1.html()
+                dialog.setTitle(title)
+                h1.remove()
+              }
               var form = content.find('form')
               if (form.size() > 0)
                 form_widgets(form)
 
               //处理表单校验
-              dialog_validate_submit(dialog, {ajax_submit:dialog_ajax_submit})
+              dialog_validate_submit(dialog, {ajax_submit:dialog_ajax_submit, onBeforeSubmit:onBeforeSubmit})
             }
           })
 
@@ -185,5 +193,17 @@ function dialog(url, options) {
     }, opts;
     opts = $.extend(true, {}, default_opts, options)
     return BootstrapDialog.show(opts);
+  })
+}
+
+function Confirm(message, callback) {
+  load('ui.bootstrap.dialog', function(){
+    BootstrapDialog.confirm(message, callback);
+  })
+}
+
+function Alert(message, callback) {
+  load('ui.bootstrap.dialog', function(){
+    BootstrapDialog.confirm(message, callback);
   })
 }

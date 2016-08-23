@@ -24,6 +24,9 @@
           display: inline-block;
           text-align: right;
         }
+        .condition-label.nomore {
+          min-width: 0px;
+        }
         .condition-cell {
           display: inline-block;
         }
@@ -31,17 +34,27 @@
           text-align: center;
           margin-top: 5px;
           margin-bottom: 10px;
+          position: relative;
+          height: 18px;
+          line-height: 18px;
         }
         .condition-more.visible {
           border-top:1px solid #ddd;
         }
         .condition-more span {
+          position: absolute;
+          left:0;
+          right:0;
+          top:-1px;
+          width:100px;
           border: 1px solid #ddd;
           border-top: 1px solid white;;
           margin: 0 auto;
-          padding: 5px 16px;
           cursor: pointer;
-          font-size: 8px;
+          font-size: 80%;
+          background-color: white;
+          line-height: 22px;
+          height:22px;
         }
         .form-control {
           display:inline-block;
@@ -51,6 +64,13 @@
         }
         input-field {
           display:inline-block;
+        }
+        .condition-row.condition-row-more.condition-buttons {
+          text-align: center;
+          margin-right: 20px;
+        }
+        .condition-row.condition-row-more.condition-buttons button{
+          margin-right: 10px;
         }
         /*
         .select2-container--bootstrap {
@@ -72,17 +92,17 @@
         <form method="get" action="{ opts.action }">
             <div each={row, i in layout} show={i==0 || show} class={condition-row:true, condition-row-more:i>0}>
                 <div each={field in row} class="condition-cell">
-                   <span class="condition-label">{ fields[this.field].label || field }</span>
+                   <span class="condition-label {nomore:i==0 &&!show}">{ fields[this.field].label || field }</span>
                    <input-field field={ fields[field] } data={data}
                      type={ fields[this.field].type || 'str' }>
                    </input-field>
                 </div>
-                <div show={ i==0 && !show } class="condition-cell" >
+                <div show={ i==0 && !show } class="condition-cell condition-buttons" >
                     <button class="btn btn-primary btn-flat" type="submit">查询</button>
                     <button class="btn btn-default btn-flat" type="button" onclick={parent.reset}>清除条件</button>
                 </div>
             </div>
-            <div class="condition-row condition-row-more" show={show}>
+            <div class="condition-row condition-row-more condition-buttons" show={show}>
               <button class="btn btn-primary btn-flat" type="submit">查询</button>
               <button class="btn btn-default btn-flat" type="button" onclick={reset}>清除条件</button>
             </div>
@@ -160,11 +180,13 @@
       </option>
     </select>
 
-    <input type="text" name={ opts.field.name} class="form-control" field-type="date"
-      if={opts.type=='date'} placeholder={opts.field.placeholder}/>
+    <input type="text" name={ opts.field.name} class="form-control" field-type="{opts.type}"
+      if={(opts.type=='date' || opts.type=='datetime')} placeholder={opts.field.placeholder}/>
 
-    <input type="text" name={ opts.field.name} class="form-control" field-type="datetime"
-      if={opts.type=='datetime'} placeholder={opts.field.placeholder}/>
+    {"-": opts.field.range}
+
+    <input type="text" name={ opts.field.name} class="form-control" field-type="{opts.type}"
+      if={(opts.type=='date' || opts.type=='datetime') && opts.field.range==true} placeholder={opts.field.placeholder}/>
 
     <script>
     var self = this
@@ -183,11 +205,11 @@
       // } else
 
       var i18n = { // 本地化
-        previousMonth	: '上个月',
-        nextMonth		: '下个月',
-        months			: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
-        weekdays		: ['周日','周一','周二','周三','周四','周五','周六'],
-        weekdaysShort	: ['日','一','二','三','四','五','六']
+        previousMonth : '上个月',
+        nextMonth   : '下个月',
+        months      : ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+        weekdays    : ['周日','周一','周二','周三','周四','周五','周六'],
+        weekdaysShort : ['日','一','二','三','四','五','六']
       }
 
       if (opts.type == 'select' && opts.field.url){
@@ -207,6 +229,75 @@
             nonSelectedText: opts.field.placeholder || '请选择',
             maxHeight: 200
             }, opts.field.opts || {})
+
+        if (opts.field.relate_from) {
+          if (!opts.field.choices_url) {
+            // 静态
+            var trigger_name = opts.field.relate_from;
+            var trigger = $($('[name="' + trigger_name + '"]')[0]);
+            var actor = $($('[name="' + opts.field.name + '"]')[0]);
+            var relation_kv = opts.field.relationship;
+            var actor_full_choices = opts.field.choices;
+
+            $('body').on('change', '[name="' + trigger_name + '"]', function(){
+              var trigger_selected = trigger.val();
+              var allow_options = [];
+              $.each(trigger_selected || [], function(){
+                if (isNaN(parseInt(this))) {
+                  Array.prototype.push.apply(allow_options, relation_kv[this]);
+                } else {
+                  Array.prototype.push.apply(allow_options, relation_kv[parseInt(this)]);
+                }
+              });
+
+              opts.field.choices = [];
+              $.each(actor_full_choices, function() {
+                if (allow_options.indexOf(""+this[0]) > -1) {
+                  opts.field.choices.push(this);
+                }
+              });
+
+              self.update();
+              if ($.fn.multiselect) {
+                actor.multiselect('rebuild');
+              }
+            });
+          } else {
+            // 动态
+            var trigger_name = opts.field.relate_from;
+            var trigger = $($('[name="' + trigger_name + '"]')[0]);
+            var actor = $($('[name="' + opts.field.name + '"]')[0]);
+
+            $('body').on('change', '[name="' + trigger_name + '"]', function(){
+              var trigger_selected = trigger.val();
+              if (!!trigger_selected && typeof(trigger_selected) == 'object') {
+                if (trigger_selected.length >= 2) {
+                  trigger_selected = trigger_selected.join(',');
+                } else if (trigger_selected.length == 1) {
+                  trigger_selected = trigger_selected[0];
+                } else {
+                  trigger_selected = "-1";
+                }
+              } else {
+                trigger_selected = "-1";
+              }
+              $.ajax({
+                method: "post",
+                url: opts.field.choices_url + '/' + trigger_selected,
+                success: function(result) {
+                  opts.field.choices = result;
+
+                  self.update();
+                  if ($.fn.multiselect) {
+                    actor.multiselect('rebuild');
+                  }
+                }
+              }); // END OF AJAX
+            });
+          } // END OF ELSE
+          trigger.trigger("change");
+        }
+
         load('ui.bootstrap.multiselect', function(){
           var el = $('[name='+opts.field.name+']', self.root).multiselect(_opts);
           if (opts.data[opts.field.name])
@@ -218,16 +309,19 @@
           $('[name='+opts.field.name+']').pikaday(_opts);
         })
       } else if (opts.type == 'datetime') {
-        var _opts = {format: 'YYYY-MM-DD hh:mm:ss', showTime:true, use24hour:true, i18n:i18n}
+        var _opts = {format: 'YYYY-MM-DD HH:mm:ss', showTime:true, use24hour:true, i18n:i18n}
         load('ui.pikaday', function(){
           $('[name='+opts.field.name+']').pikaday(_opts);
         })
       } else {
       }
       if (opts.data[opts.field.name])
-        $('[name='+opts.field.name+']').val(opts.data[opts.field.name])
-
-
+        if (opts.type == "select" || typeof(opts.data[opts.field.name]) == "string") {
+          $('[name='+opts.field.name+']').val(opts.data[opts.field.name])
+        } else {
+          $($('[name='+opts.field.name+']')[0]).val(opts.data[opts.field.name][0]);
+          $($('[name='+opts.field.name+']')[1]).val(opts.data[opts.field.name][1]);
+        }
     })
     </script>
 </input-field>

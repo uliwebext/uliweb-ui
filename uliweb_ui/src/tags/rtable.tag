@@ -176,11 +176,11 @@
     .rtable-root.zebra .rtable-row.even .rtable-cell {
       background-color: #f2f2f2;
       border-bottom:none;
-      border-right:1px dotted gray;
+      border-right:1px solid #ddd;
     }
     .rtable-root.zebra .rtable-row.odd .rtable-cell {
       border-bottom:none;
-      border-right:1px dotted gray;
+      border-right:1px solid #ddd;
     }
     .rtable-root.zebra .rtable-row.even .rtable-cell.selected {
       background-color: #ffefd5;
@@ -324,6 +324,7 @@
   this.onRowClass = opts.onRowClass || function(){}
   this.onEdit = opts.onEdit || function(){return true}
   this.onEdited = opts.onEdited || function(){return true}
+  this.onSelected = opts.onSelected || function(){}
 
   //tree options
   this.tree = opts.tree
@@ -346,18 +347,24 @@
 
   var _opts = {tree:opts.tree, parentField:opts.parentField,
     levelField:opts.levelField, orderField:opts.orderField, hasChildrenField:opts.hasChildrenField}
+  var d
   if (opts.data) {
     if (Array.isArray(opts.data)) {
-      this._data = new DataSet(_opts)
-      if (opts.tree)
-        this._data.load_tree(opts.data, {parentField:opts.parentField,
-          orderField:opts.orderField, levelField:opts.levelField,
-          hasChildrenField:opts.hasChildrenField, plain:true})
-      else
-        this._data.load(opts.data)
+      this._data = new DataSet()
+      d = opts.data
     }
-    else
+    else {
+      var d = opts.data.get()
       this._data = opts.data
+    }
+    if (opts.tree) {
+      this._data.setOption(_opts)
+      this._data.load_tree(d, {parentField:opts.parentField,
+        orderField:opts.orderField, levelField:opts.levelField,
+        hasChildrenField:opts.hasChildrenField, plain:true})
+    } else
+      this._data.load(d)
+
   } else {
     this._data = new DataSet(_opts)
   }
@@ -1247,6 +1254,8 @@
   this.root.insertBefore = data_proxy('insertBefore')
   this.root.insertAfter = data_proxy('insertAfter')
   this.root.move = data_proxy('move')
+  this.root.diff = data_proxy('diff')
+  this.root.save = data_proxy('save')
 
   <!-- this.root.load = function(newrows){
     self._data.clear()

@@ -1,10 +1,32 @@
 <rgrid>
 
+  <style scoped>
+    .rgrid-tools {margin-bottom:5px;padding-left:5px;}
+    .btn-toolbar .btn-group {margin-right:5px;}
+  </style>
+
   <query-condition if={has_query} rules={query_ules} fields={query_fields} layout={query_layout}></query-condition>
+  <div class="btn-toolbar">
+    <div if={left_tools} class="rgrid-tools pull-left">
+      <div each={btn_group in left_tools} class={btn_group_class}>
+        <button each={btn in btn_group} class="{btn.class}" id={btn.id}
+          disabled={btn.disabled()} onclick={btn.onclick}>{btn.label}</button>
+      </div>
+    </div>
+    <div if={right_tools} class="rgrid-tools pull-right">
+      <div each={btn_group in right_tools} class={btn_group_class}>
+        <button each={btn in btn_group} class="{btn.class}" id={btn.id}
+          disabled={btn.disabled()} onclick={btn.onclick}>{btn.label}</button>
+      </div>
+    </div>
+  </div>
   <rtable cols={cols} options={rtable_options} data={data} start={start}></rtable>
   <div class="clearfix tools">
     <pagination if={pagination} data={data} url={url} page={page} total={total}
       limit={limit} onpagechanged={onpagechanged}></pagination>
+    <div if={footer_tools} class="pull-right">
+        <button each={btn in footer_tools} class="btn btn-flat btn-sm btn-default" onclick={btn.onClick}>{btn.label}</button>
+    </div>
   </div>
 
   /*
@@ -30,6 +52,10 @@
   this.query_fields = this.query.fields || []
   this.query_layout = this.query.layout || []
   this.start = (this.page - 1) * this.limit
+  this.footer_tools = opts.footer_tools || []
+  this.left_tools = opts.left_tools || opts.tools || []
+  this.right_tools = opts.right_tools || []
+  this.btn_group_class = opts.btn_group_class || 'btn-group btn-group-sm'
 
   this.rtable_options = {
     theme : opts.theme,
@@ -37,6 +63,7 @@
     labelField : opts.labelField || 'title',
     indexCol: opts.indexCol,
     checkCol: opts.checkCol,
+    multiSelect: opts.multiSelect,
     maxHeight: opts.maxHeight,
     minHeight: opts.minHeight,
     height: opts.height,
@@ -45,10 +72,19 @@
     container: $(this.root).parent(),
     noData: opts.noData,
     tree: opts.tree,
-    expanded: opts.expanded,
+    expanded: opts.expanded === undefined ? true : opts.expanded,
+    useFontAwesome: opts.useFontAwesome === undefined ? true : opts.useFontAwesome,
     parentField: opts.parentField,
     orderField: opts.orderField,
-    levelField: opts.levelField
+    levelField: opts.levelField,
+    treeField: opts.treeField,
+    onDblclick: opts.onDblclick,
+    onClick: opts.onClick,
+    onMove: opts.onMove,
+    onEdit: opts.onEdit,
+    onEdited: opts.onEdited,
+    draggable: opts.draggable,
+    editable: opts.editable
 
   }
 
@@ -58,24 +94,75 @@
   }
 
   this.on('mount', function(){
+    var item, items
+    var tools = this.left_tools.concat(this.right_tools)
+    for(var i=0, len=tools.length; i<len; i++){
+        items = tools[i]
+        for(var j=0, _len=items.length; j<_len; j++) {
+          item = items[j]
+          var onclick = function(btn) {
+              return function(e) {
+                if (btn.onClick)
+                  return btn.onClick.call(self, e)
+              }
+          }
+          item.onclick = onclick(item)
+
+          var ondisabled = function(btn) {
+            return function(){
+              if (btn.onDisabled)
+                return btn.onDisabled.call(self)
+            }
+          }
+          item.disabled = ondisabled(item)
+          item.class = item.class || 'btn btn-flat btn-sm btn-primary'
+        }
+    }
+    this.table = this.root.querySelector('rtable')
+    this.root.add = this.table.add
+    this.root.addFirstChild = this.table.addFirstChild
+    this.root.update = this.table.update
+    this.root.remove = this.table.remove
+    this.root.get = this.table.get
+    this.root.load = this.load
+    this.root.insertBefore = this.table.insertBefore
+    this.root.insertAfter = this.table.insertAfter
+    this.root.get_selected = this.table.get_selected
+    this.root.expand = this.table.expand
+    this.root.collapse = this.table.collapse
+    this.root.is_selected = this.table.is_selected
+    this.root.move = this.table.move
+    this.root.save = this.table.save
+    this.root.diff = this.table.diff
     this.load()
+
+    self.data.on('*', function(r, d){
+      if (self.pagination) {
+        if (r == 'remove') self.total -= d.items.length
+        else if (r == 'add') self.total += d.items.length
+      } else
+        self.total = self.data.length
+      self.update()
+    })
+
   })
 
   this.load = function(url){
-    self.url = url || self.url
-    self.data.load(self.url, function(r){
+    var f
+    var _f = function(r){
       self.total = r.total
       return r.rows
-    }).done(function(){
+    }
+    self.url = url || self.url
+    if (opts.tree) f = self.data.load_tree(self.url, _f)
+    else f = self.data.load(self.url, _f)
+    f.done(function(){
       self.update()
-
-    /*
-      self.data.on('*', function(r, d){
-        if (r == 'remove') self.total -= d.items.length
-        else if (r == 'add') self.total += d.items.length
-        self.update()
-      })
-      */
+      self.data.save()
     })
+  }
+
+  this.getButton = function(id) {
+
   }
 </rgrid>
