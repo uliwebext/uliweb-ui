@@ -48,6 +48,9 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     onMove: opts.onMove,
     onEdit: opts.onEdit,
     onEdited: opts.onEdited,
+    onSelect: opts.onSelect,
+    onSelected: opts.onSelected,
+    onDeselected: opts.Deselected,
     draggable: opts.draggable,
     editable: opts.editable
 
