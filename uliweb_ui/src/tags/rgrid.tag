@@ -56,6 +56,7 @@
   this.left_tools = opts.left_tools || opts.tools || []
   this.right_tools = opts.right_tools || []
   this.btn_group_class = opts.btn_group_class || 'btn-group btn-group-sm'
+  this.onLoaded = opts.onLoaded
 
   this.rtable_options = {
     theme : opts.theme,
@@ -153,9 +154,10 @@
       self.total = r.total
       return r.rows
     }
+
     self.url = url || self.url
     if (opts.tree) f = self.data.load_tree(self.url, _f)
-    else f = self.data.load(self.url, _f)
+    else f = self.data.load(self.url, this.onLoaded || _f)
     f.done(function(){
       self.update()
       self.data.save()
