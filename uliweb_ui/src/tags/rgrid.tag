@@ -2,7 +2,8 @@
 
   <style scoped>
     .rgrid-tools {margin-bottom:5px;padding-left:5px;}
-    .btn-toolbar .btn-group {margin-right:5px;}
+    .btn-toolbar .btn-group {margin-right:8px;}
+    .btn-toolbar .btn-group .btn {margin-right:3px;}
   </style>
 
   <query-condition if={has_query} rules={query_ules} fields={query_fields} layout={query_layout}></query-condition>
@@ -86,7 +87,7 @@
     onEdited: opts.onEdited,
     onSelect: opts.onSelect,
     onSelected: opts.onSelected,
-    onDeselected: opts.Deselected,
+    onDeselected: opts.onDeselected,
     draggable: opts.draggable,
     editable: opts.editable
 
@@ -138,6 +139,7 @@
     this.root.move = this.table.move
     this.root.save = this.table.save
     this.root.diff = this.table.diff
+    this.root.getButton = this.getButton
     this.load()
 
     self.data.on('*', function(r, d){
@@ -168,6 +170,6 @@
   }
 
   this.getButton = function(id) {
-
+    return document.getElementById(id)
   }
 </rgrid>
