@@ -84,6 +84,9 @@
     onMove: opts.onMove,
     onEdit: opts.onEdit,
     onEdited: opts.onEdited,
+    onSelect: opts.onSelect,
+    onSelected: opts.onSelected,
+    onDeselected: opts.Deselected,
     draggable: opts.draggable,
     editable: opts.editable
 

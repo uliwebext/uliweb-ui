@@ -66,6 +66,9 @@
       top:0;
       overflow:hidden;
     }
+    .rtable-content {
+      overflow: hidden;
+    }
     .rtable-cell {
       position:absolute;
       box-sizing: border-box;
@@ -247,7 +250,7 @@
               style="left:{col.indent-12}px;" onclick={toggle_expand}></span>
 
             <!-- display checkbox -->
-            <input if={col.type=='check'} type="checkbox" onclick={checkcol} checked={col.selected}
+            <input if={col.type=='check'} type="checkbox" onclick={checkcol} checked={is_selected(col.row)}
               class="rtable-check" style="margin-top:{rowHeight/2-7}px"></input>
           </div>
         </div>
@@ -271,7 +274,7 @@
                 style="left:{col.indent-12}px;" onclick={toggle_expand}></span>
 
               <!-- display checkbox -->
-              <input if={col.type=='check'} type="checkbox" onclick={checkcol} checked={col.selected}
+              <input if={col.type=='check'} type="checkbox" onclick={checkcol} checked={is_selected(col.row)}
                   class="rtable-check" style="margin-top:{rowHeight/2-7}px;"></input>
 
               <virtual if={col.buttons} no-reorder each={btn in col.buttons}>
@@ -325,6 +328,8 @@
   this.onEdit = opts.onEdit || function(){return true}
   this.onEdited = opts.onEdited || function(){return true}
   this.onSelected = opts.onSelected || function(){}
+  this.onSelect = opts.onSelect || function(){return true}
+  this.onDeselected = opts.onDeselected || function(){}
 
   //tree options
   this.tree = opts.tree
@@ -438,6 +443,7 @@
     $(this.content_fixed).on('click', '.rtable-cell', this.click_handler)
       .on('dblclick', '.rtable-cell', this.dblclick_handler)
 
+    this.scrollbar_width = getScrollbarWidth()
     this.ready_data() //prepare data
     this.calSize()
     this.calHeader()  //calculate header positions
@@ -784,12 +790,14 @@
         width += col.width
     }
 
+    //计算无width的列
     if (cal_cols.length > 0) {
-      var dw = Math.floor((this.width-width)/cal_cols.length)
+      var w = this.width-width-this.scrollbar_width
+      var dw = Math.floor(w/cal_cols.length)
       for(var i=0, len=cal_cols.length; i<len; i++) {
         cal_cols[i].width = dw
         if (i == cal_cols.length - 1)
-          cal_cols[i].width = (this.width-width) - (cal_cols.length-1)*dw
+          cal_cols[i].width = w - (cal_cols.length-1)*dw
       }
     }
 
@@ -838,7 +846,6 @@
   }
 
   this.calScrollbar = function () {
-    this.scrollbar_width = getScrollbarWidth()
     this.has_yscroll = this.content.scrollHeight > this.content.clientHeight || (this.rows.length * this.rowHeight > (this.height - this.header_height))
     this.has_xscroll = this.content.scrollWidth > this.content.clientWidth || this.main_width > (this.width - this.fix_width)
     this.xscroll_width = this.has_xscroll ? this.scrollbar_width : 0
@@ -1141,10 +1148,9 @@
   }
 
   this.checkcol = function(e) {
-    if (e.target.checked){
-      self.select(e.item.col.row)
-    } else
-      self.deselect(e.item.col.row)
+    self.toggle_select(e.item.col.row)
+    e.target.checked = self.is_selected(e.item.col.row)
+    self.update()
   }
 
   /* toggle selected row */
@@ -1161,9 +1167,6 @@
   this.select = function(rows) {
     var row, id
 
-    if (!opts.multiSelect)
-      self.selected_rows = []
-
     if (!rows) rows = this._data.get()
     if (!Array.isArray(rows)) {
       rows = [rows]
@@ -1172,14 +1175,24 @@
       row = rows[i]
       if (row instanceof Object) id = row.id
       else id = row
-      if (this.selected_rows.indexOf(id) == -1)
-        this.selected_rows.push(id)
+      if (this.selected_rows.indexOf(id) == -1) {
+        if (this.onSelect(row)) {
+          if (!opts.multiSelect)
+            self.selected_rows = []
+          this.selected_rows.push(id)
+          this.onSelected(row)
+        }
+      }
     }
+    <!-- this.update() -->
   }
 
   this.deselect = function(rows) {
     var r = [], row, selected_rows = this.selected_rows, index, items = [], id
-    if (!rows) this.selected_rows = []
+    if (!rows) {
+      this.selected_rows = []
+      this.onDeselected()
+    }
     else {
       if (!Array.isArray(rows))
         rows = [rows]
@@ -1194,11 +1207,13 @@
         if (index != -1){
           selected_rows.splice(i, 1)
           items.splice(index, 1)
+          this.onDeselected(this._data.get(row))
         }
         if (rows.length == 0)
           break
       }
     }
+    <!-- this.update() -->
   }
 
   function proxy(funcname) {
