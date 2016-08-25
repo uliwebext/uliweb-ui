@@ -144,7 +144,7 @@
       this.reset = function(e){
         for (k in self.fields) {
           var field = self.fields[k]
-          if (field.type == 'select' && field.url) {
+          if (field.type == 'select' && field['data-url']) {
             $('[name='+k+']', self.root).val('').trigger('change')
           }
           else if (field.type == 'select') {
@@ -173,7 +173,7 @@
       if={opts.type=='password'} placeholder={opts.field.placeholder}/>
 
     <select multiple={opts.field.multiple} if={opts.type=='select'}
-      field-type="select" style="width:200px" name={opts.field.name} url={opts.field.url} placeholder={opts.field.placeholder}>
+      field-type="select" style="width:200px" name={opts.field.name} data-url={opts.field['data-url']} placeholder={opts.field.placeholder}>
       <option if={opts.field.placeholder && !opts.field.multiple} value="">{opts.field.placeholder}</option>
       <option each={value in opts.field.choices} value={value[0]}>
           {value[1]}
@@ -212,7 +212,7 @@
         weekdaysShort : ['日','一','二','三','四','五','六']
       }
 
-      if (opts.type == 'select' && opts.field.url){
+      if (opts.type == 'select' && opts.field['data-url']){
         load('ui.select2', function(){
           var el = $('[name='+opts.field.name+']', self.root);
           simple_select2(el, {width:'resolve'})
