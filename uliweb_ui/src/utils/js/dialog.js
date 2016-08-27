@@ -179,9 +179,12 @@ function dialog(url, options) {
           id: 'btnSave',
           cssClass: 'btn-primary btn-flat',
           action: function(dialog){
+            if (options.onOk) options.onOk(dialog)
+            else {
               var form = dialog.getModalBody().find('form');
               this.spin();
-              form.submit();
+              form.submit();              
+            }
           }
       }, {
           label: '取消',
