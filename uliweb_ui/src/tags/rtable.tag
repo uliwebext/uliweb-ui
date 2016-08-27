@@ -297,6 +297,7 @@
   </div>
 
   var self = this
+  this.observable = opts.observable
   this.root.instance = this
 
   if(opts.options) {
@@ -1142,10 +1143,19 @@
   } -->
 
   this.checkall = function(e) {
-    if (e.target.checked)
-      self.selected_rows = self._data.getIds()
-    else
-      self.selected_rows = []
+    e.preventUpdate = true
+    if (e.target.checked) {
+      var ids = self._data.getIds()
+      for (var i=0, len=ids.length; i<len; i++) {
+        self.select(self.get(ids[i]))
+      }
+    } else {
+      var ids = self.selected_rows.slice()
+      for (var i=0, len=ids.length; i<len; i++) {
+        self.deselect(self.get(ids[i]))
+      }
+    }
+    self.update()
   }
 
   this.checkcol = function(e) {
@@ -1182,6 +1192,7 @@
             self.selected_rows = []
           this.selected_rows.push(id)
           this.onSelected(row)
+          this.observable.trigger('selected', row)
         }
       }
     }
@@ -1193,6 +1204,7 @@
     if (!rows) {
       this.selected_rows = []
       this.onDeselected()
+      this.observable.trigger('deselected')
     }
     else {
       if (!Array.isArray(rows))
@@ -1209,6 +1221,7 @@
           selected_rows.splice(i, 1)
           items.splice(index, 1)
           this.onDeselected(this._data.get(row))
+          this.observable.trigger('deselected', this._data.get(row))
         }
         if (rows.length == 0)
           break

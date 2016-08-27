@@ -11,17 +11,17 @@
     <div if={left_tools} class="rgrid-tools pull-left">
       <div each={btn_group in left_tools} class={btn_group_class}>
         <button each={btn in btn_group} class="{btn.class}" id={btn.id}
-          disabled={btn.disabled()} onclick={btn.onclick}>{btn.label}</button>
+          disabled={btn.disabled(btn)} onclick={btn.onclick}>{btn.label}</button>
       </div>
     </div>
     <div if={right_tools} class="rgrid-tools pull-right">
       <div each={btn_group in right_tools} class={btn_group_class}>
         <button each={btn in btn_group} class="{btn.class}" id={btn.id}
-          disabled={btn.disabled()} onclick={btn.onclick}>{btn.label}</button>
+          disabled={btn.disabled(btn)} onclick={btn.onclick}>{btn.label}</button>
       </div>
     </div>
   </div>
-  <rtable cols={cols} options={rtable_options} data={data} start={start}></rtable>
+  <rtable cols={cols} options={rtable_options} data={data} start={start} observable={observable}></rtable>
   <div class="clearfix tools">
     <pagination if={pagination} data={data} url={url} page={page} total={total}
       limit={limit} onpagechanged={onpagechanged}></pagination>
@@ -39,6 +39,8 @@
      tableClass:, nameField:, labelField:, page:, total: limit:}
    */
   var self = this
+
+  this.observable = riot.observable()
 
   this.data = new DataSet()
   this.cols = opts.cols
@@ -113,13 +115,12 @@
           }
           item.onclick = onclick(item)
 
-          var ondisabled = function(btn) {
-            return function(){
+          item.disabled = function(btn) {
               if (btn.onDisabled)
                 return btn.onDisabled.call(self)
-            }
+              if (btn.checkSelected)
+                return self.table.get_selected().length == 0
           }
-          item.disabled = ondisabled(item)
           item.class = item.class || 'btn btn-flat btn-sm btn-primary'
         }
     }
@@ -140,7 +141,12 @@
     this.root.save = this.table.save
     this.root.diff = this.table.diff
     this.root.getButton = this.getButton
+    this.root.refresh = this.update
     this.load()
+
+    this.observable.on('selected deselected', function(row) {
+      self.update()
+    })
 
     self.data.on('*', function(r, d){
       if (self.pagination) {
