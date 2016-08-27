@@ -152,3 +152,7 @@ legend {margin-bottom:0; border-bottom:none;}
     user-select: none;
     -webkit-user-select: none;
 }
+
+.select2-container--default .select2-selection--multiple .select2-selection__clear {
+  height:23px;
+}
