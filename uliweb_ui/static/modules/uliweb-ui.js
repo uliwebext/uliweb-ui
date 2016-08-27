@@ -527,28 +527,38 @@ function dialog(url, options) {
 
           return content
       },
-      draggable: true,
-      buttons: [{
-          label: '确定',
-          id: 'btnSave',
-          cssClass: 'btn-primary btn-flat',
-          action: function(dialog){
-            if (options.onOk) options.onOk(dialog)
-            else {
-              var form = dialog.getModalBody().find('form');
-              this.spin();
-              form.submit();              
-            }
-          }
-      }, {
-          label: '取消',
-          cssClass: 'btn-default btn-flat',
-          action: function(dialog){
-              dialog.close();
-          }
-      }]
+      draggable: true
     }, opts;
     opts = $.extend(true, {}, default_opts, options)
+    var  okButton = {
+        label: opts.okLabel===undefined ? '确定' : opts.okLabel,
+        id: 'btnSave',
+        cssClass: 'btn-primary btn-flat',
+        action: function(dialog){
+          if (options.onOk) options.onOk(dialog)
+          else {
+            var form = dialog.getModalBody().find('form');
+            this.spin();
+            form.submit();
+          }
+        }
+    }
+    var cancelButton = {
+        label: opts.cancelLabel===undefined ? '取消' : opts.cancelLabel,
+        cssClass: 'btn-default btn-flat',
+        action: function(dialog){
+            dialog.close();
+        }
+    }
+    if (!opts.buttons) {
+      opts.buttons = []
+      if (okButton.label) {
+        opts.buttons.push(okButton)
+      }
+      if (cancelButton.label) {
+        opts.buttons.push(cancelButton)
+      }
+    }
     return BootstrapDialog.show(opts);
   })
 }
