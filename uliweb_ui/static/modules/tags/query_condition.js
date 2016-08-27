@@ -74,6 +74,7 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
 
         if (opts.field.relate_from) {
           if (!opts.field.choices_url) {
+
             var trigger_name = opts.field.relate_from;
             var trigger = $($('[name="' + trigger_name + '"]')[0]);
             var actor = $($('[name="' + opts.field.name + '"]')[0]);
@@ -104,6 +105,7 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
               }
             });
           } else {
+
             var trigger_name = opts.field.relate_from;
             var trigger = $($('[name="' + trigger_name + '"]')[0]);
             var actor = $($('[name="' + opts.field.name + '"]')[0]);
