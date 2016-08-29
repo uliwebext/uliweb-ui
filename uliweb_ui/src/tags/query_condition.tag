@@ -106,8 +106,8 @@
               <button class="btn btn-primary btn-flat" type="submit">查询</button>
               <button class="btn btn-default btn-flat" type="button" onclick={reset}>清除条件</button>
             </div>
-            <div class={condition-more:true, visible:layout.length>1}>
-              <span if={layout.length > 1} href="#" onclick={ click }>
+            <div if={layout.length > 1} class={condition-more:true, visible:layout.length>1}>
+              <span href="#" onclick={ click }>
                 { show? '收起' : '更多条件' }
                 <i class={fa:true, fa-angle-up:show, fa-angle-down:!show}></i>
               </span>
