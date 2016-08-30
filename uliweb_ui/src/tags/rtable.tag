@@ -346,10 +346,10 @@
   this.iconInden = 16
   this.expanded = opts.expanded === undefined ? false: opts.expanded
   this.parents_expand_status = {}
-  this.parentField = opts.parentField
-  this.orderField = opts.orderField
-  this.levelField = opts.levelField
-  this.hasChildrenField = opts.hasChildrenField
+  this.parentField = opts.parentField || 'parent'
+  this.orderField = opts.orderField || 'order'
+  this.levelField = opts.levelField || 'level'
+  this.hasChildrenField = opts.hasChildrenField || 'has_children'
   this.indentWidth = 16
 
   var _opts = {tree:opts.tree, parentField:opts.parentField,
