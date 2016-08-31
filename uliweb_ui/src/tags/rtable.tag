@@ -43,6 +43,13 @@
     is_selected:          Test is a row is selected: is_selected(row)
     get_selected:         Get selected rows: get_selected()
 */
+/*
+  rtable v1.0.0.1
+  author : lvyangg@gmail.com
+
+  ADD-options:
+    combine_cols(Optional): list of cols's name, the index of list means grouping-level
+*/
 <rtable>
 
   <style scoped>
@@ -217,7 +224,7 @@
 
   <yield/>
 
-  <div class={rtable-root:true, zebra:theme=='zebra'} style="width:{width-1}px;height:{height-1}px">
+  <div class={rtable-root:true, zebra:theme=='zebra', simple:theme=='simple'} style="width:{width-1}px;height:{height-1}px">
     <div class="rtable-header rtable-fixed" style="width:{fix_width}px;height:{header_height}px">
       <div each={fix_columns} no-reorder class={rtable-cell:true}
         style="width:{width}px;height:{height}px;left:{left}px;top:{top}px;line-height:{height}px;">
@@ -248,7 +255,7 @@
       <!-- transform:translate3d(0px,{0-content.scrollTop}px,0px); -->
       <div class="rtable-content" style="width:{fix_width}px;height:{rows.length*rowHeight}px;">
         <div each={row in visCells.fixed} no-reorder class={get_row_class(row.row, row.line)}>
-          <div each={col in row.cols} no-reorder class={get_cell_class(col)}
+          <div if={col.height!=0} each={col in row.cols} no-reorder class={get_cell_class(col)}
             style="width:{col.width}px;height:{col.height}px;left:{col.left}px;top:{col.top}px;line-height:{col.height}px;text-align:{col.align};">
 
             <!-- cell content -->
@@ -313,7 +320,6 @@
   var self = this
   this.observable = opts.observable
   this.root.instance = this
-
   if(opts.options) {
     for (var k in opts.options) {
       opts[k] = opts.options[k]
@@ -336,7 +342,7 @@
   this.container = opts.container || $(this.root).parent()
   this.editable = opts.editable || false
   this.draggable = opts.draggable || false
-  this.theme = 'zebra'
+  this.theme = opts.theme || 'zebra'
   this.minColWidth = opts.minColWidth || 5
 
   this.onUpdate = opts.onUpdate || function(){}
@@ -384,8 +390,9 @@
       this._data.load_tree(d, {parentField:opts.parentField,
         orderField:opts.orderField, levelField:opts.levelField,
         hasChildrenField:opts.hasChildrenField, plain:true})
-    } else
+    } else {
       this._data.load(d)
+    }
 
   } else {
     this._data = new DataSet(_opts)
@@ -947,6 +954,17 @@
     cols = this.fix_columns.concat(this.main_columns)
     i = 0
     index = 0
+
+    // 合并单元格相关参数 --START--
+    var last_val = {}
+    var last_col_index = {}
+    var now_row_combine_flag = []
+    for (var key in opts.combine_cols) {
+      last_col_index[key] = -1
+      now_row_combine_flag.push(false)
+    }
+    // 合并单元格相关参数 --END--
+
     while (i<len && first+i<this.rows.length) {
       row = this.rows[first+i]
       //hidden support
@@ -981,6 +999,7 @@
           editor:col.editor,
           name:col.name
         }
+
         if (opts.treeField == col.name && opts.tree) {
           indent = row.level || 0
           if (row.has_children) {
@@ -996,6 +1015,42 @@
         }
         d.value = row[col.name]
         d.__value__ = this.get_col_data(d, row[col.name])
+
+        // 合并单元格相关方法 --START--
+        // 如果当前列是检查合并列
+        if (opts.combine_cols.indexOf(col.name) > -1) {
+          // 依次检查当前col之前的col是否合并，如果是第一行，使用默认的true
+          var now_col_level = opts.combine_cols.indexOf(col.name)
+          // 表示之前列是否合并的变量
+          var before_col_combine_flag = ((now_col_level - 1) >= 0) ? now_row_combine_flag[now_col_level - 1] : true
+          //console.log(col.name, '>>>', before_col_combine_flag, last_val[col.name], '==', d.value, '=?=>>>', (last_val[col.name] == d.value));
+          if (before_col_combine_flag && (last_val[col.name] == d.value)){
+            // 当前列合并
+            now_row_combine_flag[now_col_level] = true
+
+            // 当前列的高度为0
+            d.height = 0
+
+            // 上一列的指定列的高度 加 单位高度h（注意：这里现在只写了静态列）
+            var target_col_last_row = vis_fixed_rows[last_col_index[col.name]]
+            for (var col_index = 0, cols_len = target_col_last_row.cols.length; col_index < cols_len; col_index ++) {
+              if (target_col_last_row.cols[col_index].name == col.name) {
+                target_col_last_row.cols[col_index].height += h
+              }
+            }
+          } else {
+            // 当前列不合并
+            now_row_combine_flag[now_col_level] = false
+
+            // 设置最后一列的序号等于当前行号
+            last_col_index[col.name] = first+i
+
+            // 设置上次指定列的值等于这次的
+            last_val[col.name] = d.value
+          }
+        }
+        // 合并单元格相关方法 --END--
+
         if (col.frozen) {
           vf_row.cols.push(d)
         }
