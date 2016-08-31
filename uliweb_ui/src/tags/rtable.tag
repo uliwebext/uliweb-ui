@@ -185,6 +185,7 @@
       border: 1px solid gray;
       width: 100px;
       background-color: antiquewhite;
+      z-index: 9999;
     }
     .rtable-expander {
       position:absolute;
@@ -310,8 +311,7 @@
       <div if={rows.length==0} data-is="rtable-raw" value={noData} class="rtable-nodata"
         style="top:{height/2-header_height/2+rowHeight/2}px;"></div>
 
-      <div if={loading} data-is="rtable-raw" value={loading} class="rtable-loading"
-        style="top:{height/2-header_height/2+rowHeight/2}px;"></div>
+      <div style="display:none" class="rtable-loading"></div>
 
     </div>
 
@@ -338,7 +338,7 @@
   this.sort_cols = []
   this.clickSelect = opts.clickSelect === undefined ? 'row' : opts.clickSelect
   this.noData = opts.noData || 'No Data'
-  this.loadingText = opts.loadingText || 'Loading... <i class="fa fa-spinner fa-pulse fa-spin"></i>'
+  this.loading = opts.loading || 'Loading... <i class="fa fa-spinner fa-pulse fa-spin"></i>'
   this.container = opts.container || $(this.root).parent()
   this.editable = opts.editable || false
   this.draggable = opts.draggable || false
@@ -400,9 +400,9 @@
 
   this.show_loading = function (flag) {
     if (flag)
-      this.loading = this.loadingText
+      $(this.root).find('.rtable-loading').html(this.loading).show()
     else
-      this.loading = ''
+      $(this.root).find('.rtable-loading').hide()
   }
 
   this.bind = function () {
@@ -490,6 +490,7 @@
   })
 
   this.on('updated', function(){
+    console.log('aaaaaaa')
     if (!this._updated) {
       this._updated = true
       this.resize()
