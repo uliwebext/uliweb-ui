@@ -368,37 +368,37 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
   })
 
   function _parse_header(cols, max_level, frozen){
-    var columns = [], i, len, j, jj, col,
+    var columns = [],
+      columns_width = {},
+      i, len, j, jj, col, jl,
       subs_len,
       path,
       rowspan,
       colspan,
       parent,
       new_col,
-      last_pos,
       left
 
     if (!cols || cols.length === 0)
       return []
 
     for (i=0; i<max_level; i++) {
-      columns.push([])
+      columns[i] = []
+      columns_width[i] = 0
     }
 
     for(i=0, len=cols.length; i<len; i++) {
       col = cols[i]
       subs_len = col.subs.length
       rowspan = 1
-      last_pos = -1
       for (j=0; j<subs_len; j++) {
         path = col.subs[j]
         new_col = {}
-        new_col.title = path
+        new_col.title = path.replace('%%', '/')
         if (j == subs_len - 1) {
 
           new_col.rowspan = max_level - (subs_len-1)*rowspan
           new_col.leaf = true
-
         } else {
           new_col.rowspan = rowspan
         }
@@ -428,30 +428,17 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
           left = null
         }
 
-        if (j == 0) {
-          last_pos = -1
-          parent = null
-        } else {
-
-          parent = columns[j-1][columns[j-1].length-1]
-          last_pos = parent.col
-        }
-
-        if (left && left.title==new_col.title && left.level==new_col.level && last_pos<i) {
+        if (left && left.title==new_col.title && left.level==new_col.level) {
           left.colspan ++
           left.width += new_col.width
+          columns_width[j] += new_col.width
         } else {
+
           columns[j].push(new_col)
-          new_col.parent_col = parent
-          if (i == 0) {
-            new_col.left = 0
-          } else {
-            if (left)
-              new_col.left = left.left + left.width
-            else if (parent)
-              new_col.left = parent.left
-            else
-              new_col.left = 0
+          new_col.left = columns_width[j]
+          columns_width[j] += new_col.width
+          for (jl=1; jl<new_col.rowspan; jl++) {
+            columns_width[j+jl] += new_col.width
           }
         }
         col.left = new_col.left

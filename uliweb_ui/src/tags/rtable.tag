@@ -685,14 +685,15 @@
   })
 
   function _parse_header(cols, max_level, frozen){
-    var columns = [], i, len, j, jj, col,
+    var columns = [], //保存每行的最后有效列
+      columns_width = {}, //保存每行最右坐标
+      i, len, j, jj, col, jl, 
       subs_len,
       path,
       rowspan, //每行平均层数，max_level/sub_len，如最大4层，当前总层数为2,则每行占两层
       colspan,
       parent, //上一层的结点为下一层的父结点
       new_col, //记录显示用的表头单元
-      last_pos, //记录上一层的列数，用于判断是否当前层要和前一个结点合并
       left  //某层最左结点
 
     if (!cols || cols.length === 0)
@@ -700,23 +701,22 @@
 
     //初始化表头层
     for (i=0; i<max_level; i++) {
-      columns.push([])
+      columns[i] = []
+      columns_width[i] = 0
     }
     //处理多级表头
     for(i=0, len=cols.length; i<len; i++) {
       col = cols[i]
       subs_len = col.subs.length
       rowspan = 1//Math.floor(max_level / subs_len)
-      last_pos = -1
       for (j=0; j<subs_len; j++) {
         path = col.subs[j]
         new_col = {}
-        new_col.title = path
+        new_col.title = path.replace('%%', '/')
         if (j == subs_len - 1) {
           //如果是最后一层，则rowspan为最大值减其余层
           new_col.rowspan = max_level - (subs_len-1)*rowspan
           new_col.leaf = true
-          //new_col.real_col = col
         } else {
           new_col.rowspan = rowspan
         }
@@ -750,32 +750,18 @@
           left = null
         }
 
-        //取上一结点的col值
-        if (j == 0) {
-          last_pos = -1
-          parent = null
-        } else {
-          //上一层的最后一个结点是父结点
-          parent = columns[j-1][columns[j-1].length-1]
-          last_pos = parent.col
-        }
-
         //进行合并的判断，当left不为null，并且标题，层级，并且位置小于当前位置
-        if (left && left.title==new_col.title && left.level==new_col.level && last_pos<i) {
+        if (left && left.title==new_col.title && left.level==new_col.level) {
           left.colspan ++
           left.width += new_col.width
+          columns_width[j] += new_col.width
         } else {
+          //当new_col占多行时，将下层结点清空
           columns[j].push(new_col)
-          new_col.parent_col = parent
-          if (i == 0) {
-            new_col.left = 0
-          } else {
-            if (left)
-              new_col.left = left.left + left.width
-            else if (parent)
-              new_col.left = parent.left
-            else
-              new_col.left = 0
+          new_col.left = columns_width[j]
+          columns_width[j] += new_col.width
+          for (jl=1; jl<new_col.rowspan; jl++) {
+            columns_width[j+jl] += new_col.width
           }
         }
         col.left = new_col.left
