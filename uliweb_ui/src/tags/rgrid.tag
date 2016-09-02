@@ -91,7 +91,8 @@
     onSelected: opts.onSelected,
     onDeselected: opts.onDeselected,
     draggable: opts.draggable,
-    editable: opts.editable
+    editable: opts.editable,
+    combine_cols: opts.combine_cols || []
 
   }
 
