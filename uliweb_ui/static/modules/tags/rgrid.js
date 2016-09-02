@@ -1,11 +1,17 @@
-riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" fields="{query_fields}" layout="{query_layout}"></query-condition> <div class="btn-toolbar"> <div if="{left_tools}" class="rgrid-tools pull-left"> <div each="{btn_group in left_tools}" class="{btn_group_class}"> <button each="{btn in btn_group}" class="{btn.class}" id="{btn.id}" __disabled="{btn.disabled(btn)}" onclick="{btn.onclick}">{btn.label}</button> </div> </div> <div if="{right_tools}" class="rgrid-tools pull-right"> <div each="{btn_group in right_tools}" class="{btn_group_class}"> <button each="{btn in btn_group}" class="{btn.class}" id="{btn.id}" __disabled="{btn.disabled(btn)}" onclick="{btn.onclick}">{btn.label}</button> </div> </div> </div> <rtable cols="{cols}" options="{rtable_options}" data="{data}" start="{start}" observable="{observable}"></rtable> <div class="clearfix tools"> <pagination if="{pagination}" data="{data}" url="{url}" page="{page}" total="{total}" limit="{limit}" onpagechanged="{onpagechanged}"></pagination> <div if="{footer_tools}" class="pull-right"> <button each="{btn in footer_tools}" class="btn btn-flat btn-sm btn-default" onclick="{btn.onClick}">{btn.label}</button> </div> </div>', 'rgrid .rgrid-tools,[riot-tag="rgrid"] .rgrid-tools,[data-is="rgrid"] .rgrid-tools{margin-bottom:5px;padding-left:5px;} rgrid .btn-toolbar .btn-group,[riot-tag="rgrid"] .btn-toolbar .btn-group,[data-is="rgrid"] .btn-toolbar .btn-group{margin-right:8px;} rgrid .btn-toolbar .btn-group .btn,[riot-tag="rgrid"] .btn-toolbar .btn-group .btn,[data-is="rgrid"] .btn-toolbar .btn-group .btn{margin-right:3px;}', '', function(opts) {
+riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" fields="{query_fields}" layout="{query_layout}" data="{query_data}"></query-condition> <div class="btn-toolbar"> <div if="{left_tools}" class="rgrid-tools pull-left"> <div each="{btn_group in left_tools}" class="{btn_group_class}"> <button each="{btn in btn_group}" class="{btn.class}" id="{btn.id}" __disabled="{btn.disabled(btn)}" onclick="{btn.onclick}">{btn.label}</button> </div> </div> <div if="{right_tools}" class="rgrid-tools pull-right"> <div each="{btn_group in right_tools}" class="{btn_group_class}"> <button each="{btn in btn_group}" class="{btn.class}" id="{btn.id}" __disabled="{btn.disabled(btn)}" onclick="{btn.onclick}">{btn.label}</button> </div> </div> </div> <rtable cols="{cols}" options="{rtable_options}" data="{data}" start="{start}" observable="{observable}"></rtable> <div class="clearfix tools"> <pagination if="{pagination}" data="{data}" url="{url}" page="{page}" total="{total}" limit="{limit}" onpagechanged="{onpagechanged}"></pagination> <div if="{footer_tools}" class="pull-right"> <button each="{btn in footer_tools}" class="btn btn-flat btn-sm btn-default" onclick="{btn.onClick}">{btn.label}</button> </div> </div>', 'rgrid .rgrid-tools,[riot-tag="rgrid"] .rgrid-tools,[data-is="rgrid"] .rgrid-tools{margin-bottom:5px;padding-left:5px;} rgrid .btn-toolbar .btn-group,[riot-tag="rgrid"] .btn-toolbar .btn-group,[data-is="rgrid"] .btn-toolbar .btn-group{margin-right:8px;} rgrid .btn-toolbar .btn-group .btn,[riot-tag="rgrid"] .btn-toolbar .btn-group .btn,[data-is="rgrid"] .btn-toolbar .btn-group .btn{margin-right:3px;}', '', function(opts) {
 
 
   var self = this
 
   this.observable = riot.observable()
 
-  this.data = new DataSet()
+  if (opts.data) {
+    if (Array.isArray(opts.data)) {
+      this.data = new DataSet(opts.data)
+    } else
+      this.data = opts.data
+  } else
+    this.data = new DataSet()
   this.cols = opts.cols
   this.url = opts.url
   this.page = opts.page || 1
@@ -17,15 +23,18 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
   this.query_rules = this.query.rules || {}
   this.query_fields = this.query.fields || []
   this.query_layout = this.query.layout || []
+  this.query_data = this.query.data || {}
   this.start = (this.page - 1) * this.limit
   this.footer_tools = opts.footer_tools || []
   this.left_tools = opts.left_tools || opts.tools || []
   this.right_tools = opts.right_tools || []
   this.btn_group_class = opts.btn_group_class || 'btn-group btn-group-sm'
   this.onLoaded = opts.onLoaded
+  this.autoLoad = opts.audoLoad || true
 
   this.rtable_options = {
     theme : opts.theme,
+    combineCols : opts.combineCols,
     nameField : opts.nameField || 'name',
     labelField : opts.labelField || 'title',
     indexCol: opts.indexCol,
@@ -41,6 +50,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     tree: opts.tree,
     expanded: opts.expanded === undefined ? true : opts.expanded,
     useFontAwesome: opts.useFontAwesome === undefined ? true : opts.useFontAwesome,
+    idField: opts.idField,
     parentField: opts.parentField,
     orderField: opts.orderField,
     levelField: opts.levelField,
@@ -54,8 +64,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     onSelected: opts.onSelected,
     onDeselected: opts.onDeselected,
     draggable: opts.draggable,
-    editable: opts.editable,
-    combine_cols: opts.combine_cols || []
+    editable: opts.editable
 
   }
 
@@ -106,7 +115,8 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     this.root.diff = this.table.diff
     this.root.getButton = this.getButton
     this.root.refresh = this.update
-    this.load()
+    if (this.url && this.autoLoad)
+      this.load()
 
     this.observable.on('selected deselected', function(row) {
       self.update()

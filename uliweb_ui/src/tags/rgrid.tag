@@ -6,7 +6,7 @@
     .btn-toolbar .btn-group .btn {margin-right:3px;}
   </style>
 
-  <query-condition if={has_query} rules={query_ules} fields={query_fields} layout={query_layout}></query-condition>
+  <query-condition if={has_query} rules={query_ules} fields={query_fields} layout={query_layout} data={query_data}></query-condition>
   <div class="btn-toolbar">
     <div if={left_tools} class="rgrid-tools pull-left">
       <div each={btn_group in left_tools} class={btn_group_class}>
@@ -42,7 +42,13 @@
 
   this.observable = riot.observable()
 
-  this.data = new DataSet()
+  if (opts.data) {
+    if (Array.isArray(opts.data)) {
+      this.data = new DataSet(opts.data)
+    } else
+      this.data = opts.data
+  } else
+    this.data = new DataSet()
   this.cols = opts.cols
   this.url = opts.url
   this.page = opts.page || 1
@@ -54,15 +60,18 @@
   this.query_rules = this.query.rules || {}
   this.query_fields = this.query.fields || []
   this.query_layout = this.query.layout || []
+  this.query_data = this.query.data || {}
   this.start = (this.page - 1) * this.limit
   this.footer_tools = opts.footer_tools || []
   this.left_tools = opts.left_tools || opts.tools || []
   this.right_tools = opts.right_tools || []
   this.btn_group_class = opts.btn_group_class || 'btn-group btn-group-sm'
   this.onLoaded = opts.onLoaded
+  this.autoLoad = opts.audoLoad || true
 
   this.rtable_options = {
     theme : opts.theme,
+    combineCols : opts.combineCols,
     nameField : opts.nameField || 'name',
     labelField : opts.labelField || 'title',
     indexCol: opts.indexCol,
@@ -78,6 +87,7 @@
     tree: opts.tree,
     expanded: opts.expanded === undefined ? true : opts.expanded,
     useFontAwesome: opts.useFontAwesome === undefined ? true : opts.useFontAwesome,
+    idField: opts.idField,
     parentField: opts.parentField,
     orderField: opts.orderField,
     levelField: opts.levelField,
@@ -91,8 +101,7 @@
     onSelected: opts.onSelected,
     onDeselected: opts.onDeselected,
     draggable: opts.draggable,
-    editable: opts.editable,
-    combine_cols: opts.combine_cols || []
+    editable: opts.editable
 
   }
 
@@ -143,7 +152,8 @@
     this.root.diff = this.table.diff
     this.root.getButton = this.getButton
     this.root.refresh = this.update
-    this.load()
+    if (this.url && this.autoLoad)
+      this.load()
 
     this.observable.on('selected deselected', function(row) {
       self.update()
