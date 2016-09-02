@@ -374,6 +374,7 @@
   this.nameField = opts.nameField || 'name'
   this.titleField = opts.titleField || 'title'
   this.cols = opts.cols.slice()
+  this.combineCols = opts.combineCols || []
   this.headerRowHeight = opts.headerRowHeight || 34
   this.rowHeight = opts.rowHeight || 34
   this.indexColWidth = opts.indexColWidth || 40
@@ -1005,7 +1006,7 @@
     var last_val = {}
     var last_col_index = {}
     var now_row_combine_flag = []
-    for (var key in opts.combineCols) {
+    for (var key in this.combineCols) {
       last_col_index[key] = -1
       now_row_combine_flag.push(false)
     }
@@ -1064,9 +1065,9 @@
 
         // 合并单元格相关方法 --START--
         // 如果当前列是检查合并列
-        if (opts.combineCols.indexOf(col.name) > -1) {
+        if (this.combineCols.indexOf(col.name) > -1) {
           // 依次检查当前col之前的col是否合并，如果是第一行，使用默认的true
-          var now_col_level = opts.combineCols.indexOf(col.name)
+          var now_col_level = this.combineCols.indexOf(col.name)
           // 表示之前列是否合并的变量
           var before_col_combine_flag = ((now_col_level - 1) >= 0) ? now_row_combine_flag[now_col_level - 1] : true
           //console.log(col.name, '>>>', before_col_combine_flag, last_val[col.name], '==', d.value, '=?=>>>', (last_val[col.name] == d.value));
