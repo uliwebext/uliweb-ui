@@ -226,7 +226,6 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
   })
 
   this.on('updated', function(){
-    console.log('aaaaaaa')
     if (!this._updated) {
       this._updated = true
       this.resize()
@@ -422,6 +421,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
         new_col.class = col.class
         new_col.tag = col.tag || 'rtable-raw'
         new_col.editor = col.editor
+        new_col.leaf = true
 
         if (columns[j].length > 0)
           left = columns[j][columns[j].length-1]
@@ -433,6 +433,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
           left.colspan ++
           left.width += new_col.width
           columns_width[j] += new_col.width
+          left.leaf = false
         } else {
 
           columns[j].push(new_col)
@@ -672,6 +673,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
       top = h*(first+index)
       for (j=0, len1=cols.length; j<len1; j++) {
         col = cols[j]
+        if (!col.leaf) continue
         d = {
           top:top,
           width:col.width,

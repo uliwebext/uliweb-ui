@@ -536,7 +536,6 @@
   })
 
   this.on('updated', function(){
-    console.log('aaaaaaa')
     if (!this._updated) {
       this._updated = true
       this.resize()
@@ -688,7 +687,7 @@
   function _parse_header(cols, max_level, frozen){
     var columns = [], //保存每行的最后有效列
       columns_width = {}, //保存每行最右坐标
-      i, len, j, jj, col, jl, 
+      i, len, j, jj, col, jl,
       subs_len,
       path,
       rowspan, //每行平均层数，max_level/sub_len，如最大4层，当前总层数为2,则每行占两层
@@ -740,6 +739,7 @@
         new_col.class = col.class
         new_col.tag = col.tag || 'rtable-raw'
         new_col.editor = col.editor
+        new_col.leaf = true
 
         //查找同层最左边的结点，判断是否title和rowspan一致
         //如果一致，进行合并，即colspan +1
@@ -756,6 +756,7 @@
           left.colspan ++
           left.width += new_col.width
           columns_width[j] += new_col.width
+          left.leaf = false
         } else {
           //当new_col占多行时，将下层结点清空
           columns[j].push(new_col)
@@ -1013,6 +1014,7 @@
       top = h*(first+index)
       for (j=0, len1=cols.length; j<len1; j++) {
         col = cols[j]
+        if (!col.leaf) continue
         d = {
           top:top,
           width:col.width,
