@@ -192,18 +192,6 @@
     var self = this
 
     this.on('mount', function(){
-      // if (opts.type == 'select' && !opts.field.multiple){
-      //   var _opts = $.extend({}, {width:'resolve', allowClear:true, minimumResultsForSearch: Infinity,
-      //     placeholder:opts.field.placeholder,
-      //     theme:'bootstrap', language:'zh_CN'}, opts.field.opts || {})
-      //   load('ui.select2', function(){
-      //     var el = $('[name='+opts.field.name+']', self.root).select2(_opts);
-      //     if (opts.data[opts.field.name])
-      //       el.val(opts.data[opts.field.name])
-      //     return
-      //   })
-      // } else
-
       var i18n = { // 本地化
         previousMonth : '上个月',
         nextMonth   : '下个月',

@@ -46,7 +46,6 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
     var self = this
 
     this.on('mount', function(){
-
       var i18n = {
         previousMonth : '上个月',
         nextMonth   : '下个月',
