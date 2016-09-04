@@ -18,7 +18,6 @@
           border-bottom: none;
         }
         .condition-label {
-          min-width: 80px;
           margin-left:8px;
           margin-right:8px;
           display: inline-block;
@@ -58,8 +57,8 @@
         }
         .form-control {
           display:inline-block;
-          width: 200px;
-          min-width: 200px;
+          /*width: 200px;
+          min-width: 200px;*/
           vertical-align: middle;
         }
         input-field {
@@ -67,10 +66,10 @@
         }
         .condition-row.condition-row-more.condition-buttons {
           text-align: center;
-          margin-right: 20px;
+          margin-right: 5px;
         }
         .condition-row.condition-row-more.condition-buttons button{
-          margin-right: 10px;
+          margin-right: 5px;
         }
         /*
         .select2-container--bootstrap {
@@ -92,19 +91,20 @@
         <form method="get" action="{ opts.action }">
             <div each={row, i in layout} show={i==0 || show} class={condition-row:true, condition-row-more:i>0}>
                 <div each={field in row} class="condition-cell">
-                   <span class="condition-label {nomore:i==0 &&!show}">{ fields[this.field].label || field }</span>
+                   <span class="condition-label {nomore:i==0 &&!show}" style="min-width:{!show?0:labelWidth}px">{ fields[this.field].label || field }</span>
                    <input-field field={ fields[field] } data={data}
-                     type={ fields[this.field].type || 'str' }>
+                     type={ fields[this.field].type || 'str' }
+                     style="min-width:{show?inputWidth+'px':'auto'}">
                    </input-field>
                 </div>
                 <div show={ i==0 && !show } class="condition-cell condition-buttons" >
-                    <button class="btn btn-primary btn-flat" type="submit">查询</button>
-                    <button class="btn btn-default btn-flat" type="button" onclick={parent.reset}>清除条件</button>
+                    <button class="btn btn-primary btn-flat" type="submit"><i class="fa fa-search"></i> 查询</button>
+                    <button class="btn btn-link btn-flat" type="button" onclick={parent.reset}>清除条件</button>
                 </div>
             </div>
             <div class="condition-row condition-row-more condition-buttons" show={show}>
-              <button class="btn btn-primary btn-flat" type="submit">查询</button>
-              <button class="btn btn-default btn-flat" type="button" onclick={reset}>清除条件</button>
+              <button class="btn btn-primary btn-flat" type="submit"><i class="fa fa-search"></i> 查询</button>
+              <button class="btn btn-link btn-flat" type="button" onclick={reset}>清除条件</button>
             </div>
             <div if={layout.length > 1} class={condition-more:true, visible:layout.length>1}>
               <span href="#" onclick={ click }>
@@ -119,6 +119,8 @@
       var self = this
       this.layout = opts.layout
       this.fields = {}
+      this.labelWidth = opts.labelWidth || 100
+      this.inputWidth = opts.inputWidth || 200
 
       // 初始化fields.name
       opts.fields.forEach(function(v){
@@ -167,13 +169,17 @@
 
 <input-field>
     <input type="text" name={ opts.field.name } class="form-control" field-type="str"
-      if={opts.type=='str' || opts.type=='unicode'} placeholder={opts.field.placeholder}/>
+      if={opts.type=='str' || opts.type=='unicode' || opts.type=='int'}
+      placeholder={get_placeholder(opts.field.placeholder, 0)}
+      style="width:{opts.field.width?opts.field.width+'px': (opts.field.range?'auto':'100%')}"/>
 
     <input type="password" name={ opts.field.name } class="form-control" field-type="password"
-      if={opts.type=='password'} placeholder={opts.field.placeholder}/>
+      if={opts.type=='password'} placeholder={opts.field.placeholder}
+      style="width:{opts.field.width?opts.field.width+'px':'100%'}"/>
 
     <select multiple={opts.field.multiple} if={opts.type=='select'}
-      field-type="select" style="width:200px" name={opts.field.name} data-url={opts.field['data-url']} placeholder={opts.field.placeholder}>
+      field-type="select" style="width:{opts.field.width?opts.field.width+'px':'100%'}"
+      name={opts.field.name} data-url={opts.field['data-url']} placeholder={opts.field.placeholder}>
       <option if={opts.field.placeholder && !opts.field.multiple} value="">{opts.field.placeholder}</option>
       <option each={value in opts.field.choices} value={value[0]}>
           {value[1]}
@@ -181,12 +187,15 @@
     </select>
 
     <input type="text" name={ opts.field.name} class="form-control" field-type="{opts.type}"
-      if={(opts.type=='date' || opts.type=='datetime')} placeholder={opts.field.placeholder}/>
+      if={(opts.type=='date' || opts.type=='datetime')} placeholder={get_placeholder(opts.field.placeholder, 0)}
+      style="width:{opts.field.width?opts.field.width+'px':'auto'}"/>
 
     {"-": opts.field.range}
 
     <input type="text" name={ opts.field.name} class="form-control" field-type="{opts.type}"
-      if={(opts.type=='date' || opts.type=='datetime') && opts.field.range==true} placeholder={opts.field.placeholder}/>
+      if={(opts.type=='date' || opts.type=='datetime' || opts.type=='str' || opts.type=='unicode' || opts.type=='int') && opts.field.range==true}
+      placeholder={get_placeholder(opts.field.placeholder, 1)}
+      style="width:{opts.field.width?opts.field.width+'px':'auto'}"/>
 
     <script>
     var self = this
@@ -323,5 +332,10 @@
           $($('[name='+opts.field.name+']')[1]).val(opts.data[opts.field.name][1]);
         }
     })
+
+    this.get_placeholder = function (placeholder, index) {
+      index = index === undefined ? 0 : index
+      return Array.isArray(placeholder) ? placeholder[index]: placeholder
+    }
     </script>
 </input-field>
