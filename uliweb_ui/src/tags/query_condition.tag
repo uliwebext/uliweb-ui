@@ -98,17 +98,17 @@
                    </input-field>
                 </div>
                 <div show={ i==0 && !show } class="condition-cell condition-buttons" >
-                    <button class="btn btn-primary btn-flat" type="submit"><i class="fa fa-search"></i> 查询</button>
-                    <button class="btn btn-link btn-flat" type="button" onclick={parent.reset}>清除条件</button>
+                    <button class="btn btn-primary btn-flat" type="submit"><i class="fa fa-search"></i> {searchTitle}</button>
+                    <button class="btn btn-link btn-flat" type="button" onclick={parent.reset}>{clearTitle}</button>
                 </div>
             </div>
             <div class="condition-row condition-row-more condition-buttons" show={show}>
-              <button class="btn btn-primary btn-flat" type="submit"><i class="fa fa-search"></i> 查询</button>
-              <button class="btn btn-link btn-flat" type="button" onclick={reset}>清除条件</button>
+              <button class="btn btn-primary btn-flat" type="submit"><i class="fa fa-search"></i> {searchTitle}</button>
+              <button class="btn btn-link btn-flat" type="button" onclick={reset}>{clearTitle}</button>
             </div>
             <div if={layout.length > 1} class={condition-more:true, visible:layout.length>1}>
               <span href="#" onclick={ click }>
-                { show? '收起' : '更多条件' }
+                { show? moreTitle[0] : moreTitle[1] }
                 <i class={fa:true, fa-angle-up:show, fa-angle-down:!show}></i>
               </span>
             </div>
@@ -121,6 +121,9 @@
       this.fields = {}
       this.labelWidth = opts.labelWidth || 100
       this.inputWidth = opts.inputWidth || 200
+      this.searchTitle = opts.searchTitle || '查询'
+      this.clearTitle = opts.clearTitle || '清除条件'
+      this.moreTitle = opts.moreTitle || ['收起', '更多条件']
 
       // 初始化fields.name
       opts.fields.forEach(function(v){
