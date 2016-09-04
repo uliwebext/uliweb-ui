@@ -6,27 +6,29 @@
     .btn-toolbar .btn-group .btn {margin-right:3px;}
   </style>
 
+  <!-- 条件 -->
   <query-condition if={has_query} rules={query_ules} fields={query_fields} layout={query_layout} data={query_data}></query-condition>
+  <!-- 按钮生成 -->
   <div class="btn-toolbar">
     <div if={left_tools} class="rgrid-tools pull-left">
       <div each={btn_group in left_tools} class={btn_group_class}>
-        <button each={btn in btn_group} class="{btn.class}" id={btn.id}
-          disabled={btn.disabled(btn)} onclick={btn.onclick}>{btn.label}</button>
+        <rgrid-button each={btn in btn_group} btn={btn}></rgrid-button>
       </div>
     </div>
     <div if={right_tools} class="rgrid-tools pull-right">
       <div each={btn_group in right_tools} class={btn_group_class}>
-        <button each={btn in btn_group} class="{btn.class}" id={btn.id}
-          disabled={btn.disabled(btn)} onclick={btn.onclick}>{btn.label}</button>
+        <rgrid-button each={btn in btn_group} btn={btn}></rgrid-button>
       </div>
     </div>
   </div>
+  <!-- 表格 -->
   <rtable cols={cols} options={rtable_options} data={data} start={start} observable={observable}></rtable>
+  <!-- footer 按钮 -->
   <div class="clearfix tools">
     <pagination if={pagination} data={data} url={url} page={page} total={total}
       limit={limit} onpagechanged={onpagechanged}></pagination>
     <div if={footer_tools} class="pull-right">
-        <button each={btn in footer_tools} class="btn btn-flat btn-sm btn-default" onclick={btn.onClick}>{btn.label}</button>
+        <rgrid-button each={btn in btn_group} btn={btn}></rgrid-button>
     </div>
   </div>
 
@@ -121,6 +123,8 @@
               return function(e) {
                 if (btn.onClick)
                   return btn.onClick.call(self, e)
+                if (btn.url)
+                  window.location.href = btn.url
               }
           }
           item.onclick = onclick(item)
@@ -190,3 +194,11 @@
     return document.getElementById(id)
   }
 </rgrid>
+
+<rgrid-button>
+  <button class="{btn.class}" id={btn.id}
+    disabled={btn.disabled(btn)} onclick={btn.onclick}>
+    <i if={btn.icon} class={btn.icon}></i>
+    {btn.label}
+  </button>
+</rgrid-button>

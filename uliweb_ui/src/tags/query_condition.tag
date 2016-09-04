@@ -71,17 +71,6 @@
         .condition-row.condition-row-more.condition-buttons button{
           margin-right: 5px;
         }
-        /*
-        .select2-container--bootstrap {
-          display: inline-block;
-        }
-        .select2-container--bootstrap .select2-selection--single .select2-selection__rendered {
-          padding: 0;
-        }
-        .select2-container--bootstrap .select2-selection--single {
-          line-height: 30px;
-        }
-        */
         /*隐藏单选radio按钮*/
         .multiselect-container li input[type="radio"] {margin-left:-200px;}
 
