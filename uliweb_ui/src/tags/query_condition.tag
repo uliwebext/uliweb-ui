@@ -86,7 +86,7 @@
                      style="min-width:{show?inputWidth+'px':'auto'}">
                    </input-field>
                 </div>
-                <div show={ i==0 && !show } class="condition-cell condition-buttons" >
+                <div if={ i==0 && !show } class="condition-cell condition-buttons" >
                     <button class="btn btn-primary btn-flat" type="submit"><i class="fa fa-search"></i> {searchTitle}</button>
                     <button class="btn btn-link btn-flat" type="button" onclick={parent.reset}>{clearTitle}</button>
                 </div>

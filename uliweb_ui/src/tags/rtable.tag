@@ -273,9 +273,13 @@
     <div class="rtable-header rtable-fixed" style="width:{fix_width}px;height:{header_height}px">
       <div each={fix_columns} no-reorder class={rtable-cell:true}
         style="width:{width}px;height:{height}px;left:{left}px;top:{top}px;line-height:{height}px;">
-        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" value={title} style="{sort?'padding-right:22px':''}"></div>
+        <!-- table header column -->
+        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" value={title}
+          style="{sort?'padding-right:22px':''}" title={tooltip}></div>
+        <!-- checkbox -->
         <input if={type=='check' && parent.multiSelect} type="checkbox" onclick={checkall}
           class="rtable-check" style="margin-top:{headerRowHeight/2-7}px" checked={parent.selected_rows.length>0}></input>
+        <!-- resizer -->
         <div if={!fixed && leaf} class="rtable-resizer" onmousedown={colresize}></div>
         <!-- sortable column -->
         <div if={sort} class={rtable-sort:true, desc:get_sorted(name)=='desc', asc:get_sorted(name)=='asc'}
@@ -285,9 +289,13 @@
     <div class="rtable-header rtable-main" style="width:{width-fix_width-xscroll_width}px;right:0px;height:{header_height}px;left:{fix_width}px;">
       <div each={main_columns} no-reorder class={rtable-cell:true}
         style="width:{width}px;height:{height}px;left:{left}px;top:{top}px;line-height:{height}px;">
-        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" value={title} style="{sort?'padding-right:22px':''}"></div>
+        <!-- table header column -->
+        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" value={title}
+          style="{sort?'padding-right:22px':''}" title={tooltip}></div>
+        <!-- checkbox -->
         <input if={type=='check' && parent.multiSelect} type="checkbox" onclick={checkall}
           class="rtable-check" style="margin-top:{headerRowHeight/2-7}px" checked={parent.selected_rows.length>0}></input>
+        <!-- resizer -->
         <div if={!fixed && leaf} class="rtable-resizer" onmousedown={colresize}></div>
         <!-- sortable column -->
         <div if={sort} class={rtable-sort:true, desc:get_sorted(name)=='desc', asc:get_sorted(name)=='asc'}
@@ -306,7 +314,7 @@
             <!-- cell content -->
             <div data-is="rtable-cell" if={col.type!='check' && !col.buttons} tag={col.tag}
               value={col.__value__} row={col.row} col={col}
-              style={col.indentWidth}></div>
+              style={col.indentWidth} title={col.tooltip}></div>
 
             <!-- expander -->
             <span if={col.expander} data-is='rtable-raw' content={col.expander} class="rtable-expander"
@@ -330,7 +338,7 @@
               <!-- cell content -->
               <div data-is="rtable-cell" if={col.type!='check' && !col.buttons} tag={col.tag}
                 value={col.__value__} row={col.row} col={col}
-                style={col.indentWidth}></div>
+                style={col.indentWidth} title={col.tooltip}></div>
 
               <!-- expander -->
               <span if={col.expander} data-is='rtable-raw' value={col.expander} class="rtable-expander"
@@ -740,6 +748,13 @@
         new_col.tag = col.tag || 'rtable-raw'
         new_col.editor = col.editor
         new_col.leaf = true
+        if (col.headerTooltip) {
+          if (typeof col.headerTooltip === 'string')
+            new_col.tooltip = col.headerTooltip
+          else if (typeof col.headerTooltip === 'function')
+            new_col.tooltip = col.headerTooltip()
+        }
+        new_col.columnTooltip = col.columnTooltip
 
         //查找同层最左边的结点，判断是否title和rowspan一致
         //如果一致，进行合并，即colspan +1
@@ -1050,6 +1065,13 @@
         }
         d.value = row[col.name]
         d.__value__ = this.get_col_data(d, row[col.name])
+
+        if (col.columnTooltip) {
+          if (typeof col.columnTooltip === 'string')
+            d.tooltip = col.columnTooltip
+          if (typeof col.columnTooltip === 'function')
+            d.tooltip = col.columnTooltip(row, d, d.value)
+        }
 
         // 合并单元格相关方法 --START--
         // 如果当前列是检查合并列
