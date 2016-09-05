@@ -196,7 +196,7 @@
 </rgrid>
 
 <rgrid-button>
-  <button class="{btn.class}" id={btn.id}
+  <button class="{btn.class}" id={btn.id} type="button"
     disabled={btn.disabled(btn)} onclick={btn.onclick}>
     <i if={btn.icon} class={btn.icon}></i>
     {btn.label}

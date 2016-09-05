@@ -156,5 +156,5 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
   }
 });
 
-riot.tag2('rgrid-button', '<button class="{btn.class}" id="{btn.id}" __disabled="{btn.disabled(btn)}" onclick="{btn.onclick}"> <i if="{btn.icon}" class="{btn.icon}"></i> {btn.label} </button>', '', '', function(opts) {
+riot.tag2('rgrid-button', '<button class="{btn.class}" id="{btn.id}" type="button" __disabled="{btn.disabled(btn)}" onclick="{btn.onclick}"> <i if="{btn.icon}" class="{btn.icon}"></i> {btn.label} </button>', '', '', function(opts) {
 });
