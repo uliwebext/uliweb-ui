@@ -667,6 +667,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
     index = 0
 
     while (i<this.rows.length && index<first) {
+      row = this.rows[i]
       if (is_hidden(this.rows, row)) {
         i++
         continue

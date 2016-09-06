@@ -1016,6 +1016,7 @@
     index = 0
     //因为有隐藏行，所以要先定位到first的位置
     while (i<this.rows.length && index<first) {
+      row = this.rows[i]
       if (is_hidden(this.rows, row)) {
         i++
         continue
