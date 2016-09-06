@@ -3,7 +3,6 @@
   <style scoped>
     .rgrid-tools {margin-bottom:5px;padding-left:5px;}
     .btn-toolbar .btn-group {margin-right:8px;}
-    .btn-toolbar .btn-group .btn {margin-right:3px;}
   </style>
 
   <!-- 条件 -->
@@ -12,12 +11,12 @@
   <div class="btn-toolbar">
     <div if={left_tools} class="rgrid-tools pull-left">
       <div each={btn_group in left_tools} class={btn_group_class}>
-        <rgrid-button each={btn in btn_group} btn={btn}></rgrid-button>
+        <button each={btn in btn_group} data-is="rgrid-button" btn={btn}></button>
       </div>
     </div>
     <div if={right_tools} class="rgrid-tools pull-right">
       <div each={btn_group in right_tools} class={btn_group_class}>
-        <rgrid-button each={btn in btn_group} btn={btn}></rgrid-button>
+        <button each={btn in btn_group} data-is="rgrid-button" btn={btn}></button>
       </div>
     </div>
   </div>
@@ -27,8 +26,8 @@
   <div class="clearfix tools">
     <pagination if={pagination} data={data} url={url} page={page} total={total}
       limit={limit} onpagechanged={onpagechanged}></pagination>
-    <div if={footer_tools} class="pull-right">
-        <rgrid-button each={btn in btn_group} btn={btn}></rgrid-button>
+    <div if={footer_tools} class="pull-right {btn_group_class}">
+      <button each={btn in footer_tools} data-is="rgrid-button" btn={btn}></button>
     </div>
   </div>
 
@@ -115,7 +114,7 @@
 
   this.on('mount', function(){
     var item, items
-    var tools = this.left_tools.concat(this.right_tools)
+    var tools = this.left_tools.concat(this.right_tools).concat([this.footer_tools])
     for(var i=0, len=tools.length; i<len; i++){
         items = tools[i]
         for(var j=0, _len=items.length; j<_len; j++) {
@@ -136,7 +135,7 @@
               if (btn.checkSelected)
                 return self.table.get_selected().length == 0
           }
-          item.class = item.class || 'btn btn-flat btn-sm btn-primary'
+          item.class = 'btn btn-sm ' + (item.class || 'btn-primary')
         }
     }
     this.table = this.root.querySelector('rtable')
@@ -196,10 +195,8 @@
   }
 </rgrid>
 
-<rgrid-button>
-  <button class="{btn.class}" id={btn.id} type="button"
-    disabled={btn.disabled(btn)} onclick={btn.onclick}>
-    <i if={btn.icon} class={btn.icon}></i>
-    {btn.label}
-  </button>
+<rgrid-button class="{opts.btn.class}" id={opts.btn.id} type="button"
+  disabled={opts.btn.disabled(btn)} onclick={opts.btn.onclick}>
+  <i if={opts.btn.icon} class={opts.btn.icon}></i>
+  <span>{opts.btn.label}</span>
 </rgrid-button>

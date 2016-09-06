@@ -1,4 +1,4 @@
-riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" fields="{query_fields}" layout="{query_layout}" data="{query_data}"></query-condition> <div class="btn-toolbar"> <div if="{left_tools}" class="rgrid-tools pull-left"> <div each="{btn_group in left_tools}" class="{btn_group_class}"> <rgrid-button each="{btn in btn_group}" btn="{btn}"></rgrid-button> </div> </div> <div if="{right_tools}" class="rgrid-tools pull-right"> <div each="{btn_group in right_tools}" class="{btn_group_class}"> <rgrid-button each="{btn in btn_group}" btn="{btn}"></rgrid-button> </div> </div> </div> <rtable cols="{cols}" options="{rtable_options}" data="{data}" start="{start}" observable="{observable}"></rtable> <div class="clearfix tools"> <pagination if="{pagination}" data="{data}" url="{url}" page="{page}" total="{total}" limit="{limit}" onpagechanged="{onpagechanged}"></pagination> <div if="{footer_tools}" class="pull-right"> <rgrid-button each="{btn in btn_group}" btn="{btn}"></rgrid-button> </div> </div>', 'rgrid .rgrid-tools,[riot-tag="rgrid"] .rgrid-tools,[data-is="rgrid"] .rgrid-tools{margin-bottom:5px;padding-left:5px;} rgrid .btn-toolbar .btn-group,[riot-tag="rgrid"] .btn-toolbar .btn-group,[data-is="rgrid"] .btn-toolbar .btn-group{margin-right:8px;} rgrid .btn-toolbar .btn-group .btn,[riot-tag="rgrid"] .btn-toolbar .btn-group .btn,[data-is="rgrid"] .btn-toolbar .btn-group .btn{margin-right:3px;}', '', function(opts) {
+riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" fields="{query_fields}" layout="{query_layout}" data="{query_data}"></query-condition> <div class="btn-toolbar"> <div if="{left_tools}" class="rgrid-tools pull-left"> <div each="{btn_group in left_tools}" class="{btn_group_class}"> <button each="{btn in btn_group}" data-is="rgrid-button" btn="{btn}"></button> </div> </div> <div if="{right_tools}" class="rgrid-tools pull-right"> <div each="{btn_group in right_tools}" class="{btn_group_class}"> <button each="{btn in btn_group}" data-is="rgrid-button" btn="{btn}"></button> </div> </div> </div> <rtable cols="{cols}" options="{rtable_options}" data="{data}" start="{start}" observable="{observable}"></rtable> <div class="clearfix tools"> <pagination if="{pagination}" data="{data}" url="{url}" page="{page}" total="{total}" limit="{limit}" onpagechanged="{onpagechanged}"></pagination> <div if="{footer_tools}" class="pull-right {btn_group_class}"> <button each="{btn in footer_tools}" data-is="rgrid-button" btn="{btn}"></button> </div> </div>', 'rgrid .rgrid-tools,[riot-tag="rgrid"] .rgrid-tools,[data-is="rgrid"] .rgrid-tools{margin-bottom:5px;padding-left:5px;} rgrid .btn-toolbar .btn-group,[riot-tag="rgrid"] .btn-toolbar .btn-group,[data-is="rgrid"] .btn-toolbar .btn-group{margin-right:8px;}', '', function(opts) {
 
 
   var self = this
@@ -76,7 +76,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
 
   this.on('mount', function(){
     var item, items
-    var tools = this.left_tools.concat(this.right_tools)
+    var tools = this.left_tools.concat(this.right_tools).concat([this.footer_tools])
     for(var i=0, len=tools.length; i<len; i++){
         items = tools[i]
         for(var j=0, _len=items.length; j<_len; j++) {
@@ -97,7 +97,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
               if (btn.checkSelected)
                 return self.table.get_selected().length == 0
           }
-          item.class = item.class || 'btn btn-flat btn-sm btn-primary'
+          item.class = 'btn btn-sm ' + (item.class || 'btn-primary')
         }
     }
     this.table = this.root.querySelector('rtable')
@@ -157,5 +157,5 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
   }
 });
 
-riot.tag2('rgrid-button', '<button class="{btn.class}" id="{btn.id}" type="button" __disabled="{btn.disabled(btn)}" onclick="{btn.onclick}"> <i if="{btn.icon}" class="{btn.icon}"></i> {btn.label} </button>', '', '', function(opts) {
+riot.tag2('rgrid-button', '<i if="{opts.btn.icon}" class="{opts.btn.icon}"></i> <span>{opts.btn.label}</span>', '', 'class="{opts.btn.class}" id="{opts.btn.id}" type="button" __disabled="{opts.btn.disabled(btn)}" onclick="{opts.btn.onclick}"', function(opts) {
 });
