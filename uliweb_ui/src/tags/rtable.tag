@@ -1001,8 +1001,6 @@
     vis_fixed_rows = []
     h = this.rowHeight
     cols = this.fix_columns.concat(this.main_columns)
-    i = 0
-    index = 0
 
     // 合并单元格相关参数 --START--
     var last_val = {}
@@ -1014,7 +1012,19 @@
     }
     // 合并单元格相关参数 --END--
 
-    while (i<len && first+i<this.rows.length) {
+    i = 0
+    index = 0
+    //因为有隐藏行，所以要先定位到first的位置
+    while (i<this.rows.length && index<first) {
+      if (is_hidden(this.rows, row)) {
+        i++
+        continue
+      }
+      index ++
+    }
+
+    index = 0 //记录实际显示行数
+    while (index<len && first+i<this.rows.length) {
       row = this.rows[first+i]
       //hidden support
       if (is_hidden(this.rows, row)) {

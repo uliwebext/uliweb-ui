@@ -654,8 +654,6 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
     vis_fixed_rows = []
     h = this.rowHeight
     cols = this.fix_columns.concat(this.main_columns)
-    i = 0
-    index = 0
 
     var last_val = {}
     var last_col_index = {}
@@ -665,7 +663,19 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
       now_row_combine_flag.push(false)
     }
 
-    while (i<len && first+i<this.rows.length) {
+    i = 0
+    index = 0
+
+    while (i<this.rows.length && index<first) {
+      if (is_hidden(this.rows, row)) {
+        i++
+        continue
+      }
+      index ++
+    }
+
+    index = 0
+    while (index<len && first+i<this.rows.length) {
       row = this.rows[first+i]
 
       if (is_hidden(this.rows, row)) {
