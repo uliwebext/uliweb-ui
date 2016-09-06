@@ -300,7 +300,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
       self.sort_cols = [{name:name, direction:dir}]
     else
       self.sort_cols = []
-    if (self.remoteSort)
+    if (opts.remoteSort)
       self._data.load(self.onSort.call(self, self.sort_cols))
     else {
       self.ready_data()
