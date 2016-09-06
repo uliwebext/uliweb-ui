@@ -103,8 +103,9 @@
     onSelected: opts.onSelected,
     onDeselected: opts.onDeselected,
     draggable: opts.draggable,
-    editable: opts.editable
-
+    editable: opts.editable,
+    onSort: opts.onSort,
+    remoteSort: opts.remoteSort
   }
 
   this.onpagechanged = function (page) {

@@ -64,8 +64,9 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     onSelected: opts.onSelected,
     onDeselected: opts.onDeselected,
     draggable: opts.draggable,
-    editable: opts.editable
-
+    editable: opts.editable,
+    onSort: opts.onSort,
+    remoteSort: opts.remoteSort
   }
 
   this.onpagechanged = function (page) {
