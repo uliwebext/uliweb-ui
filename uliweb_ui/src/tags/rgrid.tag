@@ -156,6 +156,7 @@
     this.root.diff = this.table.diff
     this.root.getButton = this.getButton
     this.root.refresh = this.update
+    this.root.instance = this
     if (this.url && this.autoLoad)
       this.load()
 
@@ -169,7 +170,6 @@
         else if (r == 'add') self.total += d.items.length
       } else
         self.total = self.data.length
-      self.update()
     })
 
   })

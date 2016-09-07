@@ -11,6 +11,8 @@ riot.tag2('query-condition', '<div class="query-condition"> <form method="get" a
 
       opts.fields.forEach(function(v){
         self.fields[v['name']] = v
+        if (v.type == 'select')
+          v.placeholder = v.placeholder || '--- 请选择 ---'
       })
       this.show = false
 

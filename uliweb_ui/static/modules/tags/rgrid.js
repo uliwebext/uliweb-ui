@@ -118,6 +118,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     this.root.diff = this.table.diff
     this.root.getButton = this.getButton
     this.root.refresh = this.update
+    this.root.instance = this
     if (this.url && this.autoLoad)
       this.load()
 
@@ -131,7 +132,6 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
         else if (r == 'add') self.total += d.items.length
       } else
         self.total = self.data.length
-      self.update()
     })
 
   })

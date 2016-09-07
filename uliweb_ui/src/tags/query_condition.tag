@@ -117,6 +117,8 @@
       // 初始化fields.name
       opts.fields.forEach(function(v){
         self.fields[v['name']] = v
+        if (v.type == 'select')
+          v.placeholder = v.placeholder || '--- 请选择 ---'
       })
       this.show = false
       // 使用 query_string 初始化值, 定义在uliweb-ui.js中
