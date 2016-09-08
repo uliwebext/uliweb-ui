@@ -25,7 +25,7 @@
   <!-- footer 按钮 -->
   <div class="clearfix tools">
     <pagination if={pagination} data={data} url={url} page={page} total={total}
-      limit={limit} onpagechanged={onpagechanged}></pagination>
+      limit={limit} onPageChanged={onpagechanged} onBeforePage={onbeforepage}></pagination>
     <div if={footer_tools} class="pull-right {btn_group_class}">
       <button each={btn in footer_tools} data-is="rgrid-button" btn={btn}></button>
     </div>
@@ -110,6 +110,10 @@
   this.onpagechanged = function (page) {
     self.start = (page - 1) * self.limit
     self.update()
+  }
+
+  this.onbeforepage = function () {
+    self.table.show_loading(true)
   }
 
   this.on('mount', function(){

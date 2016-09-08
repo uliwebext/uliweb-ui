@@ -1036,6 +1036,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
   this.root.get_selected = proxy('get_selected')
   this.root.expand = proxy('expand')
   this.root.collapse = proxy('collapse')
+  this.root.show_loading = proxy('show_loading')
 
   this.resize = function () {
     self.calSize()

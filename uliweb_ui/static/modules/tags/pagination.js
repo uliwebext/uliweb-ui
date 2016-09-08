@@ -11,13 +11,13 @@ riot.tag2('pagination', '<ul class="pagination"> <li if="{totalMessage}" class="
   this.limits = opts.limits || [10, 20, 30, 40, 50]
   this.size = opts.size || 10
   this.pages = []
-  this.onpage = opts.onpage || function () {
+  this.onpage = opts.onPage || function () {
     return self.data.load(self.get_url(), function(data){
       self.total = data.total
       return data.rows
     })
   }
-  this.onpagechanged = opts.onpagechanged
+  this.onpagechanged = opts.onPageChanged
 
   this._totalMessage = opts.totalMessage || '共 $pages 页 / $records 条记录'
   this.prev = opts.prev || '上一页'
@@ -42,6 +42,9 @@ riot.tag2('pagination', '<ul class="pagination"> <li if="{totalMessage}" class="
   this.go = function (page) {
     f = function (e) {
       self.page = page
+      if (opts.onBeforePage && typeof opts.onBeforePage === 'function') {
+        opts.onBeforePage.call(self)
+      }
       if (self.onpage && typeof self.onpage === 'function') {
         $.when(self.onpage.call(self, page)).done(function(data){
           self.show(page)
