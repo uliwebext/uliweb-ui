@@ -362,46 +362,6 @@ function getId(){
 }
 
 /*
-function common_ajaxForm_success(options) {
-    return function(r){
-        var opts = {
-            success:null,
-            message: show_message,
-            done:null,
-            error:null,
-            field_prefix:'div_field_',
-            message_type:'bootstrap'
-        };
-        if (typeof options === 'function'){
-            opts.success = options;
-        }else{
-            opts = $.extend(opts, options);
-        }
-        if (r.success){
-            opts.message(r.message||'');
-            if(opts.success) opts.success.call(this, r);
-            if(opts.done) opts.done.call(this, r);
-        }else{
-            if(opts.error) opts.error.call(this, r);
-            else{
-                $('div.form-group').removeClass('has-error').find('.help-block.error').remove();
-                if (r.message)
-                    show_message(r.message, 'error');
-                if (r.data){
-                    $.each(r.data, function(key, value){
-                        var f, t;
-                        f = '#' + opts.field_prefix + key;
-                        t = $(f).addClass('has-error');
-                        t.find('.controls').append('<p class="help-block error">'+value+'</p>');
-                    });
-                }
-            }
-        }
-    };
-}
-*/
-
-/*
  * process ajax request and jquery.validation
  */
 
@@ -534,6 +494,7 @@ function dialog(url, options) {
         label: opts.okLabel===undefined ? '确定' : opts.okLabel,
         id: 'btnSave',
         cssClass: 'btn-primary btn-flat',
+        hotkey: 13,
         action: function(dialog){
           if (options.onOk) options.onOk(dialog)
           else {
@@ -546,6 +507,7 @@ function dialog(url, options) {
     var cancelButton = {
         label: opts.cancelLabel===undefined ? '取消' : opts.cancelLabel,
         cssClass: 'btn-default btn-flat',
+        hotkey: 27,
         action: function(dialog){
             dialog.close();
         }

@@ -70,6 +70,28 @@
   this.onLoaded = opts.onLoaded
   this.autoLoad = opts.audoLoad || true
 
+  this.onpagechanged = function (page) {
+    self.start = (page - 1) * self.limit
+    self.update()
+  }
+
+  this.onloaddata = function (parent) {
+    var param = {parent:parent[opts.idField || 'id']}
+    $.getJSON(self.url, param).done(function(r){
+      if (r.rows.length > 0) {
+        self.data.add(r.rows, parent)
+      }
+      else {
+        parent.has_children = false
+        self.update()
+      }
+    })
+  }
+
+  this.onbeforepage = function () {
+    self.table.show_loading(true)
+  }
+
   this.rtable_options = {
     theme : opts.theme,
     combineCols : opts.combineCols,
@@ -101,19 +123,11 @@
     onSelect: opts.onSelect,
     onSelected: opts.onSelected,
     onDeselected: opts.onDeselected,
+    onLoadData: opts.onLoadData || this.onloaddata,
     draggable: opts.draggable,
     editable: opts.editable,
     onSort: opts.onSort,
     remoteSort: opts.remoteSort
-  }
-
-  this.onpagechanged = function (page) {
-    self.start = (page - 1) * self.limit
-    self.update()
-  }
-
-  this.onbeforepage = function () {
-    self.table.show_loading(true)
   }
 
   this.on('mount', function(){
@@ -161,8 +175,10 @@
     this.root.getButton = this.getButton
     this.root.refresh = this.update
     this.root.instance = this
-    if (this.url && this.autoLoad)
+    if (this.url && this.autoLoad) {
+      this.table.show_loading(true)
       this.load()
+    }
 
     this.observable.on('selected deselected', function(row) {
       self.update()
@@ -178,15 +194,16 @@
 
   })
 
-  this.load = function(url){
+  this.load = function(url, param){
     var f
+    param = param || {}
     var _f = function(r){
       return r.rows
     }
 
     self.url = url || self.url
-    if (opts.tree) f = self.data.load_tree(self.url, _f)
-    else f = self.data.load(self.url, this.onLoaded || _f)
+    if (opts.tree) f = self.data.load_tree(self.url, param, _f)
+    else f = self.data.load(self.url, param, this.onLoaded || _f)
     f.done(function(r){
       self.total = r.total
       self.update()

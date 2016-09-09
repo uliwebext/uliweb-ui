@@ -407,6 +407,7 @@
   this.onSelected = opts.onSelected || function(){}
   this.onSelect = opts.onSelect || function(){return true}
   this.onDeselected = opts.onDeselected || function(){}
+  this.onLoadData = opts.onLoadData || function(parent){}
 
   //tree options
   this.tree = opts.tree
@@ -421,6 +422,7 @@
   this.iconInden = 16
   this.expanded = opts.expanded === undefined ? false: opts.expanded
   this.parents_expand_status = {}
+  this.loaded_status = {} //remember node loaded status
   this.idField = opts.idField || 'id'
   this.parentField = opts.parentField || 'parent'
   this.orderField = opts.orderField || 'order'
@@ -472,6 +474,8 @@
       }
       if (r == 'loading') {
         self.show_loading(true)
+        self.parents_expand_status = {}
+        self.loaded_status = {} //remember node loaded status
       } else if (r == 'load'){
         self.show_loading(false)
       }
@@ -1148,10 +1152,9 @@
   }
 
   this.toggle_expand = function(e) {
-    var id = self.getId(e.item.col.row), status = this.parents_expand_status[id]
-    if (status === undefined) status = this.expanded
-    this.parents_expand_status[id] = !status
-    this.update()
+    var id = self.getId(e.item.col.row), status = self.parents_expand_status[id]
+    if (status === undefined) status = self.expanded
+    self._expand(e.item.col.row, !status)
   }
 
   this.expand = function (row) {
@@ -1168,6 +1171,8 @@
     if (!row) {
       for(id in self.parents_expand_status) {
         self.parents_expand_status[id] = expanded
+        if (expanded)
+          self.load_node(row)
       }
     } else {
       if (Array.isArray(row)) {
@@ -1175,14 +1180,32 @@
           id = self.getId(row[i])
           if (self.parents_expand_status.hasOwnProperty(id))
             self.parents_expand_status[id] = expanded
+            if (expanded)
+              self.load_node(row)
         }
       } else {
         id = self.getId(row)
         if (self.parents_expand_status.hasOwnProperty(id))
           self.parents_expand_status[id] = expanded
+          if (expanded)
+            self.load_node(row)
       }
     }
     self.update()
+  }
+
+  this.load_node = function(row) {
+    var id = self.getId(row), index
+    var status = self.loaded_status[id]
+
+    //already loaded, simple return
+    if (status) return
+    //test if there are children nodes
+    if (self._data.has_child(row)) {
+      self.loaded_status[row[self.idField]] = true
+      return
+    }
+    self.onLoadData.call(self, row)
   }
 
   this.opened = function(row) {
