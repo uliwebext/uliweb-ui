@@ -75,6 +75,19 @@
     self.update()
   }
 
+  this.onsort = function (sorts) {
+    var _url
+    if (sorts.length > 0) {
+      _url = get_url(self.url, {sort:sorts[0].name+'.'+sorts[0].direction})
+    } else
+      _url = get_url(self.url, {sort:''})
+
+    self.url = _url
+    self.load(_url, function(r){
+      return r.rows
+    })
+  }
+
   this.onloaddata = function (parent) {
     var param = {parent:parent[opts.idField || 'id']}
     $.getJSON(self.url, param).done(function(r){
@@ -124,9 +137,9 @@
     onSelected: opts.onSelected,
     onDeselected: opts.onDeselected,
     onLoadData: opts.onLoadData || this.onloaddata,
+    onSort: opts.onSort || this.onsort,
     draggable: opts.draggable,
     editable: opts.editable,
-    onSort: opts.onSort,
     remoteSort: opts.remoteSort
   }
 

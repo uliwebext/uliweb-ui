@@ -283,7 +283,7 @@
         <div if={!fixed && leaf} class="rtable-resizer" onmousedown={colresize}></div>
         <!-- sortable column -->
         <div if={sort} class={rtable-sort:true, desc:get_sorted(name)=='desc', asc:get_sorted(name)=='asc'}
-          title={sort} onclick={sort_handler} style="top:{get_sort_top(get_sorted(name))}px"></div>
+          title={get_sorted(name)} onclick={sort_handler} style="top:{get_sort_top(get_sorted(name))}px"></div>
       </div>
     </div>
     <div class="rtable-header rtable-main" style="width:{width-fix_width-xscroll_width}px;right:0px;height:{header_height}px;left:{fix_width}px;">
@@ -299,7 +299,7 @@
         <div if={!fixed && leaf} class="rtable-resizer" onmousedown={colresize}></div>
         <!-- sortable column -->
         <div if={sort} class={rtable-sort:true, desc:get_sorted(name)=='desc', asc:get_sorted(name)=='asc'}
-          title={sort} onclick={sort_handler} style="top:{get_sort_top(get_sorted(name))}px;"></div>
+          title={get_sorted(name)} onclick={sort_handler} style="top:{get_sort_top(get_sorted(name))}px;"></div>
       </div>
     </div>
 
@@ -528,9 +528,9 @@
         self.resize()
     })
 
-    this.content.addEventListener('mousewheel', function(e){
+    <!-- this.content.addEventListener('mousewheel', function(e){
       self.mousewheel(e)
-    })
+    }) -->
 
     $(this.content).on('click', '.rtable-cell', this.click_handler)
       .on('dblclick', '.rtable-cell', this.dblclick_handler)
@@ -629,7 +629,7 @@
     else
       self.sort_cols = []
     if (opts.remoteSort)
-      self._data.load(self.onSort.call(self, self.sort_cols))
+      self.onSort.call(self, self.sort_cols)
     else {
       self.ready_data()
       self.calData()

@@ -16,7 +16,6 @@
   this.total = opts.total       //记录总数
   this.page = opts.page || 1    //当前页号
   this.limit = opts.limit || 10 //每页记录条数，当值为 <=0 时，不限制
-  this.url = opts.url           //数据展示URL
   this.data = opts.data         //数据源
   this.limits = opts.limits || [10, 20, 30, 40, 50] //每次最大条数
   this.size = opts.size || 10   //页号范围
@@ -41,6 +40,7 @@
   this.refresh = opts.refresh || '刷新'
 
   this.on('update', function(){
+    this.url = opts.url           //数据展示URL
     this.total = opts.total
     self.show()
   })
