@@ -43,6 +43,13 @@
     is_selected:          Test is a row is selected: is_selected(row)
     get_selected:         Get selected rows: get_selected()
 */
+/*
+  rtable v1.0.0.1
+  author : lvyangg@gmail.com
+
+  ADD-options:
+    combineCols(Optional): list of cols's name, the index of list means grouping-level
+*/
 <rtable>
 
   <style scoped>
@@ -65,6 +72,9 @@
     .rtable-header.rtable-main {
       top:0;
       overflow:hidden;
+    }
+    .rtable-content {
+      overflow: hidden;
     }
     .rtable-cell {
       position:absolute;
@@ -165,6 +175,18 @@
       color: #ccc;
       line-height: 34px;
     }
+    .rtable-loading {
+      position:relative;;
+      margin: auto;
+      height: 34px;
+      text-align: center;
+      color: black;
+      line-height: 34px;
+      border: 1px solid gray;
+      width: 100px;
+      background-color: antiquewhite;
+      z-index: 9999;
+    }
     .rtable-expander {
       position:absolute;
       top:0px;
@@ -197,19 +219,67 @@
     .rtable-root.simple .rtable-row.even .rtable-cell.selected {
     }
     .rtable-root.simple .rtable-header .rtable-cell {
+      background-color: #f2f2f2;
+    }
+
+    /*table*/
+    .rtable-root.table {
+      border: none;
+    }
+    .rtable-root.table .rtable-row.even .rtable-cell {
+    }
+    .rtable-root.table .rtable-row.odd .rtable-cell {
+    }
+    .rtable-root.table .rtable-row.even .rtable-cell.selected {
+    }
+    .rtable-root.table .rtable-header .rtable-cell {
+    }
+    .rtable-root.table .rtable-cell{
+      border-right:none;
+      border-bottom:1px solid #ddd;
+    }
+    .rtable-root.table .rtable-header .rtable-cell {
+      border-bottom: 2px solid #ddd;
+    }
+
+    /*table*/
+    .rtable-root.table-striped {
+      border: none;
+    }
+    .rtable-root.table-striped .rtable-row.even .rtable-cell {
+      background-color: #f2f2f2;
+      border-bottom:none;
+    }
+    .rtable-root.table-striped .rtable-row.odd .rtable-cell {
+      border-bottom:none;
+    }
+    .rtable-root.table-striped .rtable-row.even .rtable-cell.selected {
+    }
+    .rtable-root.table-striped .rtable-header .rtable-cell {
+    }
+    .rtable-root.table-striped .rtable-cell{
+      border-right:none;
+      border-bottom:1px solid #ddd;
+    }
+    .rtable-root.table-striped .rtable-header .rtable-cell {
+      border-bottom: 2px solid #ddd;
     }
 
   </style>
 
   <yield/>
 
-  <div class={rtable-root:true, zebra:theme=='zebra'} style="width:{width-1}px;height:{height-1}px">
+  <div class="rtable-root {theme}" style="width:{width-1}px;height:{height-1}px">
     <div class="rtable-header rtable-fixed" style="width:{fix_width}px;height:{header_height}px">
       <div each={fix_columns} no-reorder class={rtable-cell:true}
         style="width:{width}px;height:{height}px;left:{left}px;top:{top}px;line-height:{height}px;">
-        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" value={title} style="{sort?'padding-right:22px':''}"></div>
+        <!-- table header column -->
+        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" value={title}
+          style="{sort?'padding-right:22px':''}" title={tooltip}></div>
+        <!-- checkbox -->
         <input if={type=='check' && parent.multiSelect} type="checkbox" onclick={checkall}
           class="rtable-check" style="margin-top:{headerRowHeight/2-7}px" checked={parent.selected_rows.length>0}></input>
+        <!-- resizer -->
         <div if={!fixed && leaf} class="rtable-resizer" onmousedown={colresize}></div>
         <!-- sortable column -->
         <div if={sort} class={rtable-sort:true, desc:get_sorted(name)=='desc', asc:get_sorted(name)=='asc'}
@@ -219,9 +289,13 @@
     <div class="rtable-header rtable-main" style="width:{width-fix_width-xscroll_width}px;right:0px;height:{header_height}px;left:{fix_width}px;">
       <div each={main_columns} no-reorder class={rtable-cell:true}
         style="width:{width}px;height:{height}px;left:{left}px;top:{top}px;line-height:{height}px;">
-        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" value={title} style="{sort?'padding-right:22px':''}"></div>
+        <!-- table header column -->
+        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" value={title}
+          style="{sort?'padding-right:22px':''}" title={tooltip}></div>
+        <!-- checkbox -->
         <input if={type=='check' && parent.multiSelect} type="checkbox" onclick={checkall}
           class="rtable-check" style="margin-top:{headerRowHeight/2-7}px" checked={parent.selected_rows.length>0}></input>
+        <!-- resizer -->
         <div if={!fixed && leaf} class="rtable-resizer" onmousedown={colresize}></div>
         <!-- sortable column -->
         <div if={sort} class={rtable-sort:true, desc:get_sorted(name)=='desc', asc:get_sorted(name)=='asc'}
@@ -234,20 +308,20 @@
       <!-- transform:translate3d(0px,{0-content.scrollTop}px,0px); -->
       <div class="rtable-content" style="width:{fix_width}px;height:{rows.length*rowHeight}px;">
         <div each={row in visCells.fixed} no-reorder class={get_row_class(row.row, row.line)}>
-          <div each={col in row.cols} no-reorder class={get_cell_class(col)}
+          <div if={col.height!=0} each={col in row.cols} no-reorder class={get_cell_class(col)}
             style="width:{col.width}px;height:{col.height}px;left:{col.left}px;top:{col.top}px;line-height:{col.height}px;text-align:{col.align};">
 
             <!-- cell content -->
             <div data-is="rtable-cell" if={col.type!='check' && !col.buttons} tag={col.tag}
               value={col.__value__} row={col.row} col={col}
-              style={col.indentWidth}></div>
+              style={col.indentWidth} title={col.tooltip}></div>
 
             <!-- expander -->
             <span if={col.expander} data-is='rtable-raw' content={col.expander} class="rtable-expander"
               style="left:{col.indent-12}px;" onclick={toggle_expand}></span>
 
             <!-- display checkbox -->
-            <input if={col.type=='check'} type="checkbox" onclick={checkcol} checked={col.selected}
+            <input if={col.type=='check'} type="checkbox" onclick={checkcol} checked={is_selected(col.row)}
               class="rtable-check" style="margin-top:{rowHeight/2-7}px"></input>
           </div>
         </div>
@@ -258,20 +332,20 @@
       <!-- transform:translate3d({0-content.scrollLeft}px,{0-content.scrollTop}px,0px); -->
       <div class="rtable-content" style="width:{main_width}px;height:{rows.length*rowHeight}px;">
         <div each={row in visCells.main} no-reorder class={get_row_class(row.row, row.line)}>
-          <div each={col in row.cols} no-reorder class={get_cell_class(col)}
+          <div if={col.height!=0} each={col in row.cols} no-reorder class={get_cell_class(col)}
               style="width:{col.width}px;height:{col.height}px;left:{col.left}px;top:{col.top}px;line-height:{col.height}px;text-align:{col.align};">
 
               <!-- cell content -->
               <div data-is="rtable-cell" if={col.type!='check' && !col.buttons} tag={col.tag}
                 value={col.__value__} row={col.row} col={col}
-                style={col.indentWidth}></div>
+                style={col.indentWidth} title={col.tooltip}></div>
 
               <!-- expander -->
               <span if={col.expander} data-is='rtable-raw' value={col.expander} class="rtable-expander"
                 style="left:{col.indent-12}px;" onclick={toggle_expand}></span>
 
               <!-- display checkbox -->
-              <input if={col.type=='check'} type="checkbox" onclick={checkcol} checked={col.selected}
+              <input if={col.type=='check'} type="checkbox" onclick={checkcol} checked={is_selected(col.row)}
                   class="rtable-check" style="margin-top:{rowHeight/2-7}px;"></input>
 
               <virtual if={col.buttons} no-reorder each={btn in col.buttons}>
@@ -289,11 +363,14 @@
       <div if={rows.length==0} data-is="rtable-raw" value={noData} class="rtable-nodata"
         style="top:{height/2-header_height/2+rowHeight/2}px;"></div>
 
+      <div style="display:none;top:{height/2-header_height/2+rowHeight/2}px" class="rtable-loading"></div>
+
     </div>
 
   </div>
 
   var self = this
+  this.observable = opts.observable
   this.root.instance = this
 
   if(opts.options) {
@@ -305,6 +382,7 @@
   this.nameField = opts.nameField || 'name'
   this.titleField = opts.titleField || 'title'
   this.cols = opts.cols.slice()
+  this.combineCols = opts.combineCols || []
   this.headerRowHeight = opts.headerRowHeight || 34
   this.rowHeight = opts.rowHeight || 34
   this.indexColWidth = opts.indexColWidth || 40
@@ -314,10 +392,12 @@
   this.sort_cols = []
   this.clickSelect = opts.clickSelect === undefined ? 'row' : opts.clickSelect
   this.noData = opts.noData || 'No Data'
+  this.loading = opts.loading || 'Loading... <i class="fa fa-spinner fa-pulse fa-spin"></i>'
   this.container = opts.container || $(this.root).parent()
   this.editable = opts.editable || false
   this.draggable = opts.draggable || false
-  this.theme = 'zebra'
+  this.theme = opts.theme || 'zebra'
+  this.minColWidth = opts.minColWidth || 5
 
   this.onUpdate = opts.onUpdate || function(){}
   this.onSort = opts.onSort || function(){}
@@ -325,6 +405,9 @@
   this.onEdit = opts.onEdit || function(){return true}
   this.onEdited = opts.onEdited || function(){return true}
   this.onSelected = opts.onSelected || function(){}
+  this.onSelect = opts.onSelect || function(){return true}
+  this.onDeselected = opts.onDeselected || function(){}
+  this.onLoadData = opts.onLoadData || function(parent){}
 
   //tree options
   this.tree = opts.tree
@@ -339,14 +422,16 @@
   this.iconInden = 16
   this.expanded = opts.expanded === undefined ? false: opts.expanded
   this.parents_expand_status = {}
-  this.parentField = opts.parentField
-  this.orderField = opts.orderField
-  this.levelField = opts.levelField
-  this.hasChildrenField = opts.hasChildrenField
+  this.loaded_status = {} //remember node loaded status
+  this.idField = opts.idField || 'id'
+  this.parentField = opts.parentField || 'parent'
+  this.orderField = opts.orderField || 'order'
+  this.levelField = opts.levelField || 'level'
+  this.hasChildrenField = opts.hasChildrenField || 'has_children'
   this.indentWidth = 16
 
-  var _opts = {tree:opts.tree, parentField:opts.parentField,
-    levelField:opts.levelField, orderField:opts.orderField, hasChildrenField:opts.hasChildrenField}
+  var _opts = {tree:opts.tree, idField:this.idField, parentField:this.parentField,
+    levelField:this.levelField, orderField:this.orderField, hasChildrenField:this.hasChildrenField}
   var d
   if (opts.data) {
     if (Array.isArray(opts.data)) {
@@ -359,9 +444,9 @@
     }
     if (opts.tree) {
       this._data.setOption(_opts)
-      this._data.load_tree(d, {parentField:opts.parentField,
-        orderField:opts.orderField, levelField:opts.levelField,
-        hasChildrenField:opts.hasChildrenField, plain:true})
+      this._data.load_tree(d, {parentField:this.parentField,
+        orderField:this.orderField, levelField:this.levelField,
+        hasChildrenField:this.hasChildrenField, plain:true})
     } else
       this._data.load(d)
 
@@ -369,19 +454,33 @@
     this._data = new DataSet(_opts)
   }
 
+  this.show_loading = function (flag) {
+    if (flag)
+      $(this.root).find('.rtable-loading').html(this.loading).show()
+    else
+      $(this.root).find('.rtable-loading').hide()
+  }
+
   this.bind = function () {
     // 绑定事件
     self._data.on('*', function(r, d){
-        self.onUpdate(self._data, r, d)
-        if (r == 'remove') {
-          var index, items = d.items
-          for(var i=0, len=items.length; i<len; i++){
-            index = self.selected_rows.indexOf(items[i].id)
-            if (index !== -1) self.selected_rows.splice(index, 1)
-          }
+      self.onUpdate(self._data, r, d)
+      if (r == 'remove') {
+        var index, items = d.items
+        for(var i=0, len=items.length; i<len; i++){
+          index = self.selected_rows.indexOf(items[i].id)
+          if (index !== -1) self.selected_rows.splice(index, 1)
         }
-        self.ready_data()
-        self.calData()
+      }
+      if (r == 'loading') {
+        self.show_loading(true)
+        self.parents_expand_status = {}
+        self.loaded_status = {} //remember node loaded status
+      } else if (r == 'load'){
+        self.show_loading(false)
+      }
+      self.ready_data()
+      self.calData()
       self.update()
     })
   }
@@ -438,6 +537,7 @@
     $(this.content_fixed).on('click', '.rtable-cell', this.click_handler)
       .on('dblclick', '.rtable-cell', this.dblclick_handler)
 
+    this.scrollbar_width = getScrollbarWidth()
     this.ready_data() //prepare data
     this.calSize()
     this.calHeader()  //calculate header positions
@@ -528,7 +628,7 @@
       self.sort_cols = [{name:name, direction:dir}]
     else
       self.sort_cols = []
-    if (self.remoteSort)
+    if (opts.remoteSort)
       self._data.load(self.onSort.call(self, self.sort_cols))
     else {
       self.ready_data()
@@ -563,7 +663,7 @@
     header.css('-moz-user-select','none');
 
     root.on('mousemove', function(e){
-      d = Math.max(width + e.clientX - start, 5)
+      d = Math.max(width + e.clientX - start, self.minColWidth)
       col.real_col.width = d
       self.resize()
     }).on('mouseup', function(e){
@@ -597,14 +697,15 @@
   })
 
   function _parse_header(cols, max_level, frozen){
-    var columns = [], i, len, j, jj, col,
+    var columns = [], //保存每行的最后有效列
+      columns_width = {}, //保存每行最右坐标
+      i, len, j, jj, col, jl,
       subs_len,
       path,
       rowspan, //每行平均层数，max_level/sub_len，如最大4层，当前总层数为2,则每行占两层
       colspan,
       parent, //上一层的结点为下一层的父结点
       new_col, //记录显示用的表头单元
-      last_pos, //记录上一层的列数，用于判断是否当前层要和前一个结点合并
       left  //某层最左结点
 
     if (!cols || cols.length === 0)
@@ -612,23 +713,22 @@
 
     //初始化表头层
     for (i=0; i<max_level; i++) {
-      columns.push([])
+      columns[i] = []
+      columns_width[i] = 0
     }
     //处理多级表头
     for(i=0, len=cols.length; i<len; i++) {
       col = cols[i]
       subs_len = col.subs.length
       rowspan = 1//Math.floor(max_level / subs_len)
-      last_pos = -1
       for (j=0; j<subs_len; j++) {
         path = col.subs[j]
         new_col = {}
-        new_col.title = path
+        new_col.title = path.replace('%%', '/')
         if (j == subs_len - 1) {
           //如果是最后一层，则rowspan为最大值减其余层
           new_col.rowspan = max_level - (subs_len-1)*rowspan
           new_col.leaf = true
-          //new_col.real_col = col
         } else {
           new_col.rowspan = rowspan
         }
@@ -651,6 +751,14 @@
         new_col.class = col.class
         new_col.tag = col.tag || 'rtable-raw'
         new_col.editor = col.editor
+        new_col.leaf = true
+        if (col.headerTooltip) {
+          if (typeof col.headerTooltip === 'string')
+            new_col.tooltip = col.headerTooltip
+          else if (typeof col.headerTooltip === 'function')
+            new_col.tooltip = col.headerTooltip()
+        }
+        new_col.columnTooltip = col.columnTooltip
 
         //查找同层最左边的结点，判断是否title和rowspan一致
         //如果一致，进行合并，即colspan +1
@@ -662,32 +770,19 @@
           left = null
         }
 
-        //取上一结点的col值
-        if (j == 0) {
-          last_pos = -1
-          parent = null
-        } else {
-          //上一层的最后一个结点是父结点
-          parent = columns[j-1][columns[j-1].length-1]
-          last_pos = parent.col
-        }
-
         //进行合并的判断，当left不为null，并且标题，层级，并且位置小于当前位置
-        if (left && left.title==new_col.title && left.level==new_col.level && last_pos<i) {
+        if (left && left.title==new_col.title && left.level==new_col.level) {
           left.colspan ++
           left.width += new_col.width
+          columns_width[j] += new_col.width
+          left.leaf = false
         } else {
+          //当new_col占多行时，将下层结点清空
           columns[j].push(new_col)
-          new_col.parent_col = parent
-          if (i == 0) {
-            new_col.left = 0
-          } else {
-            if (left)
-              new_col.left = left.left + left.width
-            else if (parent)
-              new_col.left = parent.left
-            else
-              new_col.left = 0
+          new_col.left = columns_width[j]
+          columns_width[j] += new_col.width
+          for (jl=1; jl<new_col.rowspan; jl++) {
+            columns_width[j+jl] += new_col.width
           }
         }
         col.left = new_col.left
@@ -784,12 +879,14 @@
         width += col.width
     }
 
+    //计算无width的列
     if (cal_cols.length > 0) {
-      var dw = Math.floor((this.width-width)/cal_cols.length)
+      var w = this.width-width-this.scrollbar_width
+      var dw = Math.floor(w/cal_cols.length)
       for(var i=0, len=cal_cols.length; i<len; i++) {
         cal_cols[i].width = dw
         if (i == cal_cols.length - 1)
-          cal_cols[i].width = (this.width-width) - (cal_cols.length-1)*dw
+          cal_cols[i].width = w - (cal_cols.length-1)*dw
       }
     }
 
@@ -838,7 +935,6 @@
   }
 
   this.calScrollbar = function () {
-    this.scrollbar_width = getScrollbarWidth()
     this.has_yscroll = this.content.scrollHeight > this.content.clientHeight || (this.rows.length * this.rowHeight > (this.height - this.header_height))
     this.has_xscroll = this.content.scrollWidth > this.content.clientWidth || this.main_width > (this.width - this.fix_width)
     this.xscroll_width = this.has_xscroll ? this.scrollbar_width : 0
@@ -898,7 +994,7 @@
     r1.top = this.content.scrollTop
     r1.left = this.content.scrollLeft
     r1.bottom = r1.top + this.height - this.header_height - this.scrollbar_width
-    r1.right = r1.left + this.main_width - this.fix_width - this.scrollbar_width
+    r1.right = r1.left + this.width - this.fix_width - this.scrollbar_width
 
     first = Math.max(Math.floor(this.content.scrollTop / this.rowHeight), 0)
     last = Math.ceil((this.content.scrollTop+this.height-this.header_height) / this.rowHeight)
@@ -909,9 +1005,31 @@
     vis_fixed_rows = []
     h = this.rowHeight
     cols = this.fix_columns.concat(this.main_columns)
+
+    // 合并单元格相关参数 --START--
+    var last_val = {}
+    var last_col_index = {}
+    var now_row_combine_flag = []
+    for (var key in this.combineCols) {
+      last_col_index[key] = -1
+      now_row_combine_flag.push(false)
+    }
+    // 合并单元格相关参数 --END--
+
     i = 0
     index = 0
-    while (i<len && first+i<this.rows.length) {
+    //因为有隐藏行，所以要先定位到first的位置
+    while (i<this.rows.length && index<first) {
+      row = this.rows[i]
+      if (is_hidden(this.rows, row)) {
+        i++
+        continue
+      }
+      index ++
+    }
+
+    index = 0 //记录实际显示行数
+    while (index<len && first+i<this.rows.length) {
       row = this.rows[first+i]
       //hidden support
       if (is_hidden(this.rows, row)) {
@@ -926,6 +1044,7 @@
       top = h*(first+index)
       for (j=0, len1=cols.length; j<len1; j++) {
         col = cols[j]
+        if (!col.leaf) continue
         d = {
           top:top,
           width:col.width,
@@ -945,6 +1064,7 @@
           editor:col.editor,
           name:col.name
         }
+
         if (opts.treeField == col.name && opts.tree) {
           indent = row.level || 0
           if (row.has_children) {
@@ -960,6 +1080,44 @@
         }
         d.value = row[col.name]
         d.__value__ = this.get_col_data(d, row[col.name])
+
+        if (col.columnTooltip) {
+          if (typeof col.columnTooltip === 'string')
+            d.tooltip = col.columnTooltip
+          if (typeof col.columnTooltip === 'function')
+            d.tooltip = col.columnTooltip(row, d, d.value)
+        }
+
+        // 合并单元格相关方法 --START--
+        // 如果当前列是检查合并列
+        if (this.combineCols.indexOf(col.name) > -1) {
+          // 依次检查当前col之前的col是否合并，如果是第一行，使用默认的true
+          var now_col_level = this.combineCols.indexOf(col.name)
+          // 表示之前列是否合并的变量
+          var before_col_combine_flag = ((now_col_level - 1) >= 0) ? now_row_combine_flag[now_col_level - 1] : true
+          //console.log(col.name, '>>>', before_col_combine_flag, last_val[col.name], '==', d.value, '=?=>>>', (last_val[col.name] == d.value));
+          if (before_col_combine_flag && last_val[col.name] && (last_val[col.name].value == d.value)){
+            // 当前列合并
+            now_row_combine_flag[now_col_level] = true
+
+            // 当前列的高度为0
+            d.height = 0
+
+            // 上一列的指定列的高度 加 单位高度h（注意：这里现在只写了静态列）
+            last_val[col.name].height += h
+          } else {
+            // 当前列不合并
+            now_row_combine_flag[now_col_level] = false
+
+            // 设置最后一列的序号等于当前行号
+            last_col_index[col.name] = first+i
+
+            // 设置上次指定列的值等于这次的
+            last_val[col.name] = d
+          }
+        }
+        // 合并单元格相关方法 --END--
+
         if (col.frozen) {
           vf_row.cols.push(d)
         }
@@ -994,10 +1152,9 @@
   }
 
   this.toggle_expand = function(e) {
-    var id = self.getId(e.item.col.row), status = this.parents_expand_status[id]
-    if (status === undefined) status = this.expanded
-    this.parents_expand_status[id] = !status
-    this.update()
+    var id = self.getId(e.item.col.row), status = self.parents_expand_status[id]
+    if (status === undefined) status = self.expanded
+    self._expand(e.item.col.row, !status)
   }
 
   this.expand = function (row) {
@@ -1014,6 +1171,8 @@
     if (!row) {
       for(id in self.parents_expand_status) {
         self.parents_expand_status[id] = expanded
+        if (expanded)
+          self.load_node(row)
       }
     } else {
       if (Array.isArray(row)) {
@@ -1021,14 +1180,32 @@
           id = self.getId(row[i])
           if (self.parents_expand_status.hasOwnProperty(id))
             self.parents_expand_status[id] = expanded
+            if (expanded)
+              self.load_node(row)
         }
       } else {
         id = self.getId(row)
         if (self.parents_expand_status.hasOwnProperty(id))
           self.parents_expand_status[id] = expanded
+          if (expanded)
+            self.load_node(row)
       }
     }
     self.update()
+  }
+
+  this.load_node = function(row) {
+    var id = self.getId(row), index
+    var status = self.loaded_status[id]
+
+    //already loaded, simple return
+    if (status) return
+    //test if there are children nodes
+    if (self._data.has_child(row)) {
+      self.loaded_status[row[self.idField]] = true
+      return
+    }
+    self.onLoadData.call(self, row)
   }
 
   this.opened = function(row) {
@@ -1134,17 +1311,25 @@
   } -->
 
   this.checkall = function(e) {
-    if (e.target.checked)
-      self.selected_rows = self._data.getIds()
-    else
-      self.selected_rows = []
+    e.preventUpdate = true
+    if (e.target.checked) {
+      var ids = self._data.getIds()
+      for (var i=0, len=ids.length; i<len; i++) {
+        self.select(self.get(ids[i]))
+      }
+    } else {
+      var ids = self.selected_rows.slice()
+      for (var i=0, len=ids.length; i<len; i++) {
+        self.deselect(self.get(ids[i]))
+      }
+    }
+    self.update()
   }
 
   this.checkcol = function(e) {
-    if (e.target.checked){
-      self.select(e.item.col.row)
-    } else
-      self.deselect(e.item.col.row)
+    self.toggle_select(e.item.col.row)
+    e.target.checked = self.is_selected(e.item.col.row)
+    self.update()
   }
 
   /* toggle selected row */
@@ -1161,9 +1346,6 @@
   this.select = function(rows) {
     var row, id
 
-    if (!opts.multiSelect)
-      self.selected_rows = []
-
     if (!rows) rows = this._data.get()
     if (!Array.isArray(rows)) {
       rows = [rows]
@@ -1172,14 +1354,28 @@
       row = rows[i]
       if (row instanceof Object) id = row.id
       else id = row
-      if (this.selected_rows.indexOf(id) == -1)
-        this.selected_rows.push(id)
+      if (this.selected_rows.indexOf(id) == -1) {
+        if (this.onSelect(row)) {
+          if (!opts.multiSelect)
+            self.selected_rows = []
+          this.selected_rows.push(id)
+          this.onSelected(row)
+          if (this.observable)
+            this.observable.trigger('selected', row)
+        }
+      }
     }
+    <!-- this.update() -->
   }
 
   this.deselect = function(rows) {
     var r = [], row, selected_rows = this.selected_rows, index, items = [], id
-    if (!rows) this.selected_rows = []
+    if (!rows) {
+      this.selected_rows = []
+      this.onDeselected()
+      if (this.observable)
+        this.observable.trigger('deselected')
+    }
     else {
       if (!Array.isArray(rows))
         rows = [rows]
@@ -1194,11 +1390,15 @@
         if (index != -1){
           selected_rows.splice(i, 1)
           items.splice(index, 1)
+          this.onDeselected(this._data.get(row))
+          if (this.observable)
+            this.observable.trigger('deselected', this._data.get(row))
         }
         if (rows.length == 0)
           break
       }
     }
+    <!-- this.update() -->
   }
 
   function proxy(funcname) {
@@ -1229,6 +1429,7 @@
   this.root.get_selected = proxy('get_selected')
   this.root.expand = proxy('expand')
   this.root.collapse = proxy('collapse')
+  this.root.show_loading = proxy('show_loading')
 
   /* resize width and height */
   this.resize = function () {
@@ -1256,6 +1457,7 @@
   this.root.move = data_proxy('move')
   this.root.diff = data_proxy('diff')
   this.root.save = data_proxy('save')
+  this.root.refresh = proxy('update')
 
   <!-- this.root.load = function(newrows){
     self._data.clear()

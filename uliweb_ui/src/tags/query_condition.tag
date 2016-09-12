@@ -18,7 +18,6 @@
           border-bottom: none;
         }
         .condition-label {
-          min-width: 80px;
           margin-left:8px;
           margin-right:8px;
           display: inline-block;
@@ -58,8 +57,8 @@
         }
         .form-control {
           display:inline-block;
-          width: 200px;
-          min-width: 200px;
+          /*width: 200px;
+          min-width: 200px;*/
           vertical-align: middle;
         }
         input-field {
@@ -67,22 +66,11 @@
         }
         .condition-row.condition-row-more.condition-buttons {
           text-align: center;
-          margin-right: 20px;
+          margin-right: 5px;
         }
         .condition-row.condition-row-more.condition-buttons button{
-          margin-right: 10px;
+          margin-right: 5px;
         }
-        /*
-        .select2-container--bootstrap {
-          display: inline-block;
-        }
-        .select2-container--bootstrap .select2-selection--single .select2-selection__rendered {
-          padding: 0;
-        }
-        .select2-container--bootstrap .select2-selection--single {
-          line-height: 30px;
-        }
-        */
         /*隐藏单选radio按钮*/
         .multiselect-container li input[type="radio"] {margin-left:-200px;}
 
@@ -92,23 +80,24 @@
         <form method="get" action="{ opts.action }">
             <div each={row, i in layout} show={i==0 || show} class={condition-row:true, condition-row-more:i>0}>
                 <div each={field in row} class="condition-cell">
-                   <span class="condition-label {nomore:i==0 &&!show}">{ fields[this.field].label || field }</span>
+                   <span class="condition-label {nomore:i==0 &&!show}" style="min-width:{!show?0:labelWidth}px">{ fields[this.field].label || field }</span>
                    <input-field field={ fields[field] } data={data}
-                     type={ fields[this.field].type || 'str' }>
+                     type={ fields[this.field].type || 'str' }
+                     style="min-width:{show?inputWidth+'px':'auto'}">
                    </input-field>
                 </div>
-                <div show={ i==0 && !show } class="condition-cell condition-buttons" >
-                    <button class="btn btn-primary btn-flat" type="submit">查询</button>
-                    <button class="btn btn-default btn-flat" type="button" onclick={parent.reset}>清除条件</button>
+                <div if={ i==0 && !show } class="condition-cell condition-buttons" >
+                    <button class="btn btn-primary btn-flat" type="submit"><i class="fa fa-search"></i> {searchTitle}</button>
+                    <button class="btn btn-link btn-flat" type="button" onclick={parent.reset}>{clearTitle}</button>
                 </div>
             </div>
             <div class="condition-row condition-row-more condition-buttons" show={show}>
-              <button class="btn btn-primary btn-flat" type="submit">查询</button>
-              <button class="btn btn-default btn-flat" type="button" onclick={reset}>清除条件</button>
+              <button class="btn btn-primary btn-flat" type="submit"><i class="fa fa-search"></i> {searchTitle}</button>
+              <button class="btn btn-link btn-flat" type="button" onclick={reset}>{clearTitle}</button>
             </div>
-            <div class={condition-more:true, visible:layout.length>1}>
-              <span if={layout.length > 1} href="#" onclick={ click }>
-                { show? '收起' : '更多条件' }
+            <div if={layout.length > 1} class={condition-more:true, visible:layout.length>1}>
+              <span href="#" onclick={ click }>
+                { show? moreTitle[0] : moreTitle[1] }
                 <i class={fa:true, fa-angle-up:show, fa-angle-down:!show}></i>
               </span>
             </div>
@@ -119,10 +108,17 @@
       var self = this
       this.layout = opts.layout
       this.fields = {}
+      this.labelWidth = opts.labelWidth || 100
+      this.inputWidth = opts.inputWidth || 200
+      this.searchTitle = opts.searchTitle || '查询'
+      this.clearTitle = opts.clearTitle || '清除条件'
+      this.moreTitle = opts.moreTitle || ['收起', '更多条件']
 
       // 初始化fields.name
       opts.fields.forEach(function(v){
         self.fields[v['name']] = v
+        if (v.type == 'select')
+          v.placeholder = v.placeholder || '--- 请选择 ---'
       })
       this.show = false
       // 使用 query_string 初始化值, 定义在uliweb-ui.js中
@@ -144,7 +140,7 @@
       this.reset = function(e){
         for (k in self.fields) {
           var field = self.fields[k]
-          if (field.type == 'select' && field.url) {
+          if (field.type == 'select' && field['data-url']) {
             $('[name='+k+']', self.root).val('').trigger('change')
           }
           else if (field.type == 'select') {
@@ -167,13 +163,17 @@
 
 <input-field>
     <input type="text" name={ opts.field.name } class="form-control" field-type="str"
-      if={opts.type=='str' || opts.type=='unicode'} placeholder={opts.field.placeholder}/>
+      if={opts.type=='str' || opts.type=='unicode' || opts.type=='int'}
+      placeholder={get_placeholder(opts.field.placeholder, 0)}
+      style="width:{opts.field.width?opts.field.width+'px': (opts.field.range?'auto':'100%')}"/>
 
     <input type="password" name={ opts.field.name } class="form-control" field-type="password"
-      if={opts.type=='password'} placeholder={opts.field.placeholder}/>
+      if={opts.type=='password'} placeholder={opts.field.placeholder}
+      style="width:{opts.field.width?opts.field.width+'px':'100%'}"/>
 
     <select multiple={opts.field.multiple} if={opts.type=='select'}
-      field-type="select" style="width:200px" name={opts.field.name} url={opts.field.url} placeholder={opts.field.placeholder}>
+      field-type="select" style="width:{opts.field.width?opts.field.width+'px':'100%'}"
+      name={opts.field.name} data-url={opts.field['data-url']} placeholder={opts.field.placeholder}>
       <option if={opts.field.placeholder && !opts.field.multiple} value="">{opts.field.placeholder}</option>
       <option each={value in opts.field.choices} value={value[0]}>
           {value[1]}
@@ -181,29 +181,20 @@
     </select>
 
     <input type="text" name={ opts.field.name} class="form-control" field-type="{opts.type}"
-      if={(opts.type=='date' || opts.type=='datetime')} placeholder={opts.field.placeholder}/>
+      if={(opts.type=='date' || opts.type=='datetime')} placeholder={get_placeholder(opts.field.placeholder, 0)}
+      style="width:{opts.field.width?opts.field.width+'px':'auto'}"/>
 
     {"-": opts.field.range}
 
     <input type="text" name={ opts.field.name} class="form-control" field-type="{opts.type}"
-      if={(opts.type=='date' || opts.type=='datetime') && opts.field.range==true} placeholder={opts.field.placeholder}/>
+      if={(opts.type=='date' || opts.type=='datetime' || opts.type=='str' || opts.type=='unicode' || opts.type=='int') && opts.field.range==true}
+      placeholder={get_placeholder(opts.field.placeholder, 1)}
+      style="width:{opts.field.width?opts.field.width+'px':'auto'}"/>
 
     <script>
     var self = this
 
     this.on('mount', function(){
-      // if (opts.type == 'select' && !opts.field.multiple){
-      //   var _opts = $.extend({}, {width:'resolve', allowClear:true, minimumResultsForSearch: Infinity,
-      //     placeholder:opts.field.placeholder,
-      //     theme:'bootstrap', language:'zh_CN'}, opts.field.opts || {})
-      //   load('ui.select2', function(){
-      //     var el = $('[name='+opts.field.name+']', self.root).select2(_opts);
-      //     if (opts.data[opts.field.name])
-      //       el.val(opts.data[opts.field.name])
-      //     return
-      //   })
-      // } else
-
       var i18n = { // 本地化
         previousMonth : '上个月',
         nextMonth   : '下个月',
@@ -212,7 +203,7 @@
         weekdaysShort : ['日','一','二','三','四','五','六']
       }
 
-      if (opts.type == 'select' && opts.field.url){
+      if (opts.type == 'select' && opts.field['data-url']){
         load('ui.select2', function(){
           var el = $('[name='+opts.field.name+']', self.root);
           simple_select2(el, {width:'resolve'})
@@ -323,5 +314,10 @@
           $($('[name='+opts.field.name+']')[1]).val(opts.data[opts.field.name][1]);
         }
     })
+
+    this.get_placeholder = function (placeholder, index) {
+      index = index === undefined ? 0 : index
+      return Array.isArray(placeholder) ? placeholder[index]: placeholder
+    }
     </script>
 </input-field>

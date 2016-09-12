@@ -171,20 +171,20 @@ function popup_info(target, url, options) {
  @param url: download url
  */
 
-(function ($) {
-    $(function () {
-        jQuery('<iframe src="" style="display:none" id="ajaxiframedownload"></iframe>')
-            .appendTo('body');
-    });
-    $.download = function (url) {
-        //url and data options required
-        if (url) {
-            //send request
-            var el = $('#ajaxiframedownload');
-            el.attr('src', url);
-        }
-    }
-})(jQuery);
+ $.download = function (url) {
+     //url and data options required
+     if (url) {
+         //send request
+         var el = $('#ajaxiframedownload');
+         el.attr('src', url);
+     }
+ }
+
+$(function () {
+    var frame = $('#ajaxiframedownload')
+    if (frame.size() == 0)
+        $('<iframe src="" style="display:none" id="ajaxiframedownload"></iframe>').appendTo('body');
+});
 
 
 /* block_message

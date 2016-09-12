@@ -174,7 +174,7 @@ DataSet.prototype.getId = function (item) {
 };
 
 DataSet.prototype.async_call = function (f) {
-  var self = this
+  var me = this
   var _f = function (id, url) {
     var func
 
@@ -189,11 +189,11 @@ DataSet.prototype.async_call = function (f) {
         throw new Error("url should be string or function type")
       }
       return $.when(func()).done(function(data){
-        ret = f.call(self, data.data)
+        ret = f.call(me, data.data)
         return ret
       })
     } else {
-      return f.call(self, id)
+      return f.call(me, id)
     }
   }
   return _f
@@ -271,7 +271,7 @@ DataSet.prototype.insertAfter = function (data, index) {
 DataSet.prototype._insert = function (data, target, position) {
   var addedIds = [],
       id,
-      me = this, delta;
+      me = this, delta, parent;
 
   index = this.index(target);
 
@@ -284,11 +284,14 @@ DataSet.prototype._insert = function (data, target, position) {
         else {
           delta = 0
         }
+      } else {
+        if (addedIds.indexOf(data[i][me._parentField])>=0)
+          parent = data[i][me._parentField]
       }
       if (position == 'before')
-        id = me._insertItem(data[i], index+i, 'before', delta);
+        id = me._insertItem(data[i], index+i, 'before', delta, parent);
       else {
-        id = me._insertItem(data[i], index, 'after', delta);
+        id = me._insertItem(data[i], index, 'after', delta, parent);
         index = id.index
       }
       addedIds.push(id.id);
@@ -321,7 +324,7 @@ DataSet.prototype._insert = function (data, target, position) {
  * @return {String} id
  * @private
  */
-DataSet.prototype._insertItem = function (item, index, position, delta) {
+DataSet.prototype._insertItem = function (item, index, position, delta, parent) {
   var id = item[this._idField], node = this._data[index];
   delta = delta == undefined ? 0 : delta
 
@@ -358,9 +361,9 @@ DataSet.prototype._insertItem = function (item, index, position, delta) {
     }
   }
   this.length++;
-  var last_order, level, x, parent
+  var last_order, level, x
   if (this._isTree) {
-    d[this._parentField] = node[this._parentField]
+    d[this._parentField] = parent || node[this._parentField]
     if (!d[this._levelField])
       d[this._levelField] = node[this._levelField]
     if (position == 'after')
@@ -369,7 +372,6 @@ DataSet.prototype._insertItem = function (item, index, position, delta) {
       d[this._orderField] = node[this._orderField]
 
     level = node[this._levelField]
-    parent = node[this._parentField]
     last_order = d[this._orderField]
 
     this._reOrder(index+1, level, last_order)
@@ -479,39 +481,67 @@ DataSet.prototype._findNext = function (index) {
   } else return n
 }
 
+/*
+ * Test is a row has child node
+ */
+DataSet.prototype.has_child = function (row) {
+  var me = this
+  if (me._isTree) {
+    var index = me.index(row)
+    if (index+1 >= me.length) return false
+
+    return (me._data[index+1][me._parentField] == me._data[index][me._idField])
+  }
+  return false
+}
+
 /**
  * Update existing items via ajax request or just plain data
  * @param {String} url if no url then it'll use options.url
  *                 require jquery
+ * examples:
+ *   load('abc/def')
+ *   load('abc/def', {parent:1})
+ *   load('abc/def', {parent:1}, function(){})
+ *   load('abc/def', function(){})
+ *   load(function(){})
  */
-DataSet.prototype.load = function (url, callback) {
-  var self = this
+DataSet.prototype.load = function (url, param, callback) {
+  var me = this
   this._data = [];
   this._ids = {};
   this.length = 0;
+  this.url = url;
   if (typeof url === 'string') {
-    return $.getJSON(url || this._options.url).done(function(r) {
-        self.mute()
-        if (callback) self.add(callback(r))
-        else self.add(r)
-        self.mute(false)
-        self._trigger('load')
+    if (typeof param === 'function') {
+      callback = param
+      param = {}
+    }
+    me._trigger('loading')
+    return $.getJSON(url || this._options.url, param).done(function(r) {
+        me.mute()
+        if (callback) me.add(callback(r))
+        else me.add(r)
+        me.mute(false)
+        me._trigger('load')
       })
   } else {
-    self.mute()
-    if (callback) self.add(callback(url))
-    else self.add(url)
-    self.mute(false)
-    self._trigger('load')
+    me._trigger('loading')
+    me.mute()
+    if (callback) me.add(callback(url))
+    else me.add(url)
+    me.mute(false)
+    me._trigger('load')
   }
 }
 
-DataSet.prototype.load_tree = function (url, callback) {
+DataSet.prototype.load_tree = function (url, param, callback) {
   var me = this, opts = {}
   var f
   this._data = [];
   this._ids = {};
   this.length = 0;
+  this.url = url;
 
   var _post = function(){
     if (typeof callback != 'function' && callback instanceof Object) {
@@ -530,19 +560,30 @@ DataSet.prototype.load_tree = function (url, callback) {
   }
 
   if (typeof url === 'string') {
-    return $.getJSON(url || this._options.url).done(function(r) {
+    if (typeof param === 'function') {
+      callback = param
+      param = {}
+    }
+
+    me._trigger('loading')
+    return $.getJSON(url || this._options.url, param).done(function(r) {
         me._isTree = false
+        me.mute()
         if (callback) me.add(callback(r))
         else me.add(r)
+        me.mute(false)
         me._isTree = true
         _post()
       })
   } else {
-    me._isTree = true
+    me._trigger('loading')
+    me._isTree = false
+    me.mute()
     if (typeof callback == 'function')
       me.add(callback(url))
     else me.add(url)
-    me._isTree = false
+    me.mute(false)
+    me._isTree = true
     _post()
   }
 }
@@ -1113,7 +1154,7 @@ DataSet.prototype._sort = function (items, order) {
     var arr;
     var key;
     var f, desc, last=null;
-    var self =  this
+    var me =  this
     if (util.isString(order)) arr = [order]
     else arr = order
     for(var i=arr.length-1; i>-1; i--){
@@ -1125,9 +1166,9 @@ DataSet.prototype._sort = function (items, order) {
         else
             desc = false;
         if (last)
-            f = self._by(key, desc, last);
+            f = me._by(key, desc, last);
         else
-            f = self._by(key, desc);
+            f = me._by(key, desc);
         last = f;
     }
     return mergesort(items, f);

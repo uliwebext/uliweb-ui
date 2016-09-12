@@ -95,5 +95,5 @@
 function get_url(url, data) {
   var query = new QueryString(url)
   query.merge(data)
-  return query.toString()
+  return query.url+query.toString()
 }

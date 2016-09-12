@@ -13,10 +13,13 @@
 .table-bordered > tfoot > tr > td {
   border: 1px solid #ccc;
 }
-.table-field-label {min-width: 150px;display: table-cell;text-align: right;margin-right: 10px;
+.table-field-label {min-width: 120px;display: table-cell;text-align: right;margin-right: 10px;
     vertical-align:top;
-    font-weight:bold;margin-bottom:0;padding-right:10px;}
-.table-layout .form-control-static  {display:inline-block;vertical-align:top;padding-top:0;padding-bottom:0;}
+    font-weight:bold;margin-bottom:0;padding-right:10px;
+    padding-top:5px;
+  }
+.table-layout {margin-bottom:0px;}
+.table-layout .form-control-static  {display:inline-block;vertical-align:top;padding-top:5px;padding-bottom:0;}
 .table-layout .form-control  {display:table-cell;vertical-align:top;}
 .table-field-row {display:table-row;width:100%;min-height:34px;}
 .table-field-col {display:table-cell; width:2000px;}
@@ -44,3 +47,4 @@ legend {margin-bottom:0; border-bottom:none;}
         display: initial;
     }
 }
+.label-default {line-height: 27px;}
