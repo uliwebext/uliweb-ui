@@ -340,7 +340,7 @@ $(document).ajaxError(function (event, jqxhr, settings, thrownError) {
         var url = m.redirect;
         //Test if login, then replace next parameter
         if (login.test(m.redirect)) {
-            url = updateURLParameter(m.redirect, 'next', window.location.href);
+            url = get_url(m.redirect, {next: window.location.href});
         }
         window.location.href = url;
     }
