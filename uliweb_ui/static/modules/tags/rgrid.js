@@ -90,6 +90,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     orderField: opts.orderField,
     levelField: opts.levelField,
     treeField: opts.treeField,
+    hasChildrenField: opts.hasChildrenField,
     onDblclick: opts.onDblclick,
     onClick: opts.onClick,
     onMove: opts.onMove,
@@ -100,6 +101,8 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     onDeselected: opts.onDeselected,
     onLoadData: opts.onLoadData || this.onloaddata,
     onSort: opts.onSort || this.onsort,
+    onCheckable: opts.onCheckable,
+    colspanValue: opts.colspanValue,
     draggable: opts.draggable,
     editable: opts.editable,
     remoteSort: opts.remoteSort

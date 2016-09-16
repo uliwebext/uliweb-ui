@@ -128,6 +128,7 @@
     orderField: opts.orderField,
     levelField: opts.levelField,
     treeField: opts.treeField,
+    hasChildrenField: opts.hasChildrenField,
     onDblclick: opts.onDblclick,
     onClick: opts.onClick,
     onMove: opts.onMove,
@@ -138,6 +139,8 @@
     onDeselected: opts.onDeselected,
     onLoadData: opts.onLoadData || this.onloaddata,
     onSort: opts.onSort || this.onsort,
+    onCheckable: opts.onCheckable,
+    colspanValue: opts.colspanValue,
     draggable: opts.draggable,
     editable: opts.editable,
     remoteSort: opts.remoteSort
