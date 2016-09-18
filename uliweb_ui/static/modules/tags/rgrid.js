@@ -37,6 +37,19 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     self.update()
   }
 
+  this.onsort = function (sorts) {
+    var _url
+    if (sorts.length > 0) {
+      _url = get_url(self.url, {sort:sorts[0].name+'.'+sorts[0].direction})
+    } else
+      _url = get_url(self.url, {sort:''})
+
+    self.url = _url
+    self.load(_url, function(r){
+      return r.rows
+    })
+  }
+
   this.onloaddata = function (parent) {
     var param = {parent:parent[opts.idField || 'id']}
     $.getJSON(self.url, param).done(function(r){
@@ -61,6 +74,8 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     labelField : opts.labelField || 'title',
     indexCol: opts.indexCol,
     checkCol: opts.checkCol,
+    indexColFrozen: opts.indexColFrozen,
+    checkColFrozen: opts.checkColFrozen,
     multiSelect: opts.multiSelect,
     maxHeight: opts.maxHeight,
     minHeight: opts.minHeight,
@@ -77,6 +92,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     orderField: opts.orderField,
     levelField: opts.levelField,
     treeField: opts.treeField,
+    hasChildrenField: opts.hasChildrenField,
     onDblclick: opts.onDblclick,
     onClick: opts.onClick,
     onMove: opts.onMove,
@@ -86,9 +102,11 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     onSelected: opts.onSelected,
     onDeselected: opts.onDeselected,
     onLoadData: opts.onLoadData || this.onloaddata,
+    onSort: opts.onSort || this.onsort,
+    onCheckable: opts.onCheckable,
+    colspanValue: opts.colspanValue,
     draggable: opts.draggable,
     editable: opts.editable,
-    onSort: opts.onSort,
     remoteSort: opts.remoteSort
   }
 

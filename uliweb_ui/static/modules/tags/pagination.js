@@ -6,7 +6,6 @@ riot.tag2('pagination', '<ul class="pagination"> <li if="{totalMessage}" class="
   this.total = opts.total
   this.page = opts.page || 1
   this.limit = opts.limit || 10
-  this.url = opts.url
   this.data = opts.data
   this.limits = opts.limits || [10, 20, 30, 40, 50]
   this.size = opts.size || 10
@@ -31,6 +30,7 @@ riot.tag2('pagination', '<ul class="pagination"> <li if="{totalMessage}" class="
   this.refresh = opts.refresh || '刷新'
 
   this.on('update', function(){
+    this.url = opts.url
     this.total = opts.total
     self.show()
   })

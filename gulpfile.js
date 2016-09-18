@@ -60,8 +60,7 @@ gulp.task('tags-js', function() {
     // .pipe(notify({ message: 'js-rest task complete' }));
 });
 
-gulp.task('watch', function() {
-  gulp.start('css', 'js', 'tags', 'tags-js');
+gulp.task('watch', ['default'], function() {
   gulp.watch('uliweb_ui/src/tags/*.tag', ['tags']);
   // Watch .css files
   gulp.watch('uliweb_ui/src/utils/css/*.css', ['css']);
