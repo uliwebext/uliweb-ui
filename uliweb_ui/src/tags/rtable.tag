@@ -19,6 +19,7 @@
     indexCol(Optional):     Display index column, starting value will be this.start
     indexColWidth(Optional):Width of index column, default is 40
     checkCol(Optional):     Display checkbox column
+    checkColWidth(Optional):Width of checkbox column, default is 30
     multiSelect(Optional):  Multi selection, default is false
     clickSelect(Optional):  If click can select row, default is 'row', others are: 'column', null
     remoteSort(Optional):   If sort in remote, it'll invoke a callback onSort. Default is false
@@ -286,7 +287,7 @@
           title={sort} onclick={sort_handler} style="top:{get_sort_top(get_sorted(name))}px"></div>
       </div>
     </div>
-    <div class="rtable-header rtable-main" style="width:{width-fix_width-xscroll_fix}px;right:0px;height:{header_height}px;left:{fix_width}px;">
+    <div class="rtable-header rtable-main" style="width:{width-fix_width-yscroll_fix}px;right:0px;height:{header_height}px;left:{fix_width}px;">
       <div each={main_columns} no-reorder class={rtable-cell:true}
         style="width:{width}px;height:{height}px;left:{left}px;top:{top}px;line-height:{height}px;">
         <!-- table header column -->
@@ -308,7 +309,7 @@
     </div>
 
     <div class="rtable-body rtable-fixed"
-      style="width:{fix_width}px;bottom:{xscroll_width}px;top:{header_height}px;height:{height-header_height-xscroll_width}px;">
+      style="width:{fix_width}px;bottom:0;padding-bottom:{xscroll_fix}px;top:{header_height}px;height:{height-header_height-xscroll_fix}px;">
       <!-- transform:translate3d(0px,{0-content.scrollTop}px,0px); -->
       <div class="rtable-content" style="width:{fix_width}px;height:{rows.length*rowHeight}px;">
         <div each={row in visCells.fixed} no-reorder class={get_row_class(row.row, row.line)}>
@@ -334,8 +335,8 @@
         </div>
       </div>
     </div>
-    <div class="rtable-body rtable-main" onscroll={scrolling}
-      style="left:{fix_width}px;top:{header_height}px;bottom:0px;right:0px;width:{width-fix_width+yscroll_fix}px;height:{height-header_height+xscroll_fix}px;">
+    <div class="rtable-body rtable-main"
+      style="left:{fix_width}px;top:{header_height}px;bottom:0px;right:0px;width:{width-fix_width+(browser.ie?yscroll_fix:0)}px;height:{height-header_height+(browser.ie?xscroll_fix:0)}px;">
       <!-- transform:translate3d({0-content.scrollLeft}px,{0-content.scrollTop}px,0px); -->
       <div class="rtable-content" style="width:{main_width}px;height:{rows.length*rowHeight}px;">
         <div each={row in visCells.main} no-reorder class={get_row_class(row.row, row.line)}>
@@ -396,6 +397,9 @@
   this.headerRowHeight = opts.headerRowHeight || 34
   this.rowHeight = opts.rowHeight || 34
   this.indexColWidth = opts.indexColWidth || 40
+  this.indexColFrozen = opts.indexColFrozen || false
+  this.checkColWidth = opts.checkColWidth || 30
+  this.checkColFrozen = opts.checkColFrozen || false
   this.multiSelect = opts.multiSelect || false
   this.visCells = []
   this.selected_rows = []
@@ -541,9 +545,19 @@
         self.resize()
     })
 
+
+    this.content.addEventListener('scroll', function(e){
+      self.scrolling(e)
+    }, {passive:true})
+
     this.content.addEventListener('mousewheel', function(e){
       self.mousewheel(e)
+      e.preventDefault()
     })
+
+    this.content_fixed.addEventListener('mousewheel', function(e){
+      self.mousewheel(e)
+    }, {passive:true})
 
     $(this.content).on('click', '.rtable-cell', this.click_handler)
       .on('dblclick', '.rtable-cell', this.dblclick_handler)
@@ -557,7 +571,7 @@
     this.calSize()
     this.calHeader()  //calculate header positions
     this.calData()    //calculate data position
-    this.calScrollbar()
+    <!-- this.calScrollbar() -->
     this.bind()       //monitor data change
     this.update()
   })
@@ -976,7 +990,7 @@
       cols = [],
       cal_cols=[],
       width = 0,
-      has_frozen,
+      has_frozen = false,
       has_col, has_check;
 
     max_level = 0
@@ -987,8 +1001,13 @@
       } else if (self.cols[x][self.nameField] == '__check_col__'){
         has_check = true
       }
-      if (has_col && has_check) break
+      if (this.cols[x].frozen){
+        has_frozen = true
+      }
+      if (has_col && has_check && has_frozen) break
     }
+
+    has_frozen = has_frozen || this.indexColFrozen || this.checkColFrozen
 
     // this.cols = opts.cols.slice()
     //
@@ -999,7 +1018,7 @@
           return col.index + 1
         },
         width:self.indexColWidth,
-        frozen:true,
+        frozen:has_frozen,
         align:'center'
       }
       col[this.nameField] = '__index_col__'
@@ -1007,19 +1026,12 @@
       this.cols.unshift(col)
     }
 
-    for(i=0, len=self.cols.length; i<len; i++){
-      if (this.cols[i].frozen){
-        has_frozen = true
-        break
-      }
-    }
-
     if (opts.checkCol && !has_check) {
       col = {
         type:'check',
-        width:30,
+        width:self.checkColWidth,
         align:'center',
-        frozen:has_frozen
+        frozen: has_frozen
       }
       col[this.nameField] = '__check_col__'
       col[this.titleField] = '_check'
@@ -1047,6 +1059,16 @@
       else
         width += col.width
     }
+    this.max_level = max_level
+    this.header_height = max_level * this.headerRowHeight
+    this.calData()
+
+    //计算滚动修正值
+    if (this.rowHeight * this.rows.length > this.height - this.header_height)
+      this.yscroll_fix = this.scrollbar_width
+    else
+      this.yscroll_fix = 0
+
 
     //计算无width的列
     if (cal_cols.length > 0) {
@@ -1079,9 +1101,15 @@
       else
         main_width += col.width
     }
-    this.header_height = this.max_level * this.headerRowHeight
     this.fix_width = fix_width
     this.main_width = main_width //内容区宽度
+
+    //计算滚动修正值
+    if (this.main_width > this.width - this.fix_width)
+      this.xscroll_fix = this.scrollbar_width
+    else
+      this.xscroll_fix = 0
+
   }
 
   /* calculate width and height */
@@ -1108,8 +1136,8 @@
     this.has_xscroll = this.content.scrollWidth > this.content.clientWidth || this.main_width > (this.width - this.fix_width)
     this.xscroll_width = this.has_xscroll ? this.scrollbar_width : 0
     this.yscroll_width = this.has_yscroll ? this.scrollbar_width : 0
-    this.xscroll_fix = this.browser.ie && this.has_xscroll ? this.xscroll_width : 0
-    this.yscroll_fix = this.browser.ie && this.has_yscroll ? this.yscroll_width : 0
+    <!-- this.xscroll_fix = this.browser.ie && this.has_xscroll ? this.xscroll_width : 0
+    this.yscroll_fix = this.browser.ie && this.has_yscroll ? this.yscroll_width : 0 -->
   }
 
   /* Calculate data relative position
@@ -1168,6 +1196,7 @@
 
     first = Math.max(Math.floor(this.content.scrollTop / this.rowHeight), 0)
     last = Math.ceil((this.content.scrollTop+this.height-this.header_height) / this.rowHeight)
+
     var b = new Date().getTime()
 
     len = last - first
@@ -1234,7 +1263,7 @@
           selected:this.is_selected(row),
           render:col.render,
           buttons:col.buttons,
-          index:first+i,
+          index:first+index,
           sor:col.sort,
           align:col.align,
           class:col.class,
@@ -1407,7 +1436,6 @@
   }
 
   this.scrolling = function(e) {
-    e.preventUpdate = true
     self.header.scrollLeft = self.content.scrollLeft
     self.content_fixed.scrollTop = self.content.scrollTop
     return self.update()
@@ -1476,8 +1504,6 @@
     var wheelEvent = normalizeWheel(event);
     // we need to detect in which direction scroll is happening to allow trackpads scroll horizontally
     // horizontal scroll
-    var left1 = this.header.scrollLeft, top1 = this.header.scrollTop,
-      left2 = this.content.scrollLeft, top2 = this.content.scrollTop
     if (Math.abs(wheelEvent.pixelX) > Math.abs(wheelEvent.pixelY)) {
         this.header.scrollLeft = this.header.scrollLeft + wheelEvent.pixelX
         this.content.scrollLeft = this.content.scrollLeft + wheelEvent.pixelX
@@ -1486,10 +1512,7 @@
         this.header.scrollTop = this.header.scrollTop + wheelEvent.pixelY
         this.content.scrollTop = this.content.scrollTop + wheelEvent.pixelY
     }
-    <!-- if ((this.header.scrollLeft != left1) || (this.content.scrollLeft != left2) ||
-      (this.header.scrollTop!=top1) || (this.content.scrollTop != top2)) -->
-    e.preventDefault()
-    return false;
+    return true
   }
 
   <!--
@@ -1626,7 +1649,7 @@
     self.calSize()
     self.calHeader()  //calculate header positions
     self.calData()    //calculate data position
-    self.calScrollbar()
+    <!-- self.calScrollbar() -->
     self.header.scrollLeft = self.content.scrollLeft
     self.content_fixed.scrollTop = self.content.scrollTop
     self.update()

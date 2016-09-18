@@ -112,6 +112,8 @@
     labelField : opts.labelField || 'title',
     indexCol: opts.indexCol,
     checkCol: opts.checkCol,
+    indexColFrozen: opts.indexColFrozen,
+    checkColFrozen: opts.checkColFrozen,
     multiSelect: opts.multiSelect,
     maxHeight: opts.maxHeight,
     minHeight: opts.minHeight,
