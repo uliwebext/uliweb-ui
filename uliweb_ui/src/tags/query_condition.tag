@@ -211,7 +211,9 @@
       }else if (opts.type == 'select') {
         var _opts = $.extend({}, {
             includeSelectAllOption: true,
-            selectAllText: '全部选中',
+            selectAllText: '全选',
+            allSelectedText: '全部选中',
+            nSelectedText: '个已选',
 //            enableFiltering: true,
 //            enableCaseInsensitiveFiltering: true,
             buttonClass: 'btn btn-default btn-flat',
