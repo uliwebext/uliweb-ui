@@ -83,7 +83,7 @@
                    <span class="condition-label {nomore:i==0 &&!show}" style="min-width:{!show?0:labelWidth}px">{ fields[this.field].label || field }</span>
                    <input-field field={ fields[field] } data={data}
                      type={ fields[this.field].type || 'str' }
-                     style="min-width:{show?inputWidth+'px':'auto'}">
+                     style="min-width:{field.width || inputWidth}px">
                    </input-field>
                 </div>
                 <div if={ i==0 && !show } class="condition-cell condition-buttons" >
@@ -119,6 +119,7 @@
         self.fields[v['name']] = v
         if (v.type == 'select')
           v.placeholder = v.placeholder || '--- 请选择 ---'
+        v._width = v.width ? v.width+'px' : (v.range?'auto':'100%')
       })
       this.show = false
       // 使用 query_string 初始化值, 定义在uliweb-ui.js中
@@ -165,14 +166,14 @@
     <input type="text" name={ opts.field.name } class="form-control" field-type="str"
       if={opts.type=='str' || opts.type=='unicode' || opts.type=='int'}
       placeholder={get_placeholder(opts.field.placeholder, 0)}
-      style="width:{opts.field.width?opts.field.width+'px': (opts.field.range?'auto':'100%')}"/>
+      style="width:{opts.field._width}"/>
 
     <input type="password" name={ opts.field.name } class="form-control" field-type="password"
       if={opts.type=='password'} placeholder={opts.field.placeholder}
-      style="width:{opts.field.width?opts.field.width+'px':'100%'}"/>
+      style="width:{opts.field._width}"/>
 
     <select multiple={opts.field.multiple} if={opts.type=='select'}
-      field-type="select" style="width:{opts.field.width?opts.field.width+'px':'100%'}"
+      field-type="select" style="width:{opts.field._width}"
       name={opts.field.name} data-url={opts.field['data-url']} placeholder={opts.field.placeholder}>
       <option if={opts.field.placeholder && !opts.field.multiple} value="">{opts.field.placeholder}</option>
       <option each={value in opts.field.choices} value={value[0]}>
@@ -182,14 +183,14 @@
 
     <input type="text" name={ opts.field.name} class="form-control" field-type="{opts.type}"
       if={(opts.type=='date' || opts.type=='datetime')} placeholder={get_placeholder(opts.field.placeholder, 0)}
-      style="width:{opts.field.width?opts.field.width+'px':'auto'}"/>
+      style="width:{opts.field._width}"/>
 
     {"-": opts.field.range}
 
     <input type="text" name={ opts.field.name} class="form-control" field-type="{opts.type}"
       if={(opts.type=='date' || opts.type=='datetime' || opts.type=='str' || opts.type=='unicode' || opts.type=='int') && opts.field.range==true}
       placeholder={get_placeholder(opts.field.placeholder, 1)}
-      style="width:{opts.field.width?opts.field.width+'px':'auto'}"/>
+      style="width:{opts.field._width}"/>
 
     <script>
     var self = this
