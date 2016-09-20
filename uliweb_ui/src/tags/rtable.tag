@@ -1263,7 +1263,7 @@
           selected:this.is_selected(row),
           render:col.render,
           buttons:col.buttons,
-          index:first+index,
+          index:this.start+index,
           sor:col.sort,
           align:col.align,
           class:col.class,
