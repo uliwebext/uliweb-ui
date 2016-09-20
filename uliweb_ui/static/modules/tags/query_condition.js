@@ -70,7 +70,9 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
       }else if (opts.type == 'select') {
         var _opts = $.extend({}, {
             includeSelectAllOption: true,
-            selectAllText: '全部选中',
+            selectAllText: '全选',
+            allSelectedText: '全部选中',
+            nSelectedText: '个已选',
 
             buttonClass: 'btn btn-default btn-flat',
             numberDisplayed: 2,
