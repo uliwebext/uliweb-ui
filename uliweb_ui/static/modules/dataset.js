@@ -796,7 +796,7 @@ DataSet.prototype.tree = function (options) {
   idField = options.idField || me._idField
   orderField = options.orderField || me._orderField
 
-  order.push(options.parentField || me._parentField)
+  order.push(options.levelField || me._levelField)
   order.push(orderField)
 
   var items = this.get({order:order})
