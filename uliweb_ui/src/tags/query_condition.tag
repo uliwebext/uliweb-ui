@@ -273,7 +273,9 @@
                   trigger_selected = "-1";
                 }
               } else {
-                trigger_selected = "-1";
+                if (typeof(trigger_selected) == 'undefined'){
+                  trigger_selected = "-1";
+                }
               }
               $.ajax({
                 method: "post",
