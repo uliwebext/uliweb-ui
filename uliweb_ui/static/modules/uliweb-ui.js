@@ -1631,3 +1631,43 @@ function get_url(url, data) {
   query.merge(data)
   return query.url+query.toString()
 }
+
+/*
+ * 生成树弹出框
+ * target 目标元素
+ * url 后台路径
+ */
+function tree_select(target, url, options) {
+    load('ui.popover', function(){
+        var default_setting = {
+            content:function(data){
+                var begin, end;
+                begin = data.indexOf('<!-- form -->')
+                end = data.indexOf('<!-- end form -->')
+                if (begin > -1 && end > -1){
+                    return data.substring(begin, end);
+                }
+                return data;
+            },
+            async: {
+                success: function(that){
+                    that.getContentElement().on('success.form', function(e, data){
+                        that.hide();
+                    });
+                }
+            },
+            title: '',
+            width:400,
+            arrow:false,
+            cache:false,
+            height:'auto',
+            padding:true,
+            closeable:true,
+            type:'async',
+            url:url,
+            delay:50
+        }
+        var opts = $.extend({}, default_setting, options || {})
+        $(target).webuiPopover(opts);
+    })
+}

@@ -53,7 +53,6 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
       }
       else {
         parent.has_children = false
-        console.log('+++++++')
         self.update()
       }
     })

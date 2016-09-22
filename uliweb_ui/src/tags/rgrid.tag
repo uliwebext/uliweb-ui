@@ -91,7 +91,6 @@
       }
       else {
         parent.has_children = false
-        console.log('+++++++')
         self.update()
       }
     })
