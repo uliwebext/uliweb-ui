@@ -280,6 +280,7 @@
               $.ajax({
                 method: "post",
                 url: opts.field.choices_url + '/' + trigger_selected,
+                async: false,
                 success: function(result) {
                   opts.field.choices = result;
 
