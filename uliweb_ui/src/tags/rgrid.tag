@@ -20,6 +20,7 @@
       </div>
     </div>
   </div>
+  <yield/>
   <!-- 表格 -->
   <rtable cols={cols} options={rtable_options} data={data} start={start} observable={observable}></rtable>
   <!-- footer 按钮 -->
