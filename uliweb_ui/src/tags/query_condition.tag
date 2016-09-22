@@ -273,11 +273,14 @@
                   trigger_selected = "-1";
                 }
               } else {
-                trigger_selected = "-1";
+                if (!("" + trigger_selected)){
+                  trigger_selected = "-1";
+                }
               }
               $.ajax({
                 method: "post",
                 url: opts.field.choices_url + '/' + trigger_selected,
+                async: false,
                 success: function(result) {
                   opts.field.choices = result;
 
