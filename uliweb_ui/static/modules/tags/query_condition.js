@@ -130,7 +130,7 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
                   trigger_selected = "-1";
                 }
               } else {
-                if (typeof(trigger_selected) == 'undefined'){
+                if (!("" + trigger_selected)){
                   trigger_selected = "-1";
                 }
               }

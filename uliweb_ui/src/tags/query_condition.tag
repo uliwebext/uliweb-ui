@@ -273,7 +273,7 @@
                   trigger_selected = "-1";
                 }
               } else {
-                if (typeof(trigger_selected) == 'undefined'){
+                if (!("" + trigger_selected)){
                   trigger_selected = "-1";
                 }
               }
