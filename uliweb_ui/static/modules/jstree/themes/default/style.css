@@ -1029,3 +1029,6 @@
     margin-right: 0;
   }
 }
+.jstree-disabled .jstree-checkbox {
+  display: none;
+}

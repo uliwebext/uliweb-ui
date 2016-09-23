@@ -1,7 +1,8 @@
 
-riot.tag2('pagination', '<ul class="pagination"> <li if="{totalMessage}" class="disabled total"><a>{totalMessage}</a></li> <li if="{has_first}" class="first"><a href="#" onclick="{go(1)}"><raw content="{first}"></raw></a></li> <li if="{has_prev}" class="prev"><a href="#" onclick="{go(page-1)}"><raw content="{prev}"></raw></a></li> <li class="{page:true, active:p==page}" each="{p in pages}"><a href="#" onclick="{go(p)}">{p}</a></li> <li if="{has_next}" class="next"><a href="#" onclick="{go(page+1)}"><raw content="{next}"></raw></a></li> <li if="{has_last}" class="last"><a href="#" onclick="{go(totalPages)}"><raw content="{last}"></raw></a></li> <li if="{refresh}" class="refresh"><a href="#" onclick="{go(page)}"><raw content="{refresh}"></raw></a></li> </ul>', '', '', function(opts) {
+riot.tag2('pagination', '<ul class="pagination"> <li if="{totalMessage}" class="disabled total"><a>{totalMessage}</a></li> <li if="{has_first}" class="first"><a href="#" onclick="{go(1)}"><pagination-raw content="{first}"></pagination-raw></a></li> <li if="{has_prev}" class="prev"><a href="#" onclick="{go(page-1)}"><pagination-raw content="{prev}"></pagination-raw></a></li> <li class="{page:true, active:p==page}" each="{p in pages}"><a href="#" onclick="{go(p)}">{p}</a></li> <li if="{has_next}" class="next"><a href="#" onclick="{go(page+1)}"><pagination-raw content="{console.log(next)||next}"></pagination-raw></a></li> <li if="{has_last}" class="last"><a href="#" onclick="{go(totalPages)}"><pagination-raw content="{last}"></pagination-raw></a></li> <li if="{refresh}" class="refresh"><a href="#" onclick="{go(page)}"><pagination-raw content="{refresh}"></pagination-raw></a></li> </ul>', '', '', function(opts) {
 
   var self = this
+  this.observable = opts.observable
 
   this.total = opts.total
   this.page = opts.page || 1
@@ -16,7 +17,7 @@ riot.tag2('pagination', '<ul class="pagination"> <li if="{totalMessage}" class="
       return data.rows
     })
   }
-  this.onpagechanged = opts.onPageChanged
+  this.onpagechanged = opts.onpagechanged
 
   this._totalMessage = opts.totalMessage || '共 $pages 页 / $records 条记录'
   this.prev = opts.prev || '上一页'
@@ -32,7 +33,7 @@ riot.tag2('pagination', '<ul class="pagination"> <li if="{totalMessage}" class="
   this.on('update', function(){
     this.url = opts.url
     this.total = opts.total
-    self.show()
+    this.show()
   })
 
   this.get_url = function(page) {
@@ -41,9 +42,10 @@ riot.tag2('pagination', '<ul class="pagination"> <li if="{totalMessage}" class="
 
   this.go = function (page) {
     f = function (e) {
+      e.preventDefault()
       self.page = page
-      if (opts.onBeforePage && typeof opts.onBeforePage === 'function') {
-        opts.onBeforePage.call(self)
+      if (opts.onbeforepage && typeof opts.onbeforepage === 'function') {
+        opts.onbeforepage.call(self)
       }
       if (self.onpage && typeof self.onpage === 'function') {
         $.when(self.onpage.call(self, page)).done(function(data){
@@ -55,6 +57,7 @@ riot.tag2('pagination', '<ul class="pagination"> <li if="{totalMessage}" class="
       } else {
         self.show()
       }
+
     }
     return f
   }
@@ -96,13 +99,14 @@ riot.tag2('pagination', '<ul class="pagination"> <li if="{totalMessage}" class="
       self.has_last = false
       self.has_first = false
     }
-
-    self.update()
   }
 
 });
 
-riot.tag2('raw', '<span></span>', '', '', function(opts) {
+riot.tag2('pagination-raw', '<span></span>', '', '', function(opts) {
+  this.on('mount', function(){
+    this.root.innerHTML = opts.content
+  })
   this.on('update', function () {
     this.root.innerHTML = opts.content
   })

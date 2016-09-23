@@ -212,7 +212,9 @@
       }else if (opts.type == 'select') {
         var _opts = $.extend({}, {
             includeSelectAllOption: true,
-            selectAllText: '全部选中',
+            selectAllText: '全选',
+            allSelectedText: '全部选中',
+            nSelectedText: '个已选',
 //            enableFiltering: true,
 //            enableCaseInsensitiveFiltering: true,
             buttonClass: 'btn btn-default btn-flat',
@@ -271,11 +273,14 @@
                   trigger_selected = "-1";
                 }
               } else {
-                trigger_selected = "-1";
+                if (!("" + trigger_selected)){
+                  trigger_selected = "-1";
+                }
               }
               $.ajax({
                 method: "post",
                 url: opts.field.choices_url + '/' + trigger_selected,
+                async: false,
                 success: function(result) {
                   opts.field.choices = result;
 

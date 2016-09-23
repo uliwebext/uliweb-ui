@@ -50,7 +50,7 @@ riot.tag2('query-condition', '<div class="query-condition"> <form method="get" a
 
 });
 
-riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="form-control" field-type="str" if="{opts.type==\'str\' || opts.type==\'unicode\' || opts.type==\'int\'}" placeholder="{get_placeholder(opts.field.placeholder, 0)}" riot-style="width:{opts.field._width}"> <input type="password" name="{opts.field.name}" class="form-control" field-type="password" if="{opts.type==\'password\'}" placeholder="{opts.field.placeholder}" riot-style="width:{opts.field._width}"> <select __multiple="{opts.field.multiple}" if="{opts.type==\'select\'}" field-type="select" riot-style="width:{opts.field._width}" name="{opts.field.name}" data-url="{opts.field[\'data-url\']}" placeholder="{opts.field.placeholder}"> <option if="{opts.field.placeholder && !opts.field.multiple}" value="">{opts.field.placeholder}</option> <option each="{value in opts.field.choices}" value="{value[0]}"> {value[1]} </option> </select> <input type="text" name="{opts.field.name}" class="form-control" field-type="{opts.type}" if="{(opts.type==\'date\' || opts.type==\'datetime\')}" placeholder="{get_placeholder(opts.field.placeholder, 0)}" riot-style="width:{opts.field._width}"> {⁗-⁗: opts.field.range} <input type="text" name="{opts.field.name}" class="form-control" field-type="{opts.type}" if="{(opts.type==\'date\' || opts.type==\'datetime\' || opts.type==\'str\' || opts.type==\'unicode\' || opts.type==\'int\') && opts.field.range==true}" placeholder="{get_placeholder(opts.field.placeholder, 1)}" riot-style="width:{opts.field._width}">', '', '', function(opts) {
+riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="form-control" field-type="str" if="{opts.type==\'str\' || opts.type==\'unicode\' || opts.type==\'int\'}" placeholder="{get_placeholder(opts.field.placeholder, 0)}" riot-style="width:{opts.field._width}"> <input type="password" name="{opts.field.name}" class="form-control" field-type="password" if="{opts.type==\'password\'}" placeholder="{opts.field.placeholder}" riot-style="width:{opts.field._width}"> <select multiple="{opts.field.multiple}" if="{opts.type==\'select\'}" field-type="select" riot-style="width:{opts.field._width}" name="{opts.field.name}" data-url="{opts.field[\'data-url\']}" placeholder="{opts.field.placeholder}"> <option if="{opts.field.placeholder && !opts.field.multiple}" value="">{opts.field.placeholder}</option> <option each="{value in opts.field.choices}" value="{value[0]}"> {value[1]} </option> </select> <input type="text" name="{opts.field.name}" class="form-control" field-type="{opts.type}" if="{(opts.type==\'date\' || opts.type==\'datetime\')}" placeholder="{get_placeholder(opts.field.placeholder, 0)}" riot-style="width:{opts.field._width}"> {⁗-⁗: opts.field.range} <input type="text" name="{opts.field.name}" class="form-control" field-type="{opts.type}" if="{(opts.type==\'date\' || opts.type==\'datetime\' || opts.type==\'str\' || opts.type==\'unicode\' || opts.type==\'int\') && opts.field.range==true}" placeholder="{get_placeholder(opts.field.placeholder, 1)}" riot-style="width:{opts.field._width}">', '', '', function(opts) {
     var self = this
 
     this.on('mount', function(){
@@ -70,7 +70,9 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
       }else if (opts.type == 'select') {
         var _opts = $.extend({}, {
             includeSelectAllOption: true,
-            selectAllText: '全部选中',
+            selectAllText: '全选',
+            allSelectedText: '全部选中',
+            nSelectedText: '个已选',
 
             buttonClass: 'btn btn-default btn-flat',
             numberDisplayed: 2,
@@ -128,11 +130,14 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
                   trigger_selected = "-1";
                 }
               } else {
-                trigger_selected = "-1";
+                if (!("" + trigger_selected)){
+                  trigger_selected = "-1";
+                }
               }
               $.ajax({
                 method: "post",
                 url: opts.field.choices_url + '/' + trigger_selected,
+                async: false,
                 success: function(result) {
                   opts.field.choices = result;
 
@@ -149,8 +154,9 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
 
         load('ui.bootstrap.multiselect', function(){
           var el = $('[name='+opts.field.name+']', self.root).multiselect(_opts);
-          if (opts.data[opts.field.name])
-            el.multiselect('select', opts.data[opts.field.name])
+          if (opts.data[opts.field.name]){
+            el.multiselect('select', opts.data[opts.field.name]);
+          }
         })
       } else if (opts.type == 'date') {
         var _opts = {format: 'YYYY-MM-DD', showTime:false, i18n:i18n};
@@ -166,7 +172,7 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
       }
       if (opts.data[opts.field.name])
         if (opts.type == "select" || typeof(opts.data[opts.field.name]) == "string") {
-          $('[name='+opts.field.name+']').val(opts.data[opts.field.name])
+          $('[name='+opts.field.name+']').val(opts.data[opts.field.name]);
         } else {
           $($('[name='+opts.field.name+']')[0]).val(opts.data[opts.field.name][0]);
           $($('[name='+opts.field.name+']')[1]).val(opts.data[opts.field.name][1]);

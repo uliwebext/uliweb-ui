@@ -3,15 +3,16 @@
 
   <ul class="pagination">
     <li if={totalMessage} class="disabled total"><a>{totalMessage}</a></li>
-    <li if={has_first} class="first"><a href="#" onclick={go(1)}><raw content={first}></raw></a></li>
-    <li if={has_prev} class="prev"><a href="#" onclick={go(page-1)}><raw content={prev}></raw></a></li>
+    <li if={has_first} class="first"><a href="#" onclick={go(1)}><pagination-raw content={first}></pagination-raw></a></li>
+    <li if={has_prev} class="prev"><a href="#" onclick={go(page-1)}><pagination-raw content={prev}></pagination-raw></a></li>
     <li class={page:true, active:p==page} each={p in pages}><a href="#" onclick={go(p)}>{p}</a></li>
-    <li if={has_next} class="next"><a href="#" onclick={go(page+1)}><raw content={next}></raw></a></li>
-    <li if={has_last} class="last"><a href="#" onclick={go(totalPages)}><raw content={last}></raw></a></li>
-    <li if={refresh} class="refresh"><a href="#" onclick={go(page)}><raw content={refresh}></raw></a></li>
+    <li if={has_next} class="next"><a href="#" onclick={go(page+1)}><pagination-raw content="{console.log(next)||next}"></pagination-raw></a></li>
+    <li if={has_last} class="last"><a href="#" onclick={go(totalPages)}><pagination-raw content={last}></pagination-raw></a></li>
+    <li if={refresh} class="refresh"><a href="#" onclick={go(page)}><pagination-raw content={refresh}></pagination-raw></a></li>
   </ul>
 
   var self = this
+  this.observable = opts.observable
 
   this.total = opts.total       //记录总数
   this.page = opts.page || 1    //当前页号
@@ -26,7 +27,7 @@
       return data.rows
     })
   }    //页面事件回调,缺省使用data作为数据源
-  this.onpagechanged = opts.onPageChanged
+  this.onpagechanged = opts.onpagechanged
 
   this._totalMessage = opts.totalMessage || '共 $pages 页 / $records 条记录'  //'Total $pages pages / $records records'
   this.prev = opts.prev || '上一页'
@@ -42,7 +43,7 @@
   this.on('update', function(){
     this.url = opts.url           //数据展示URL
     this.total = opts.total
-    self.show()
+    this.show()
   })
 
   /* 获得指定页的URL
@@ -61,9 +62,10 @@
    */
   this.go = function (page) {
     f = function (e) {
+      e.preventDefault()
       self.page = page
-      if (opts.onBeforePage && typeof opts.onBeforePage === 'function') {
-        opts.onBeforePage.call(self)
+      if (opts.onbeforepage && typeof opts.onbeforepage === 'function') {
+        opts.onbeforepage.call(self)
       }
       if (self.onpage && typeof self.onpage === 'function') {
         $.when(self.onpage.call(self, page)).done(function(data){
@@ -75,6 +77,7 @@
       } else {
         self.show()
       }
+      <!-- self.update() -->
     }
     return f
   }
@@ -120,16 +123,17 @@
       self.has_last = false
       self.has_first = false
     }
-
-    self.update()
   }
 
 
 </pagination>
 
-<raw>
+<pagination-raw>
   <span></span>
+  this.on('mount', function(){
+    this.root.innerHTML = opts.content
+  })
   this.on('update', function () {
     this.root.innerHTML = opts.content
   })
-</raw>
+</pagination-raw>

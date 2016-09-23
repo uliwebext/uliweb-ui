@@ -20,12 +20,13 @@
       </div>
     </div>
   </div>
+  <yield/>
   <!-- 表格 -->
   <rtable cols={cols} options={rtable_options} data={data} start={start} observable={observable}></rtable>
   <!-- footer 按钮 -->
   <div class="clearfix tools">
-    <pagination if={pagination} data={data} url={url} page={page} total={total}
-      limit={limit} onPageChanged={onpagechanged} onBeforePage={onbeforepage}></pagination>
+    <pagination if={pagination} data={data} url={url} page={page} total={total} observable={observable}
+      limit={limit} onpagechanged={onpagechanged} onbeforepage={onbeforepage}></pagination>
     <div if={footer_tools} class="pull-right {btn_group_class}">
       <button each={btn in footer_tools} data-is="rgrid-button" btn={btn}></button>
     </div>
@@ -69,11 +70,6 @@
   this.btn_group_class = opts.btn_group_class || 'btn-group btn-group-sm'
   this.onLoaded = opts.onLoaded
   this.autoLoad = opts.audoLoad || true
-
-  this.onpagechanged = function (page) {
-    self.start = (page - 1) * self.limit
-    self.update()
-  }
 
   this.onsort = function (sorts) {
     var _url
@@ -146,6 +142,11 @@
     draggable: opts.draggable,
     editable: opts.editable,
     remoteSort: opts.remoteSort
+  }
+
+  this.onpagechanged = function (page) {
+    self.start = (page - 1) * self.limit
+    self.update()
   }
 
   this.on('mount', function(){
