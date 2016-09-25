@@ -1590,7 +1590,14 @@ function($) {
             return result;
         },
         merge: function (data) {
-          $.extend(this.urlParams, data)
+          for(var k in data) {
+            if (k[0] == '-') //first char is '-' means this key will be removed
+              this.remove(k.substr(1))
+            else {
+              this.set(k, data[k], true)
+            }
+          }
+          return this
         },
         set: function (k, v, replace) {
             replace = replace || false;
