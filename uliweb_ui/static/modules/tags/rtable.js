@@ -86,6 +86,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
   this.theme = opts.theme || 'zebra'
   this.minColWidth = opts.minColWidth || 5
   this.contextMenu = opts.contextMenu || []
+  this.virtual = opts.virtual || false
 
   this.onUpdate = opts.onUpdate || function(){}
   this.onSort = opts.onSort || function(){}
@@ -219,15 +220,6 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
 
     this.content.addEventListener('scroll', function(e){
       self.scrolling(e)
-    }, {passive:true})
-
-    this.content.addEventListener('mousewheel', function(e){
-      if (self.mousewheel(e))
-        e.preventDefault()
-    })
-
-    this.content_fixed.addEventListener('mousewheel', function(e){
-      self.mousewheel(e)
     }, {passive:true})
 
     $(this.content).on('click', '.rtable-cell', this.click_handler)
@@ -831,8 +823,13 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
     r1.bottom = r1.top + this.height - this.header_height - this.scrollbar_width
     r1.right = r1.left + this.width - this.fix_width - this.scrollbar_width
 
-    first = Math.max(Math.floor(this.content.scrollTop / this.rowHeight), 0)
-    last = Math.ceil((this.content.scrollTop+this.height-this.header_height) / this.rowHeight)
+    if (this.virtual) {
+      first = Math.max(Math.floor(this.content.scrollTop / this.rowHeight), 0)
+      last = Math.ceil((this.content.scrollTop+this.height-this.header_height) / this.rowHeight)
+    } else {
+      first = 0
+      last = this.rows.length
+    }
 
     var b = new Date().getTime()
 
@@ -958,8 +955,12 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
         }
         else {
 
-          if (!(d.left > r1.right || d.right < r1.left))
+          if (this.virtual) {
+            if (!(d.left > r1.right || d.right < r1.left))
+              v_row.cols.push(d)
+          } else {
             v_row.cols.push(d)
+          }
         }
       }
 
@@ -1064,7 +1065,8 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
   this.scrolling = function(e) {
     self.header.scrollLeft = self.content.scrollLeft
     self.content_fixed.scrollTop = self.content.scrollTop
-    return self.update()
+    if (this.virtual)
+      return self.update()
   }
 
   var normalizeWheel = function (event) {

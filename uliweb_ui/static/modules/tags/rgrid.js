@@ -176,15 +176,18 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
   })
 
   this.load = function(url, param){
-    var f
+    var f, url
     param = param || {}
     var _f = function(r){
       return r.rows
     }
 
     self.url = url || self.url
-    if (opts.tree) f = self.data.load_tree(self.url, param, _f)
-    else f = self.data.load(self.url, param, this.onLoaded || _f)
+    if (self.pagination) {
+      url = get_url(self.url, {limit:self.limit})
+    } else url = self.url
+    if (opts.tree) f = self.data.load_tree(url, param, _f)
+    else f = self.data.load(url, param, this.onLoaded || _f)
     f.done(function(r){
       self.total = r.total
       self.update()
