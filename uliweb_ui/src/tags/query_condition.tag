@@ -40,6 +40,9 @@
         .condition-more.visible {
           border-top:1px solid #ddd;
         }
+        .condition-more.visible.hover {
+          border-top:1px solid red;
+        }
         .condition-more span {
           position: absolute;
           left:0;
@@ -47,13 +50,17 @@
           top:-1px;
           width:100px;
           border: 1px solid #ddd;
-          border-top: 1px solid white;;
+          border-top: 1px solid white;
           margin: 0 auto;
           cursor: pointer;
           font-size: 80%;
           background-color: white;
           line-height: 22px;
           height:22px;
+        }
+        .condition-more span:hover {
+          border: 1px solid red;
+          border-top: 1px solid white;
         }
         .form-control {
           display:inline-block;
@@ -95,8 +102,8 @@
               <button class="btn btn-primary btn-flat" type="submit"><i class="fa fa-search"></i> {searchTitle}</button>
               <button class="btn btn-link btn-flat" type="button" onclick={reset}>{clearTitle}</button>
             </div>
-            <div if={layout.length > 1} class={condition-more:true, visible:layout.length>1}>
-              <span href="#" onclick={ click }>
+            <div if={layout.length > 1} class={condition-more:true, visible:layout.length>1, hover:hover}>
+              <span href="#" onclick={ click } onmouseenter={mouseenter} onmouseleave={mouseleave}>
                 { show? moreTitle[0] : moreTitle[1] }
                 <i class={fa:true, fa-angle-up:show, fa-angle-down:!show}></i>
               </span>
@@ -122,6 +129,7 @@
         v._width = v.width ? v.width+'px' : (v.range?'auto':'100%')
       })
       this.show = false
+      self.hover = false
       // 使用 query_string 初始化值, 定义在uliweb-ui.js中
       this.data = $.extend({}, $.query_string.urlParams, opts.data)
 
@@ -136,6 +144,15 @@
 
       this.click = function(e){
         self.show = !self.show
+      }
+
+      this.mouseenter = function(e) {
+        self.hover = true
+        console.log('aaaaaaa')
+      }
+
+      this.mouseleave = function(e) {
+        self.hover = false
       }
 
       this.reset = function(e){

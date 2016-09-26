@@ -8,13 +8,13 @@
   <!-- 条件 -->
   <query-condition if={has_query} rules={query_ules} fields={query_fields} layout={query_layout} data={query_data}></query-condition>
   <!-- 按钮生成 -->
-  <div class="btn-toolbar">
-    <div if={left_tools} class="rgrid-tools pull-left">
+  <div if={left_tools.length>0 || right_tools.length>0} class="btn-toolbar">
+    <div if={left_tools.length>0} class="rgrid-tools pull-left">
       <div each={btn_group in left_tools} class={btn_group_class}>
         <button each={btn in btn_group} data-is="rgrid-button" btn={btn}></button>
       </div>
     </div>
-    <div if={right_tools} class="rgrid-tools pull-right">
+    <div if={right_tools.length>0} class="rgrid-tools pull-right">
       <div each={btn_group in right_tools} class={btn_group_class}>
         <button each={btn in btn_group} data-is="rgrid-button" btn={btn}></button>
       </div>
@@ -27,7 +27,7 @@
   <div class="clearfix tools">
     <pagination if={pagination} data={data} url={url} page={page} total={total} observable={observable}
       limit={limit} onpagechanged={onpagechanged} onbeforepage={onbeforepage}></pagination>
-    <div if={footer_tools} class="pull-right {btn_group_class}">
+    <div if={footer_tools.length>0} class="pull-right {btn_group_class}">
       <button each={btn in footer_tools} data-is="rgrid-button" btn={btn}></button>
     </div>
   </div>
@@ -102,7 +102,7 @@
   }
 
   this.rtable_options = {
-    theme : opts.theme,
+    theme : opts.theme || 'simple',
     combineCols : opts.combineCols,
     nameField : opts.nameField || 'name',
     labelField : opts.labelField || 'title',
@@ -115,6 +115,7 @@
     minHeight: opts.minHeight,
     height: opts.height,
     width: opts.width,
+    clickSelect: opts.clickSelect,
     rowHeight: opts.rowHeight,
     container: $(this.root).parent(),
     noData: opts.noData,
@@ -214,15 +215,18 @@
   })
 
   this.load = function(url, param){
-    var f
+    var f, url
     param = param || {}
     var _f = function(r){
       return r.rows
     }
 
     self.url = url || self.url
-    if (opts.tree) f = self.data.load_tree(self.url, param, _f)
-    else f = self.data.load(self.url, param, this.onLoaded || _f)
+    if (self.pagination) {
+      url = get_url(self.url, {limit:self.limit})
+    } else url = self.url
+    if (opts.tree) f = self.data.load_tree(url, param, _f)
+    else f = self.data.load(url, param, this.onLoaded || _f)
     f.done(function(r){
       self.total = r.total
       self.update()
