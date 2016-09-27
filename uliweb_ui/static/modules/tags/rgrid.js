@@ -89,6 +89,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     levelField: opts.levelField,
     treeField: opts.treeField,
     hasChildrenField: opts.hasChildrenField,
+    virtual: opts.virtual,
     onDblclick: opts.onDblclick,
     onClick: opts.onClick,
     onMove: opts.onMove,

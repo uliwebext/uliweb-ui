@@ -128,6 +128,7 @@
     levelField: opts.levelField,
     treeField: opts.treeField,
     hasChildrenField: opts.hasChildrenField,
+    virtual: opts.virtual,
     onDblclick: opts.onDblclick,
     onClick: opts.onClick,
     onMove: opts.onMove,
