@@ -102,7 +102,7 @@
   }
 
   this.rtable_options = {
-    theme : opts.theme || 'simple',
+    theme : opts.theme || 'zebra',
     combineCols : opts.combineCols,
     nameField : opts.nameField || 'name',
     labelField : opts.labelField || 'title',
@@ -197,7 +197,7 @@
     this.root.instance = this
     if (this.url && this.autoLoad) {
       this.table.show_loading(true)
-      this.load()
+      setTimeout(function(){self.load()}, 100)
     }
 
     this.observable.on('selected deselected', function(row) {
