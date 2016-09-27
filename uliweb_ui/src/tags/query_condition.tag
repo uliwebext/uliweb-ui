@@ -275,41 +275,58 @@
             });
           } else {
             // 动态
-            var trigger_name = opts.field.relate_from;
-            var trigger = $($('[name="' + trigger_name + '"]')[0]);
+            var trigger_name_list = [];
             var actor = $($('[name="' + opts.field.name + '"]')[0]);
-
-            $('body').on('change', '[name="' + trigger_name + '"]', function(){
-              var trigger_selected = trigger.val();
-              if (!!trigger_selected && typeof(trigger_selected) == 'object') {
-                if (trigger_selected.length >= 2) {
-                  trigger_selected = trigger_selected.join(',');
-                } else if (trigger_selected.length == 1) {
-                  trigger_selected = trigger_selected[0];
-                } else {
-                  trigger_selected = "-1";
-                }
-              } else {
-                if (!("" + trigger_selected)){
-                  trigger_selected = "-1";
-                }
-              }
-              $.ajax({
-                method: "post",
-                url: opts.field.choices_url + '/' + trigger_selected,
-                async: false,
-                success: function(result) {
-                  opts.field.choices = result;
-
-                  self.update();
-                  if ($.fn.multiselect) {
-                    actor.multiselect('rebuild');
+            if (typeof(opts.field.relate_from) == 'string'){
+              trigger_name_list.push(opts.field.relate_from);
+            } else if (typeof(opts.field.relate_from) == 'object'){
+              trigger_name_list = opts.field.relate_from;
+            }
+            var len = trigger_name_list.length;
+            for (var t = 0; t < len; t++){
+              $('body').on('change', '[name="' + trigger_name_list[t] + '"]', function(){
+                var trigger_selected_list = [];
+                for (var tt = 0; tt < len; tt++){
+                  var trigger_selected = $('[name=' + trigger_name_list[tt] + ']').val();
+                  console.log('[name=' + trigger_name_list[tt] + ']', trigger_selected);
+                  if (!!trigger_selected && typeof(trigger_selected) == 'object') {
+                    if (trigger_selected.length >= 2) {
+                      trigger_selected = trigger_selected.join(',');
+                    } else if (trigger_selected.length == 1) {
+                      trigger_selected = trigger_selected[0];
+                    } else {
+                      trigger_selected = "-1";
+                    }
+                  } else {
+                    if (trigger_selected === undefined || trigger_selected === null || !("" + trigger_selected)){
+                      trigger_selected = "-1";
+                    }
                   }
+
+                  trigger_selected_list.push(trigger_selected);
                 }
-              }); // END OF AJAX
+
+                var trigger_selected_url_string = trigger_selected_list.join('/');
+                console.log('trigger_selected_url_string=', trigger_selected_url_string);
+                $.ajax({
+                  method: "post",
+                  url: opts.field.choices_url + '/' + trigger_selected_url_string,
+                  async: false,
+                  success: function(result) {
+                    opts.field.choices = result;
+                    self.update();
+                    if ($.fn.multiselect) {
+                      actor.multiselect('rebuild');
+                    }
+                  }
+                });
+              });
+            }
+
+            $.each(trigger_name_list, function(){
+              $('[name=' + this + ']').trigger('change');
             });
-          } // END OF ELSE
-          trigger.trigger("change");
+          }
         }
 
         load('ui.bootstrap.multiselect', function(){
