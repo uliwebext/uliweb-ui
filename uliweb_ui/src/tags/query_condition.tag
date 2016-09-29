@@ -148,7 +148,6 @@
 
       this.mouseenter = function(e) {
         self.hover = true
-        console.log('aaaaaaa')
       }
 
       this.mouseleave = function(e) {
