@@ -35,7 +35,6 @@ riot.tag2('query-condition', '<div class="query-condition"> <form method="get" a
 
       this.mouseenter = function(e) {
         self.hover = true
-        console.log('aaaaaaa')
       }
 
       this.mouseleave = function(e) {

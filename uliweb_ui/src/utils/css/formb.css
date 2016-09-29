@@ -20,7 +20,7 @@
   }
 .table-layout {margin-bottom:0px;}
 .table-layout .form-control-static  {display:inline-block;vertical-align:top;padding-top:5px;padding-bottom:0;}
-.table-layout .form-control  {display:table-cell;vertical-align:top;}
+.table-layout .form-control  {vertical-align:top;}
 .table-field-row {display:table-row;width:100%;min-height:34px;}
 .table-field-col {display:table-cell; width:2000px;}
 input[type="checkbox"].checkbox {height: 34px;padding-top: 7px;margin:0;}
