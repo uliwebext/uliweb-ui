@@ -169,6 +169,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
         self.show_loading(true)
         self.parents_expand_status = {}
         self.loaded_status = {}
+        return
       } else if (r == 'load'){
         self.show_loading(false)
       }

@@ -45,13 +45,13 @@ riot.tag2('pagination', '<ul class="pagination"> <li if="{totalMessage}" class="
       e.preventDefault()
       self.page = page
       if (opts.onbeforepage && typeof opts.onbeforepage === 'function') {
-        opts.onbeforepage.call(self)
+        opts.onbeforepage.call(self, page)
       }
       if (self.onpage && typeof self.onpage === 'function') {
         $.when(self.onpage.call(self, page)).done(function(data){
           self.show(page)
           if (self.onpagechanged) {
-            self.onpagechanged(page)
+            self.onpagechanged.call(self, page)
           }
         })
       } else {

@@ -32,7 +32,10 @@ function show_message(message, category) {
 
         var config = {
             "closeButton": true,
-            "positionClass": "toast-top-center"
+            "positionClass": "toast-top-full-width",
+            "timeOut": "5000",
+            "newestOnTop": true,
+            "progressBar": true
         }
         var title = ""
 
@@ -228,16 +231,21 @@ function simple_select2 (el, options){
     var $el = $(el),
       url = $el.attr('data-url') || $el.attr('url'),
       placeholder = $el.attr('placeholder') || '请选择';
+    options = options || {}
     if (typeof options === 'string') {
       url = options
       options = {}
     }
     var opts
+    var limit = options.limit || 10
     if (url)
       opts = {
         minimumInputLength: 2,
         width: '100%',
-        placeholder:placeholder,
+        placeholder:{
+          id:'',
+          placeholder:placeholder
+        },
         allowClear:true,
         language: 'zh-CN',
         ajax: {
@@ -246,21 +254,30 @@ function simple_select2 (el, options){
                 return {
                     term: params.term,
                     label: 'text',
-                    page:params.page
+                    page:params.page,
+                    limit:limit
                 }
             },
             dataType: 'json',
-            processResults: function (data, params) {
+            processResults: function (result, params) {
               // parse the results into the format expected by Select2
               // since we are using custom formatting functions we do not need to
               // alter the remote JSON data, except to indicate that infinite
               // scrolling can be used
               params.page = params.page || 1;
 
+              if (!Array.isArray(result)) {
+                data = result.rows
+                total = result.total
+              } else {
+                data = result
+                total = 0
+              }
+
               return {
                 results: data,
                 pagination: {
-                  more: (params.page * 20) < data.length
+                  more: (params.page * limit) < total
                 }
               }
             }
@@ -278,7 +295,10 @@ function simple_select2 (el, options){
       opts = {
         width: '100%',
         allowClear:true,
-        placeholder:placeholder,
+        placeholder:{
+          id:'',
+          placeholder:placeholder
+        },
         language: 'zh-CN'
       }
 
@@ -322,6 +342,8 @@ function get_select(target, url, data){
     });
 };
 
+/* serialize form data
+*/
 function serializeObject(el) {
   var d = {}
   var data = $(':input', el).serializeArray()
@@ -330,6 +352,21 @@ function serializeObject(el) {
   }
   return d
 }
+
+/* get display value from choices dataType
+ * for example:
+ * var choices = [['0', 'A'], ['1', 'B']]
+ * get_choice(choices, '0') === 'A'
+*/
+function get_choice(choices, value) {
+  for(var i=0, len=choices.length; i<len; i++) {
+    if (choices[i][0] == value){
+      return choices[i][1]
+    }
+  }
+  return ''
+}
+
 
 /* jquery init function
 */
