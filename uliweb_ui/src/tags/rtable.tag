@@ -111,40 +111,16 @@
       top:0px;
       right:0px;
     }
-    .rtable-cell .rtable-sort, .rtable-cell .rtable-sort.desc,
-    .rtable-cell .rtable-sort.asc {
+    .rtable-cell .rtable-sort{
       position: absolute;
-      display: block;
-      content: "";
-      background-color: transparent;
-      border-left: 1px solid #ccc;
-      border-bottom: 1px solid #ccc;
-      height: 8px;
-      width: 8px;
-      right: 6px;
-      top:6px;
+      right: 2px;
+      top:0px;
       z-index: 102;
       cursor: pointer;
-      -webkit-transform: rotate(45deg);
-      -ms-transform: rotate(45deg);
-      -o-transform: rotate(45deg);
-      transform: rotate(45deg);
+      opacity: 0.5;
     }
-    .rtable-cell .rtable-sort.desc{
-      border-left: 1px solid black;
-      border-bottom: 1px solid black;
-      -webkit-transform: rotate(-45deg);
-      -ms-transform: rotate(-45deg);
-      -o-transform: rotate(-45deg);
-      transform: rotate(-45deg);
-    }
-    .rtable-cell .rtable-sort.asc{
-      border-left: 1px solid black;
-      border-bottom: 1px solid black;
-      -webkit-transform: rotate(135deg);
-      -ms-transform: rotate(135deg);
-      -o-transform: rotate(135deg);
-      transform: rotate(135deg);
+    .rtable-cell .rtable-sort.fa-sort-desc, .rtable-cell .rtable-sort.fa-sort-asc{
+      opacity: 1;
     }
     .rtable-header .rtable-cell {
       text-align:center;
@@ -304,8 +280,9 @@
         <!-- resizer -->
         <div if={!fixed && leaf} class="rtable-resizer" onmousedown={colresize}></div>
         <!-- sortable column -->
-        <div if={sort} class={rtable-sort:true, desc:get_sorted(name)=='desc', asc:get_sorted(name)=='asc'}
-          title={sort} onclick={sort_handler} style="top:{get_sort_top(get_sorted(name))}px"></div>
+        <i if={sort} class="rtable-sort fa {get_sorted(name)}"
+          title={sort} onclick={sort_handler} style="height:{rowHeight}px;line-height:{rowHeight}px;right:4px;">
+        </i>
       </div>
     </div>
     <div class="rtable-header rtable-main" style="width:{width-fix_width-yscroll_fix}px;right:0px;height:{header_height}px;left:{fix_width}px;">
@@ -324,8 +301,9 @@
         <!-- resizer -->
         <div if={!fixed && leaf} class="rtable-resizer" onmousedown={colresize}></div>
         <!-- sortable column -->
-        <div if={sort} class={rtable-sort:true, desc:get_sorted(name)=='desc', asc:get_sorted(name)=='asc'}
-          title={sort} onclick={sort_handler} style="top:{get_sort_top(get_sorted(name))}px;"></div>
+        <i if={sort} class="rtable-sort fa {get_sorted(name)}"
+          title={sort} onclick={sort_handler} style="height:{rowHeight}px;line-height:{rowHeight}px;right:4px;">
+        </i>
       </div>
     </div>
 
@@ -451,8 +429,8 @@
   this.tree = opts.tree
   this.showIcon = opts.showIcon === undefined ? true : opts.showIcon //if display icon by default
   if (opts.useFontAwesome) {
-    this.openIcon = '<i class="fa fa-minus-square-o"></i>'
-    this.closeIcon = '<i class="fa fa-plus-square-o"></i>'
+    this.openIcon = opts.openIcon || '<i class="fa fa-minus-square-o"></i>'
+    this.closeIcon = opts.closeIcon || '<i class="fa fa-plus-square-o"></i>'
   } else {
     this.openIcon = opts.openIcon || '-'
     this.closeIcon = opts.closeIcon || '+'
@@ -1405,8 +1383,9 @@
     for(var i=0, len=this.sort_cols.length; i<len; i++) {
       col = this.sort_cols[i]
       if (col.name == name && col.direction)
-        return col.direction
+        return 'fa-sort-' + col.direction
     }
+    return 'fa-sort'
   }
 
   this.getId = function(row) {
