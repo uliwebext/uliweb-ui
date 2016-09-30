@@ -90,6 +90,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     treeField: opts.treeField,
     hasChildrenField: opts.hasChildrenField,
     virtual: opts.virtual,
+    contextMenu: opts.contextMenu,
     onDblclick: opts.onDblclick,
     onClick: opts.onClick,
     onMove: opts.onMove,

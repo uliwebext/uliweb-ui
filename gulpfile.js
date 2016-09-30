@@ -62,9 +62,8 @@ gulp.task('tags-js', function() {
 
 gulp.task('watch', ['default'], function() {
   gulp.watch('uliweb_ui/src/tags/*.tag', ['tags']);
-  // Watch .css files
+  gulp.watch('uliweb_ui/src/tags/*.js', ['tags-js']);
   gulp.watch('uliweb_ui/src/utils/css/*.css', ['css']);
-  // Watch .js files
   gulp.watch('uliweb_ui/src/utils/js/*.js', ['js']);
 });
 

@@ -129,6 +129,7 @@
     treeField: opts.treeField,
     hasChildrenField: opts.hasChildrenField,
     virtual: opts.virtual,
+    contextMenu: opts.contextMenu,
     onDblclick: opts.onDblclick,
     onClick: opts.onClick,
     onMove: opts.onMove,
