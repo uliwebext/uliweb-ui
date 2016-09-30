@@ -518,6 +518,7 @@
         self.show_loading(true)
         self.parents_expand_status = {}
         self.loaded_status = {} //remember node loaded status
+        return //不更新界面
       } else if (r == 'load'){
         self.show_loading(false)
       }

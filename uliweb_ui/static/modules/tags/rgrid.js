@@ -58,8 +58,9 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     })
   }
 
-  this.onbeforepage = function () {
+  this.onbeforepage = function (page) {
     self.table.show_loading(true)
+    self.start = (page - 1) * self.limit
   }
 
   this.rtable_options = {
@@ -106,11 +107,6 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     draggable: opts.draggable,
     editable: opts.editable,
     remoteSort: opts.remoteSort
-  }
-
-  this.onpagechanged = function (page) {
-    self.start = (page - 1) * self.limit
-    self.update()
   }
 
   this.on('mount', function(){
