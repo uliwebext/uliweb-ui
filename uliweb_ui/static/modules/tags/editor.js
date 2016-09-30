@@ -152,7 +152,7 @@ var select2_editor = function (parent, row, col) {
     if (value_from) {
       value = col.row[value_from]['value']
       if (Array.isArray(value)) {
-        for(var j, _len=value.length; j<_len; j++) {
+        for(var j=0, _len=value.length; j<_len; j++) {
           choices.push([col.row[value_from]['value'][j], col.row[value_from]['text'][j]])
         }
       } else {
@@ -256,7 +256,7 @@ function _simple_select2 (el, options){
     url = options
     options = {}
   }
-  var opts
+  var opts, data
   var limit = options.limit || 10
   if (url)
     opts = {

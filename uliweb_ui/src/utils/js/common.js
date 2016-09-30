@@ -236,7 +236,7 @@ function simple_select2 (el, options){
       url = options
       options = {}
     }
-    var opts
+    var opts, data
     var limit = options.limit || 10
     if (url)
       opts = {
