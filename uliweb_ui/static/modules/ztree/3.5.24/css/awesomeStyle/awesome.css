@@ -64,7 +64,7 @@ website:    http://code.google.com/p/jquerytree/
 .ztree li a.curSelectedNode {
   padding-top: 0px;
   background-color: #af4040;
-  color: #ffff00;
+  color: #ffffff;
   height: 17px;
   opacity: 0.8;
 }
