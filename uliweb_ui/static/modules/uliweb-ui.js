@@ -1,12 +1,87 @@
+/*
+ * 通用输入框选择控件，可以用在input, select上
+ * 可以支持多种展示形式：
+ * 1. 作为一个图标显示在原输入控件后面
+ * 2. 替换原输入控件
+ * 另外，可以容易实现扩展
+ */
+ ;(function($,window,document,undefined){
+   "use strict";
+
+
+    var Chooser = function(el, opt) {
+      var self = this;
+      this.element = el;
+      this.$el = $(el);
+      this.options = opt;
+      this.init();
+    }
+
+    Chooser.prototype = {
+        constructor: Chooser,
+        init: function () {
+          var contain, icon, h, self=this
+
+          if (this.options.type == 'addon') {
+            this.$el.css('paddingRight', 24)
+            contain = this.options.contain || this.$el.parent()
+            contain.css('position', 'relative')
+            icon = $('<i class="'+this.options.icon+' chooser"></i>')
+            h = this.$el.outerHeight()
+            icon.css({height:h, 'line-height':h+'px', position:'absolute',
+              right:4, top:0, cursor:'pointer', "font-size":'1em',
+              color: "gray"})
+            contain.append(icon)
+
+            icon.click(function(e){
+              e.preventDefault()
+              e.stopPropagation()
+              self._do()
+            })
+
+          }
+        },
+
+        _do: function() {
+          var name = this.options.widgets[this.options.widget]
+          window[name](this.$el, this.options.widget_options)
+        }
+    }
+    $.fn.chooser = function (option) {
+      return this.each(function() {
+        var $this = $(this),
+          data = $this.data('chooser'),
+          options = $.extend({}, $.fn.chooser.defaults, typeof option == 'object' && option || {});
+        if (!data) $this.data('chooser', (data = new Chooser(this, options)));
+        if (typeof option == 'string') data[option].apply(data, args);
+      })
+    }
+
+    $.fn.chooser.defaults = {
+      icon: 'fa fa-ellipsis-h',  //展示图标，可以使用ion图标或fontawesome图标, 用在 'addon' 类型上
+      container: null, //关联的父元素，缺省使用input的父元素
+      widget: null, //使用何种控件，如'tree', 'list'
+      url: null, //是否有url
+      data: null, //传入的数据
+      widget_options: {}, //控件需要的额外的参数
+      type: 'addon', //与input关联时的展示形式，缺省为图标模式，还可以选 'overwrite',
+      placeholder: '请输入', //占位符
+      multiple: null, //是否可以多选，缺省根据控件的multiple属性来判断
+      onValue: function (){},
+      render: function(data) {}, //在进行操作之后，如何显示结果，data是一个数组，形式为：
+                                   //[{value:'value', text:'text'}]
+      widgets: {tree:'tree_select'}
+    }
+
+    $.fn.chooser.Constructor = Chooser;
+
+ })(jQuery,window,document);
+
 /* display clear input text buttons
 */
 (function($){
     $.fn.clear_button = function(options){
-        //各种属性和参数
-
-        // var options = $.extend(defaults, options || {});
-
-        this.each(function(){
+        return this.each(function(){
             //插件的实现代码
             var $item = $(this)
             if ($item.data('clear_button')) return
@@ -45,14 +120,14 @@
  */
 
 function load(module, callback){
-    $import(["/static/jsmodules.js"], function(){
+    head.load(["/static/jsmodules.js"], function(){
         var modules = [];
         if ($.isArray(module)) {
             module.forEach(function(v){
                 $.merge(modules, jsmodules[v])
             })
         } else modules = jsmodules[module].slice()
-        $import(modules, callback);
+        head.load(modules, callback);
     });
 
 }
@@ -1399,183 +1474,6 @@ function form_widgets(target, options) {
     }
 })(jQuery, window, document);
 
-/**
- * JavaScript/CSS/LESS files $import utility
- *
- * Usage: $import (src[, srcN, ...][, callback])
- *
- * Where "src" is: "[name:type] url"
- *             OR: "[name] url"
- *             OR: "[:type] url"
- *             OR: "url"
- *
- * Where "type" is: "js" or "css" or "less"
- *
- * https://github.com/w3core/import.js/
- * @version 1.0.0
- * @license BSD License
- * @author Max Chuhryaev
- */
-(new function (window, document) {
-
-  var NODES = [], head = document.getElementsByTagName("head")[0];
-
-  function on (event, node, fn, sign) { node.addEventListener(event, fn, sign) }
-  function off (event, node, fn, sign) { node.removeEventListener(event, fn, sign) }
-  function isEnum (o) {return o && typeof o == "object" && typeof o.length == "number" && !o.nodeName && o != window}
-
-  function dispatch (event, data) {
-    var e = document.createEvent("HTMLEvents");
-    e.data = data;
-    e.initEvent(event, true, true );
-    return !document.dispatchEvent(e);
-  }
-
-  function parseString (s) {
-    var v = /^(\s*\[\s*(\!?)\s*([a-zA-Z0-9\.\-_]*)\s*\:?\s*([a-zA-Z]*)\s*\])?\s*([^\s]+)\s*$/g.exec(s);
-    var t = /^[^#?]+\.([a-zA-Z0-9]+)([?#].*)?$/g.exec(s);
-    return v ? {
-      reload: !!v[2],
-      name: v[3] ? [v[3]] : [],
-      type: v[4] || t ? (v[4] || t[1]).toLowerCase() : null,
-      url: v[5]
-    } : null;
-  }
-
-  function pushSrc (src, s) {
-    var s = typeof s == "string" ? parseString(s) : s;
-    if (s) {
-      var done;
-      for (var i=0; i<src.length; i++) {
-        if (src[i].url == s.url) {
-          if (s.reload) src[i].reload = !0;
-          if (s.type && !src[i].type) src[i].type = s.type;
-          if (s.name.length) {
-            for (var j=0; j<s.name.length; j++) {
-              if (src[i].name.indexOf(s.name[j]) < 0) src[i].name.push(s.name[j]);
-            }
-          }
-          done = !0;
-          break;
-        }
-      }
-      if (!done) src.push(s);
-    }
-  }
-
-  function parseArguments (o) {
-    var callback = [], src = [], v;
-
-    if (typeof o == "function") callback.push(o);
-    else if (typeof o == "string") {
-      v = o.split(",");
-      for (var i=0; i<v.length; i++) pushSrc(src, v[i]);
-    }
-    else if (o && typeof o == "object") {
-      var list = isEnum(o);
-      for (var i in o) {
-        v = parseArguments(o[i]);
-        for (var s=0; s<v.src.length; s++) {
-          if (!list) v.src[s].name.push(i);
-          pushSrc(src, v.src[s]);
-        }
-        for (var c=0; c<v.callback.length; c++) callback.push(v.callback[c]);
-      }
-    }
-    return {src:src, callback:callback};
-  }
-
-  function isTypeJS (type) {return !type || type == "js"}
-  function tagByType (type) {return isTypeJS(type) ? "script" : "link"}
-  function srcByType (type) {return isTypeJS(type) ? "src" : "href"}
-
-  function load (inf, callback) {
-    var img = document.createElement("img"),
-       load = "load",
-      error = "error",
-         js = isTypeJS(inf.type),
-       node = document.createElement(tagByType(inf.type));
-    node.queue = [callback];
-    node[srcByType(inf.type)] = inf.url;
-    node[js?"type":"rel"] = js ? "text/javascript"
-                          : inf.type == "less" ? "stylesheet/less"
-                          : "stylesheet";
-    var fn = function (e) {
-      off(load, node, fn);
-      off(error, node, fn);
-      if (isEnum(node.queue) && node.queue.length) {
-        while (node.queue.length > 0) {
-          var callback = node.queue.shift();
-          if (typeof callback == "function") callback(node, inf, e);
-        }
-      }
-    };
-    on(load, js?node:img, fn);
-    on(error, js?node:img, fn);
-    NODES.push(node);
-    head.appendChild(node);
-    if(!js) img.src = inf.url;
-    return node;
-  }
-
-  function searchExists (type, url) {
-    var attr = srcByType(type), list = document.getElementsByTagName(tagByType(type));
-    for (var i=0; i<list.length; i++) {
-      if (list[i][attr] == url) return list[i];
-    }
-  }
-
-  function getExists (type, url) {
-    var found = searchExists(type, url);
-    if (found) {
-      if (!isEnum(found.queue)) {
-        found.queue = [];
-        NODES.push(found);
-      }
-      return found;
-    }
-    else {
-      var attr = srcByType(type);
-      for (var i=0; i<NODES.length; i++) {
-        if (NODES[i][attr] == url) return NODES[i];
-      }
-    }
-  }
-
-  function $import (src, callback) {
-    var req = parseArguments([].slice.call(arguments));
-
-    var src = req.src, callback = req.callback, done = 0;
-    var reconnect = function (node) {
-      if (!node.parentNode) head.appendChild(node);
-      return node;
-    };
-    var exec = function () {
-      for (var i=0; i<callback.length; i++) callback[i](src);
-      for (var i=0; i<src.length; i++) {
-        dispatch("@import", src[i]);
-        for (var j=0; j<src[i].name.length; j++) dispatch("@import:" + src[i].name[j], src[i]);
-      }
-    };
-    if (!src.length) return exec();
-    var calc = function () {
-      done++; if (done == src.length) exec();
-    };
-    for (var i=0; i<src.length; i++) {
-      var type = src[i].type, url = src[i].url;
-      var exists = getExists(type, url);
-      if (exists) {
-        src[i].node = reconnect(exists);
-        if (exists.queue.length) exists.queue.push(calc);
-        else calc();
-      }
-      else src[i].node = load(src[i], calc);
-    }
-  }
-
-  window.$import = $import;
-}(window, document));
-
 
 /* =========================================================
  * bootstrap-pagination.js v1.0
@@ -1891,42 +1789,57 @@ function get_url(url, data) {
   return query.url+query.toString()
 }
 
-/*
- * 生成树弹出框
- * target 目标元素
- * url 后台路径
- */
-function tree_select(target, url, options) {
-    load('ui.popover', function(){
-        var default_setting = {
-            content:function(data){
-                var begin, end;
-                begin = data.indexOf('<!-- form -->')
-                end = data.indexOf('<!-- end form -->')
-                if (begin > -1 && end > -1){
-                    return data.substring(begin, end);
-                }
-                return data;
-            },
-            async: {
-                success: function(that){
-                    that.getContentElement().on('success.form', function(e, data){
-                        that.hide();
-                    });
-                }
-            },
-            title: '',
-            width:400,
-            arrow:false,
-            cache:false,
-            height:'auto',
-            padding:true,
-            closeable:true,
-            type:'async',
-            url:url,
-            delay:50
+var tree_select = function(target, options) {
+  var $target = $(target)
+  options = options || {}
+
+  load(['ui.ztree', 'ui.popover'], function(){
+    var _defaults = {
+      content:function(){
+        return '<ul class="ztree"></ul>'
+      },
+      type: 'html',
+      height: 'auto',
+      maxHeight: 300,
+      arrow: false,
+    }
+
+    var ztree_options = {
+      async:{},
+      check:{},
+      view:{},
+      check:{},
+      callback: {
+        onClick: function(e, treeId, node) {
+          if (!z_opts.multiple) {
+            $target.val(node.tId)
+            $target.webuiPopover('hide')
+          }
         }
-        var opts = $.extend({}, default_setting, options || {})
-        $(target).webuiPopover(opts);
-    })
-}
+      }
+    }
+    var url = options.url
+    delete options.url
+    var opts = $.extend({}, _defaults, options || {})
+    var z_opts = $.extend(true, {}, ztree_options, options || {})
+    var data = options.data
+    if (url) {
+      z_opts.async.url = url
+      z_opts.async.enable = true
+      z_opts.async.autoParam = ["id=parent"]
+    }
+
+    $(target).webuiPopover(opts).on('show.webui.popover', function(e){
+      var body = $target.data('plugin_webuiPopover').getContentElement()
+      var ztree = $(body).find('.ztree')
+      if (!ztree.data('ztree_loaded')) {
+        $.fn.zTree.init(ztree, z_opts, data);
+        ztree.data('ztree_loaded', true)
+      }
+    });
+    setTimeout(function(){
+      $target.webuiPopover('show');
+    }, 100)
+  });
+
+};

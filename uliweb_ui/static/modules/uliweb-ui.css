@@ -1,3 +1,11 @@
+.chooser {
+  opacity: 0.5;
+}
+.chooser:hover {
+  opacity: 1;
+  color: #3c8dbc;
+}
+
 /* form related */
 .field_required {color:red;}
 .form-group {margin-bottom:10px;}

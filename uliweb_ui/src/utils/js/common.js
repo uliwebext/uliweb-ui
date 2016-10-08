@@ -7,14 +7,14 @@
  */
 
 function load(module, callback){
-    $import(["/static/jsmodules.js"], function(){
+    head.load(["/static/jsmodules.js"], function(){
         var modules = [];
         if ($.isArray(module)) {
             module.forEach(function(v){
                 $.merge(modules, jsmodules[v])
             })
         } else modules = jsmodules[module].slice()
-        $import(modules, callback);
+        head.load(modules, callback);
     });
 
 }
