@@ -164,8 +164,13 @@ var select2_editor = function (parent, row, col) {
       choices = [[value, value]]
     }
   } else {
-    value = [col.value]
-    choices = [[col.value, col.value]]
+    if (value_from) {
+      value = col.row[value_from]['value']
+      choices = [[col.row[value_from]['value'], col.row[value_from]['text']]]
+    } else {
+      value = [col.value]
+      choices = [[col.value, col.value]]
+    }
   }
   var choices = col.editor.choices ? col.editor.choices : choices
   if (col.editor.placeholder)

@@ -1,5 +1,5 @@
 var gulp = require('gulp'),
-    minifycss = require('gulp-minify-css'),
+    cleancss = require('gulp-clean-css'),
     jshint = require('gulp-jshint'),
     uglify = require('gulp-uglify'),
     concat = require('gulp-concat'),
@@ -16,7 +16,7 @@ gulp.task('css', function() {
     .pipe(concat('uliweb-ui.css'))
     .pipe(gulp.dest('uliweb_ui/static/modules/'))
     .pipe(rename({suffix: '.min'}))
-    .pipe(minifycss())
+    .pipe(cleancss())
     .pipe(gulp.dest('uliweb_ui/static/modules/'))
     // .pipe(notify({ message: 'css process completed!' }));
 });

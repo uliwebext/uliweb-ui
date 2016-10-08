@@ -2,11 +2,7 @@
 */
 (function($){
     $.fn.clear_button = function(options){
-        //各种属性和参数
-
-        // var options = $.extend(defaults, options || {});
-
-        this.each(function(){
+        return this.each(function(){
             //插件的实现代码
             var $item = $(this)
             if ($item.data('clear_button')) return

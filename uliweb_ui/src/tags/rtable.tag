@@ -273,7 +273,7 @@
         <!-- checkbox -->
         <i if={type=='check' && parent.multiSelect} onclick={checkall}
           class="fa {parent.selected_rows.length>0 ? 'fa-check-square-o' : 'fa-square-o'}"
-          style="cursor:pointer"></i>
+          style="cursor:pointer;height:{headerRowHeight}px;line-height:{headerRowHeight}px"></i>
 
         <!-- <input if={type=='check' && parent.multiSelect} type="checkbox" onclick={checkall}
           class="rtable-check" style="margin-top:{headerRowHeight/2-7}px" checked={parent.selected_rows.length>0}></input> -->
@@ -294,7 +294,7 @@
         <!-- checkbox -->
         <i if={type=='check' && parent.multiSelect} onclick={checkall}
           class="fa {parent.selected_rows.length>0 ? 'fa-check-square-o' : 'fa-square-o'}"
-          style="cursor:pointer"></i>
+          style="cursor:pointer;height:{headerRowHeight}px;line-height:{headerRowHeight}px"></i>
         <!-- <input if={type=='check' && parent.multiSelect} type="checkbox" onclick={checkall}
           class="rtable-check" style="margin-top:{headerRowHeight/2-7}px"
           checked={parent.selected_rows.length>0}></input> -->
@@ -327,7 +327,7 @@
             <!-- display checkbox -->
             <i if={col.type=='check' && onCheckable(col.row)} onclick={checkcol}
               class="fa {is_selected(col.row)?'fa-check-square-o':'fa-square-o'}"
-              style="cursor:pointer"></i>
+              style="cursor:pointer;height:{rowHeight}px;line-height:{rowHeight}px"></i>
             <!-- <input if={col.type=='check' && !useFontAwesome} type="checkbox" onclick={checkcol} checked={console.log(is_selected(col.row)) || is_selected(col.row)}
               class="rtable-check" style="margin-top:{rowHeight/2-7}px"></input> -->
           </div>
@@ -354,7 +354,7 @@
               <!-- display checkbox -->
               <i if={col.type=='check' && onCheckable(col.row)} onclick={checkcol}
                 class="fa {is_selected(col.row)?'fa-check-square-o':'fa-square-o'}"
-                style="cursor:pointer"></i>
+                style="cursor:pointer;height:{rowHeight}px;line-height:{rowHeight}px"></i>
               <!-- <input if={col.type=='check' && !useFontAwesome} type="checkbox" onclick={checkcol} checked={console.log(is_selected(col.row)) || is_selected(col.row)}
                 class="rtable-check" style="margin-top:{rowHeight/2-7}px"></input> -->
 
