@@ -117,7 +117,7 @@
       top:0px;
       z-index: 102;
       cursor: pointer;
-      opacity: 0.5;
+      opacity: 0.3;
     }
     .rtable-cell .rtable-sort.fa-sort-desc, .rtable-cell .rtable-sort.fa-sort-asc{
       opacity: 1;
@@ -258,7 +258,31 @@
       border-bottom: 2px solid #ddd;
     }
 
+    .rtable-notation{
+        border: 6px solid;
+        border-color: transparent transparent transparent transparent;
+        width: 0px;
+        height: 0px;
+        position: absolute;
+        top: 0px;
+        right: -5px;
+    }
 
+    .rtable-notation.error{
+        border-color: #b94a48 #b94a48 transparent transparent;
+    }
+
+    .rtable-notation.warning{
+        border-color: #f89406 #f89406 transparent transparent;
+    }
+
+    .rtable-notation.success{
+        border-color: #468847 #468847 transparent transparent;
+    }
+
+    .rtable-notation.info{
+        border-color: #3a87ad #3a87ad transparent transparent;
+    }
   </style>
 
   <yield/>
@@ -330,6 +354,10 @@
               style="cursor:pointer;height:{rowHeight}px;line-height:{rowHeight}px"></i>
             <!-- <input if={col.type=='check' && !useFontAwesome} type="checkbox" onclick={checkcol} checked={console.log(is_selected(col.row)) || is_selected(col.row)}
               class="rtable-check" style="margin-top:{rowHeight/2-7}px"></input> -->
+
+            <!-- notation -->
+            <span if={col.notation} class="rtable-notation {col.notation.type}" title={col.notation.title}></span>
+
           </div>
         </div>
       </div>
@@ -365,6 +393,10 @@
                   href={ btn.href || '#' }
                   onclick={parent.parent.action_click(parent.col, btn)}>{ btn.label }</a>
               </virtual>
+
+              <!-- notation -->
+              <span if={col.notation} class="rtable-notation {col.notation.type}" title={col.notation.title}></span>
+
             </div>
           </div>
         </div>
@@ -403,6 +435,7 @@
   this.visCells = []
   this.selected_rows = []
   this.sort_cols = []
+  this.notations = {}
   this.clickSelect = opts.clickSelect === undefined ? 'row' : opts.clickSelect
   this.noData = opts.noData || 'No Data'
   this.loading = opts.loading || 'Loading... <i class="fa fa-spinner fa-pulse fa-spin"></i>'
@@ -424,6 +457,7 @@
   this.onDeselected = opts.onDeselected || function(){}
   this.onLoadData = opts.onLoadData || function(parent){}
   this.onCheckable = opts.onCheckable || function(row){return true} //是否显示checkbox
+  this.onEditable = opts.onEditable || function(row, col){return self.editable} //是否允许单元格编辑
 
   //tree options
   this.tree = opts.tree
@@ -799,6 +833,8 @@
       e.preventDefault()
       if (opts.editable) {
         if (!col.editor) return
+        //判断单元格是否可以编辑
+        if (!self.onEditable(col.row, col)) return
         e.preventUpdate = true
         document.selection && document.selection.empty && ( document.selection.empty(), 1)
         || window.getSelection && window.getSelection().removeAllRanges();
@@ -1296,7 +1332,8 @@
           class:col.class,
           tag:col.tag,
           editor:col.editor,
-          name:col.name
+          name:col.name,
+          notation:this.get_col_notation(row, col)
         }
 
         //记录上一次的colspan单元格
@@ -1375,6 +1412,20 @@
       fixed: vis_fixed_rows,
       main: vis_rows
     }
+  }
+
+  this.get_col_notation = function(row, col) {
+    var key = row.id + ':' + col.name
+    return this.notations[key] || null
+  }
+
+  /* notation value should be
+   * {type:error|warning|success|info, title:'infomation'}
+   */
+  this.set_notation = function(row, field, notation) {
+    var id = this.getId(row)
+    var key = id + ':' + field
+    this.notations[key] = notation
   }
 
   this.get_sorted = function(name) {
@@ -1716,6 +1767,7 @@
   this.root.diff = data_proxy('diff')
   this.root.save = data_proxy('save')
   this.root.refresh = proxy('update')
+  this.root.set_notation = proxy('set_notation')
 
   <!-- this.root.load = function(newrows){
     self._data.clear()
