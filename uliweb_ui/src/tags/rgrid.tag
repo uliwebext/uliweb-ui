@@ -142,6 +142,7 @@
     onLoadData: opts.onLoadData || this.onloaddata,
     onSort: opts.onSort || this.onsort,
     onCheckable: opts.onCheckable,
+    onEditable: opts.onEditable,
     colspanValue: opts.colspanValue,
     draggable: opts.draggable,
     editable: opts.editable,
