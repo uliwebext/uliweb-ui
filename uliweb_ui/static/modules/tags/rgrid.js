@@ -103,6 +103,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
     onLoadData: opts.onLoadData || this.onloaddata,
     onSort: opts.onSort || this.onsort,
     onCheckable: opts.onCheckable,
+    onEditable: opts.onEditable,
     colspanValue: opts.colspanValue,
     draggable: opts.draggable,
     editable: opts.editable,
