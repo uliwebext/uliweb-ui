@@ -1690,7 +1690,7 @@
       }
       for(var i=selected_rows.length-1; i>-1; i--){
         row = selected_rows[i]
-        if (!self.onCheckable(row)) return
+        if (!self.onCheckable(this._data.get(row))) return
         index = items.indexOf(row)
         if (index != -1){
           selected_rows.splice(i, 1)
