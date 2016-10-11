@@ -1,0 +1,7 @@
+.chooser {
+  opacity: 0.5;
+}
+.chooser:hover {
+  opacity: 1;
+  color: #3c8dbc;
+}

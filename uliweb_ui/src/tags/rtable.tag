@@ -433,9 +433,7 @@
   this.checkColFrozen = opts.checkColFrozen || false
   this.multiSelect = opts.multiSelect || false
   this.visCells = []
-  this.selected_rows = []
   this.sort_cols = []
-  this.notations = {}
   this.clickSelect = opts.clickSelect === undefined ? 'row' : opts.clickSelect
   this.noData = opts.noData || 'No Data'
   this.loading = opts.loading || 'Loading... <i class="fa fa-spinner fa-pulse fa-spin"></i>'
@@ -471,8 +469,6 @@
   }
   this.iconInden = 16
   this.expanded = opts.expanded === undefined ? false: opts.expanded
-  this.parents_expand_status = {}
-  this.loaded_status = {} //remember node loaded status
   this.idField = opts.idField || 'id'
   this.parentField = opts.parentField || 'parent'
   this.orderField = opts.orderField || 'order'
@@ -480,6 +476,12 @@
   this.hasChildrenField = opts.hasChildrenField || 'has_children'
   this.indentWidth = 16
   this.colspanValue = opts.colspanValue || '--'
+
+  //中间状态数据
+  this.selected_rows = [] //选中状态
+  this.parents_expand_status = {} //父结点展开状态
+  this.loaded_status = {} //结点装入状态
+  this.notations = {} //数据单元格指示器保存
 
   var _opts = {tree:opts.tree, idField:this.idField, parentField:this.parentField,
     levelField:this.levelField, orderField:this.orderField, hasChildrenField:this.hasChildrenField}
@@ -515,6 +517,14 @@
     <!-- this.update() -->
   }
 
+  //装入前清理
+  this.load_clear = function() {
+    self.selected_rows = [] //选中状态
+    self.parents_expand_status = {} //父结点展开状态
+    self.loaded_status = {} //结点装入状态
+    self.notations = {} //数据单元格指示器保存
+  }
+
   this.bind = function () {
     // 绑定事件
     self._data.on('*', function(r, d){
@@ -528,8 +538,7 @@
       }
       if (r == 'loading') {
         self.show_loading(true)
-        self.parents_expand_status = {}
-        self.loaded_status = {} //remember node loaded status
+        self.load_clear() //清理中间状态数据
         return //不更新界面
       } else if (r == 'load'){
         self.show_loading(false)

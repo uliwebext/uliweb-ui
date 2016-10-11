@@ -148,9 +148,13 @@ var select2_editor = function (parent, row, col) {
   ]
   var item
   var value, text=[], choices=[], value_from = col.editor.value_from
-  if (col.editor.multiple) {
+  if (value_from) {
+    value = col.row[value_from]['value']
+  } else {
+    value = col.value
+  }
+  if (value) {
     if (value_from) {
-      value = col.row[value_from]['value']
       if (Array.isArray(value)) {
         for(var j=0, _len=value.length; j<_len; j++) {
           choices.push([col.row[value_from]['value'][j], col.row[value_from]['text'][j]])
@@ -158,23 +162,14 @@ var select2_editor = function (parent, row, col) {
       } else {
         choices = [[col.row[value_from]['value'], col.row[value_from]['text']]]
       }
-    }
-    else {
-      value = col.value
-      choices = [[value, value]]
-    }
-  } else {
-    if (value_from) {
-      if (col.row[value_from] instanceof Object){
-        value = col.row[value_from]['value']
-        choices = [[col.row[value_from]['value'], col.row[value_from]['text']]]
-      } else {
-        value = col.row[value_from]['value']
-        choices = [[value, col.value]]
-      }
     } else {
-      value = [col.value]
-      choices = [[col.value, col.value]]
+      if (Array.isArray(value)) {
+        for(var j=0, _len=value.length; j<_len; j++) {
+          choices.push([value[j], value[j]])
+        }
+      } else {
+        choices = [[value, value]]
+      }
     }
   }
   var choices = col.editor.choices ? col.editor.choices : choices, selected
