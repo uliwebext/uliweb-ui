@@ -1058,7 +1058,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
       for(id in self.parents_expand_status) {
         self.parents_expand_status[id] = expanded
         if (expanded)
-          self.load_node(row)
+          self.load_node(self._data.get(id))
       }
     } else {
       if (Array.isArray(row)) {
@@ -1067,14 +1067,14 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
           if (self.parents_expand_status.hasOwnProperty(id))
             self.parents_expand_status[id] = expanded
             if (expanded)
-              self.load_node(row)
+              self.load_node(self._data.get(id))
         }
       } else {
         id = self.getId(row)
         if (self.parents_expand_status.hasOwnProperty(id))
           self.parents_expand_status[id] = expanded
           if (expanded)
-            self.load_node(row)
+            self.load_node(self._data.get(id))
       }
     }
 
