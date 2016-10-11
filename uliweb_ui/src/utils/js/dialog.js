@@ -179,6 +179,6 @@ function Confirm(message, callback) {
 
 function Alert(message, callback) {
   load('ui.bootstrap.dialog', function(){
-    BootstrapDialog.confirm(message, callback);
+    BootstrapDialog.alert(message, callback);
   })
 }

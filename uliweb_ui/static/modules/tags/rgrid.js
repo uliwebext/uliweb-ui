@@ -59,6 +59,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
   }
 
   this.onbeforepage = function (page) {
+    self.page = page
     self.table.show_loading(true)
     self.start = (page - 1) * self.limit
   }
@@ -183,7 +184,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_ules}" field
 
     self.url = url || self.url
     if (self.pagination) {
-      url = get_url(self.url, {limit:self.limit})
+      url = get_url(self.url, {limit:self.limit, page:self.page})
     } else url = self.url
     if (opts.tree) f = self.data.load_tree(url, param, _f)
     else f = self.data.load(url, param, this.onLoaded || _f)

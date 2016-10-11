@@ -75,9 +75,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
   this.checkColFrozen = opts.checkColFrozen || false
   this.multiSelect = opts.multiSelect || false
   this.visCells = []
-  this.selected_rows = []
   this.sort_cols = []
-  this.notations = {}
   this.clickSelect = opts.clickSelect === undefined ? 'row' : opts.clickSelect
   this.noData = opts.noData || 'No Data'
   this.loading = opts.loading || 'Loading... <i class="fa fa-spinner fa-pulse fa-spin"></i>'
@@ -112,8 +110,6 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
   }
   this.iconInden = 16
   this.expanded = opts.expanded === undefined ? false: opts.expanded
-  this.parents_expand_status = {}
-  this.loaded_status = {}
   this.idField = opts.idField || 'id'
   this.parentField = opts.parentField || 'parent'
   this.orderField = opts.orderField || 'order'
@@ -121,6 +117,11 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
   this.hasChildrenField = opts.hasChildrenField || 'has_children'
   this.indentWidth = 16
   this.colspanValue = opts.colspanValue || '--'
+
+  this.selected_rows = []
+  this.parents_expand_status = {}
+  this.loaded_status = {}
+  this.notations = {}
 
   var _opts = {tree:opts.tree, idField:this.idField, parentField:this.parentField,
     levelField:this.levelField, orderField:this.orderField, hasChildrenField:this.hasChildrenField}
@@ -156,6 +157,13 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
 
   }
 
+  this.load_clear = function() {
+    self.selected_rows = []
+    self.parents_expand_status = {}
+    self.loaded_status = {}
+    self.notations = {}
+  }
+
   this.bind = function () {
 
     self._data.on('*', function(r, d){
@@ -169,8 +177,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
       }
       if (r == 'loading') {
         self.show_loading(true)
-        self.parents_expand_status = {}
-        self.loaded_status = {}
+        self.load_clear()
         return
       } else if (r == 'load'){
         self.show_loading(false)
