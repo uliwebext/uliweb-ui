@@ -1,4 +1,117 @@
 /*
+ * 通用输入框选择控件，可以用在input, select上
+ * 可以支持多种展示形式：
+ * 1. 作为一个图标显示在原输入控件后面
+ * 2. 替换原输入控件
+ * 另外，可以容易实现扩展
+ */
+ ;(function($,window,document,undefined){
+   "use strict";
+
+
+    var Chooser = function(el, opt) {
+      var self = this;
+      this.element = el;
+      this.$el = $(el);
+      this.options = opt;
+      this.init();
+    }
+
+    Chooser.prototype = {
+        constructor: Chooser,
+        init: function () {
+          var contain, icon, h, self=this
+
+          if (this.options.type == 'addon') {
+            this.$el.css('paddingRight', 24)
+            contain = this.options.contain || this.$el.parent()
+            contain.css('position', 'relative')
+            icon = $('<i class="'+this.options.icon+' chooser"></i>')
+            h = this.$el.outerHeight()
+            icon.css({height:h, 'line-height':h+'px', position:'absolute',
+              right:4, top:0, cursor:'pointer', "font-size":'1em',
+              color: "gray"})
+            contain.append(icon)
+
+            icon.click(function(e){
+              e.preventDefault()
+              e.stopPropagation()
+              self._do()
+            })
+
+          }
+        },
+
+        _do: function() {
+          var name = this.options.widgets[this.options.widget]
+          window[name](this.$el, this.options.widget_options)
+        }
+    }
+    $.fn.chooser = function (option) {
+      return this.each(function() {
+        var $this = $(this),
+          data = $this.data('chooser'),
+          options = $.extend({}, $.fn.chooser.defaults, typeof option == 'object' && option || {});
+        if (!data) $this.data('chooser', (data = new Chooser(this, options)));
+        if (typeof option == 'string') data[option].apply(data, args);
+      })
+    }
+
+    $.fn.chooser.defaults = {
+      icon: 'fa fa-ellipsis-h',  //展示图标，可以使用ion图标或fontawesome图标, 用在 'addon' 类型上
+      container: null, //关联的父元素，缺省使用input的父元素
+      widget: null, //使用何种控件，如'tree', 'list'
+      url: null, //是否有url
+      data: null, //传入的数据
+      widget_options: {}, //控件需要的额外的参数
+      type: 'addon', //与input关联时的展示形式，缺省为图标模式，还可以选 'overwrite',
+      placeholder: '请输入', //占位符
+      multiple: null, //是否可以多选，缺省根据控件的multiple属性来判断
+      onValue: function (){},
+      render: function(data) {}, //在进行操作之后，如何显示结果，data是一个数组，形式为：
+                                   //[{value:'value', text:'text'}]
+      widgets: {tree:'tree_select'}
+    }
+
+    $.fn.chooser.Constructor = Chooser;
+
+ })(jQuery,window,document);
+
+/* display clear input text buttons
+*/
+(function($){
+    $.fn.clear_button = function(options){
+        return this.each(function(){
+            //插件的实现代码
+            var $item = $(this)
+            if ($item.data('clear_button')) return
+            $item.css({'padding-right':24})
+            var $parent = $item.parent()
+            $parent.css({position:'relative'})
+            var el = $('<i class="ion-ios-close"></i>')
+            var h = $item.outerHeight()
+            el.css({height:h, 'line-height':h+'px', position:'absolute',
+              right:4, top:0, cursor:'pointer', "font-size":'1.4em',
+              color: "gray", display:'none'})
+            $parent.append(el)
+            $item.keyup(function(e){
+              if ($item.val())
+                el.show()
+              else {
+                el.hide()
+              }
+            })
+            el.click(function(e){
+              e.preventDefault()
+              $item.val('')
+              el.hide()
+            })
+            $item.data('clear_button', el)
+        });
+    };
+})(jQuery);
+
+/*
  * use head.load to load js files
  *
  * options:
@@ -32,7 +145,10 @@ function show_message(message, category) {
 
         var config = {
             "closeButton": true,
-            "positionClass": "toast-top-center"
+            "positionClass": "toast-top-full-width",
+            "timeOut": "5000",
+            "newestOnTop": true,
+            "progressBar": true
         }
         var title = ""
 
@@ -228,16 +344,21 @@ function simple_select2 (el, options){
     var $el = $(el),
       url = $el.attr('data-url') || $el.attr('url'),
       placeholder = $el.attr('placeholder') || '请选择';
+    options = options || {}
     if (typeof options === 'string') {
       url = options
       options = {}
     }
-    var opts
+    var opts, data
+    var limit = options.limit || 10
     if (url)
       opts = {
         minimumInputLength: 2,
         width: '100%',
-        placeholder:placeholder,
+        placeholder:{
+          id:'',
+          placeholder:placeholder
+        },
         allowClear:true,
         language: 'zh-CN',
         ajax: {
@@ -246,21 +367,30 @@ function simple_select2 (el, options){
                 return {
                     term: params.term,
                     label: 'text',
-                    page:params.page
+                    page:params.page,
+                    limit:limit
                 }
             },
             dataType: 'json',
-            processResults: function (data, params) {
+            processResults: function (result, params) {
               // parse the results into the format expected by Select2
               // since we are using custom formatting functions we do not need to
               // alter the remote JSON data, except to indicate that infinite
               // scrolling can be used
               params.page = params.page || 1;
 
+              if (!Array.isArray(result)) {
+                data = result.rows
+                total = result.total
+              } else {
+                data = result
+                total = 0
+              }
+
               return {
                 results: data,
                 pagination: {
-                  more: (params.page * 20) < data.length
+                  more: (params.page * limit) < total
                 }
               }
             }
@@ -278,7 +408,10 @@ function simple_select2 (el, options){
       opts = {
         width: '100%',
         allowClear:true,
-        placeholder:placeholder,
+        placeholder:{
+          id:'',
+          placeholder:placeholder
+        },
         language: 'zh-CN'
       }
 
@@ -322,6 +455,8 @@ function get_select(target, url, data){
     });
 };
 
+/* serialize form data
+*/
 function serializeObject(el) {
   var d = {}
   var data = $(':input', el).serializeArray()
@@ -330,6 +465,21 @@ function serializeObject(el) {
   }
   return d
 }
+
+/* get display value from choices dataType
+ * for example:
+ * var choices = [['0', 'A'], ['1', 'B']]
+ * get_choice(choices, '0') === 'A'
+*/
+function get_choice(choices, value) {
+  for(var i=0, len=choices.length; i<len; i++) {
+    if (choices[i][0] == value){
+      return choices[i][1]
+    }
+  }
+  return ''
+}
+
 
 /* jquery init function
 */
@@ -533,7 +683,7 @@ function Confirm(message, callback) {
 
 function Alert(message, callback) {
   load('ui.bootstrap.dialog', function(){
-    BootstrapDialog.confirm(message, callback);
+    BootstrapDialog.alert(message, callback);
   })
 }
 
@@ -1590,7 +1740,14 @@ function($) {
             return result;
         },
         merge: function (data) {
-          $.extend(this.urlParams, data)
+          for(var k in data) {
+            if (k[0] == '-') //first char is '-' means this key will be removed
+              this.remove(k.substr(1))
+            else {
+              this.set(k, data[k], true)
+            }
+          }
+          return this
         },
         set: function (k, v, replace) {
             replace = replace || false;
@@ -1632,42 +1789,57 @@ function get_url(url, data) {
   return query.url+query.toString()
 }
 
-/*
- * 生成树弹出框
- * target 目标元素
- * url 后台路径
- */
-function tree_select(target, url, options) {
-    load('ui.popover', function(){
-        var default_setting = {
-            content:function(data){
-                var begin, end;
-                begin = data.indexOf('<!-- form -->')
-                end = data.indexOf('<!-- end form -->')
-                if (begin > -1 && end > -1){
-                    return data.substring(begin, end);
-                }
-                return data;
-            },
-            async: {
-                success: function(that){
-                    that.getContentElement().on('success.form', function(e, data){
-                        that.hide();
-                    });
-                }
-            },
-            title: '',
-            width:400,
-            arrow:false,
-            cache:false,
-            height:'auto',
-            padding:true,
-            closeable:true,
-            type:'async',
-            url:url,
-            delay:50
+var tree_select = function(target, options) {
+  var $target = $(target)
+  options = options || {}
+
+  load(['ui.ztree', 'ui.popover'], function(){
+    var _defaults = {
+      content:function(){
+        return '<ul class="ztree"></ul>'
+      },
+      type: 'html',
+      height: 'auto',
+      maxHeight: 300,
+      arrow: false,
+    }
+
+    var ztree_options = {
+      async:{},
+      check:{},
+      view:{},
+      check:{},
+      callback: {
+        onClick: function(e, treeId, node) {
+          if (!z_opts.multiple) {
+            $target.val(node.tId)
+            $target.webuiPopover('hide')
+          }
         }
-        var opts = $.extend({}, default_setting, options || {})
-        $(target).webuiPopover(opts);
-    })
-}
+      }
+    }
+    var url = options.url
+    delete options.url
+    var opts = $.extend({}, _defaults, options || {})
+    var z_opts = $.extend(true, {}, ztree_options, options || {})
+    var data = options.data
+    if (url) {
+      z_opts.async.url = url
+      z_opts.async.enable = true
+      z_opts.async.autoParam = ["id=parent"]
+    }
+
+    $(target).webuiPopover(opts).on('show.webui.popover', function(e){
+      var body = $target.data('plugin_webuiPopover').getContentElement()
+      var ztree = $(body).find('.ztree')
+      if (!ztree.data('ztree_loaded')) {
+        $.fn.zTree.init(ztree, z_opts, data);
+        ztree.data('ztree_loaded', true)
+      }
+    });
+    setTimeout(function(){
+      $target.webuiPopover('show');
+    }, 100)
+  });
+
+};

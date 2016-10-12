@@ -111,43 +111,16 @@
       top:0px;
       right:0px;
     }
-    .rtable-cell.selected {
-      background-color:#ffefd5;
-    }
-    .rtable-cell .rtable-sort, .rtable-cell .rtable-sort.desc,
-    .rtable-cell .rtable-sort.asc {
+    .rtable-cell .rtable-sort{
       position: absolute;
-      display: block;
-      content: "";
-      background-color: transparent;
-      border-left: 1px solid #ccc;
-      border-bottom: 1px solid #ccc;
-      height: 8px;
-      width: 8px;
-      right: 6px;
-      top:6px;
+      right: 2px;
+      top:0px;
       z-index: 102;
       cursor: pointer;
-      -webkit-transform: rotate(45deg);
-      -ms-transform: rotate(45deg);
-      -o-transform: rotate(45deg);
-      transform: rotate(45deg);
+      opacity: 0.3;
     }
-    .rtable-cell .rtable-sort.desc{
-      border-left: 1px solid black;
-      border-bottom: 1px solid black;
-      -webkit-transform: rotate(-45deg);
-      -ms-transform: rotate(-45deg);
-      -o-transform: rotate(-45deg);
-      transform: rotate(-45deg);
-    }
-    .rtable-cell .rtable-sort.asc{
-      border-left: 1px solid black;
-      border-bottom: 1px solid black;
-      -webkit-transform: rotate(135deg);
-      -ms-transform: rotate(135deg);
-      -o-transform: rotate(135deg);
-      transform: rotate(135deg);
+    .rtable-cell .rtable-sort.fa-sort-desc, .rtable-cell .rtable-sort.fa-sort-asc{
+      opacity: 1;
     }
     .rtable-header .rtable-cell {
       text-align:center;
@@ -191,17 +164,34 @@
       font-size:14px;
     }
 
-    /* theme */
+    .rtable-row.hover .rtable-cell {
+      background-color: #e1eff8;
+    }
+    .rtable-row.selected.hover .rtable-cell {
+      background-color: #ffefd5;
+    }
+
+    .rtable-row.selected .rtable-cell {
+      background-color:#ffefd5;
+    }
+    /*.rtable-cell.selected {
+      background-color:#ffefd5;
+    }*/
+
+    /* zebra */
     .rtable-root.zebra .rtable-row.even .rtable-cell {
-      background-color: #f2f2f2;
+      background-color: #f9f9f9;
       border-bottom:none;
       border-right:1px solid #ddd;
+    }
+    .rtable-root.zebra .rtable-row.even.hover .rtable-cell {
+      background-color: #e1eff8;
     }
     .rtable-root.zebra .rtable-row.odd .rtable-cell {
       border-bottom:none;
       border-right:1px solid #ddd;
     }
-    .rtable-root.zebra .rtable-row.even .rtable-cell.selected {
+    .rtable-root.zebra .rtable-row.even.selected .rtable-cell {
       background-color: #ffefd5;
     }
     .rtable-root.zebra .rtable-header .rtable-cell {
@@ -211,9 +201,11 @@
     /*simple*/
     .rtable-root.simple .rtable-row.even .rtable-cell {
     }
+    .rtable-root.simple .rtable-row.even.hover .rtable-cell {
+    }
     .rtable-root.simple .rtable-row.odd .rtable-cell {
     }
-    .rtable-root.simple .rtable-row.even .rtable-cell.selected {
+    .rtable-root.simple .rtable-row.even.selected .rtable-cell {
     }
     .rtable-root.simple .rtable-header .rtable-cell {
       background-color: #f2f2f2;
@@ -227,7 +219,8 @@
     }
     .rtable-root.table .rtable-row.odd .rtable-cell {
     }
-    .rtable-root.table .rtable-row.even .rtable-cell.selected {
+    .rtable-root.table .rtable-row.even.selected .rtable-cell {
+      background-color: #ffefd5;
     }
     .rtable-root.table .rtable-header .rtable-cell {
     }
@@ -239,18 +232,21 @@
       border-bottom: 2px solid #ddd;
     }
 
-    /*table*/
+    /*table-striped*/
     .rtable-root.table-striped {
       border: none;
     }
     .rtable-root.table-striped .rtable-row.even .rtable-cell {
-      background-color: #f2f2f2;
+      background-color: #f9f9f9;
       border-bottom:none;
+    }
+    .rtable-root.table-striped .rtable-row.even.hover .rtable-cell {
+      background-color: #e1eff8;
     }
     .rtable-root.table-striped .rtable-row.odd .rtable-cell {
       border-bottom:none;
     }
-    .rtable-root.table-striped .rtable-row.even .rtable-cell.selected {
+    .rtable-root.table-striped .rtable-row.even.selected .rtable-cell {
     }
     .rtable-root.table-striped .rtable-header .rtable-cell {
     }
@@ -262,11 +258,36 @@
       border-bottom: 2px solid #ddd;
     }
 
+    .rtable-notation{
+        border: 6px solid;
+        border-color: transparent transparent transparent transparent;
+        width: 0px;
+        height: 0px;
+        position: absolute;
+        top: 0px;
+        right: -5px;
+    }
+
+    .rtable-notation.error{
+        border-color: #b94a48 #b94a48 transparent transparent;
+    }
+
+    .rtable-notation.warning{
+        border-color: #f89406 #f89406 transparent transparent;
+    }
+
+    .rtable-notation.success{
+        border-color: #468847 #468847 transparent transparent;
+    }
+
+    .rtable-notation.info{
+        border-color: #3a87ad #3a87ad transparent transparent;
+    }
   </style>
 
   <yield/>
 
-  <div class="rtable-root {theme}" style="width:{width-1}px;height:{height-1}px">
+  <div class="rtable-root {theme}" style="width:{width-1}px;height:{height-1+xscroll_fix}px">
     <div class="rtable-header rtable-fixed" style="width:{fix_width}px;height:{header_height}px">
       <div each={fix_columns} no-reorder class={rtable-cell:true}
         style="width:{width}px;height:{height}px;left:{left}px;top:{top}px;line-height:{height}px;">
@@ -276,15 +297,16 @@
         <!-- checkbox -->
         <i if={type=='check' && parent.multiSelect} onclick={checkall}
           class="fa {parent.selected_rows.length>0 ? 'fa-check-square-o' : 'fa-square-o'}"
-          style="cursor:pointer"></i>
+          style="cursor:pointer;height:{headerRowHeight}px;line-height:{headerRowHeight}px"></i>
 
         <!-- <input if={type=='check' && parent.multiSelect} type="checkbox" onclick={checkall}
           class="rtable-check" style="margin-top:{headerRowHeight/2-7}px" checked={parent.selected_rows.length>0}></input> -->
         <!-- resizer -->
         <div if={!fixed && leaf} class="rtable-resizer" onmousedown={colresize}></div>
         <!-- sortable column -->
-        <div if={sort} class={rtable-sort:true, desc:get_sorted(name)=='desc', asc:get_sorted(name)=='asc'}
-          title={sort} onclick={sort_handler} style="top:{get_sort_top(get_sorted(name))}px"></div>
+        <i if={sort} class="rtable-sort fa {get_sorted(name)}"
+          title={sort} onclick={sort_handler} style="height:{rowHeight}px;line-height:{rowHeight}px;right:4px;">
+        </i>
       </div>
     </div>
     <div class="rtable-header rtable-main" style="width:{width-fix_width-yscroll_fix}px;right:0px;height:{header_height}px;left:{fix_width}px;">
@@ -296,23 +318,24 @@
         <!-- checkbox -->
         <i if={type=='check' && parent.multiSelect} onclick={checkall}
           class="fa {parent.selected_rows.length>0 ? 'fa-check-square-o' : 'fa-square-o'}"
-          style="cursor:pointer"></i>
+          style="cursor:pointer;height:{headerRowHeight}px;line-height:{headerRowHeight}px"></i>
         <!-- <input if={type=='check' && parent.multiSelect} type="checkbox" onclick={checkall}
           class="rtable-check" style="margin-top:{headerRowHeight/2-7}px"
           checked={parent.selected_rows.length>0}></input> -->
         <!-- resizer -->
         <div if={!fixed && leaf} class="rtable-resizer" onmousedown={colresize}></div>
         <!-- sortable column -->
-        <div if={sort} class={rtable-sort:true, desc:get_sorted(name)=='desc', asc:get_sorted(name)=='asc'}
-          title={sort} onclick={sort_handler} style="top:{get_sort_top(get_sorted(name))}px;"></div>
+        <i if={sort} class="rtable-sort fa {get_sorted(name)}"
+          title={sort} onclick={sort_handler} style="height:{rowHeight}px;line-height:{rowHeight}px;right:4px;">
+        </i>
       </div>
     </div>
 
     <div class="rtable-body rtable-fixed"
-      style="width:{fix_width}px;bottom:0;padding-bottom:{xscroll_fix}px;top:{header_height}px;height:{height-header_height-xscroll_fix}px;">
+      style="width:{fix_width}px;bottom:0;padding-bottom:{xscroll_fix}px;top:{header_height}px;height:{height-header_height}px;">
       <!-- transform:translate3d(0px,{0-content.scrollTop}px,0px); -->
       <div class="rtable-content" style="width:{fix_width}px;height:{rows.length*rowHeight}px;">
-        <div each={row in visCells.fixed} no-reorder class={get_row_class(row.row, row.line)}>
+        <div each={row in visCells.fixed} no-reorder class="{get_row_class(row.row, row.line)}">
           <div if={col.height!=0 && col.width!=0} each={col in row.cols} no-reorder class={get_cell_class(col)}
             style="width:{col.width}px;height:{col.height}px;left:{col.left}px;top:{col.top}px;line-height:{col.height}px;text-align:{col.align};">
 
@@ -328,18 +351,22 @@
             <!-- display checkbox -->
             <i if={col.type=='check' && onCheckable(col.row)} onclick={checkcol}
               class="fa {is_selected(col.row)?'fa-check-square-o':'fa-square-o'}"
-              style="cursor:pointer"></i>
+              style="cursor:pointer;height:{rowHeight}px;line-height:{rowHeight}px"></i>
             <!-- <input if={col.type=='check' && !useFontAwesome} type="checkbox" onclick={checkcol} checked={console.log(is_selected(col.row)) || is_selected(col.row)}
               class="rtable-check" style="margin-top:{rowHeight/2-7}px"></input> -->
+
+            <!-- notation -->
+            <span if={col.notation} class="rtable-notation {col.notation.type}" title={col.notation.title}></span>
+
           </div>
         </div>
       </div>
     </div>
     <div class="rtable-body rtable-main"
-      style="left:{fix_width}px;top:{header_height}px;bottom:0px;right:0px;width:{width-fix_width+(browser.ie?yscroll_fix:0)}px;height:{height-header_height+(browser.ie?xscroll_fix:0)}px;">
+      style="left:{fix_width}px;top:{header_height}px;bottom:0px;right:0px;width:{width-fix_width+(browser.ie?yscroll_fix:0)}px;height:{height-header_height+(browser.ie?2*xscroll_fix:xscroll_fix)}px;">
       <!-- transform:translate3d({0-content.scrollLeft}px,{0-content.scrollTop}px,0px); -->
       <div class="rtable-content" style="width:{main_width}px;height:{rows.length*rowHeight}px;">
-        <div each={row in visCells.main} no-reorder class={get_row_class(row.row, row.line)}>
+        <div each={row in visCells.main} no-reorder class="{get_row_class(row.row, row.line)}">
           <div if={col.height!=0 && col.width!=0} each={col in row.cols} no-reorder class={get_cell_class(col)}
               style="width:{col.width}px;height:{col.height}px;left:{col.left}px;top:{col.top}px;line-height:{col.height}px;text-align:{col.align};">
 
@@ -355,7 +382,7 @@
               <!-- display checkbox -->
               <i if={col.type=='check' && onCheckable(col.row)} onclick={checkcol}
                 class="fa {is_selected(col.row)?'fa-check-square-o':'fa-square-o'}"
-                style="cursor:pointer"></i>
+                style="cursor:pointer;height:{rowHeight}px;line-height:{rowHeight}px"></i>
               <!-- <input if={col.type=='check' && !useFontAwesome} type="checkbox" onclick={checkcol} checked={console.log(is_selected(col.row)) || is_selected(col.row)}
                 class="rtable-check" style="margin-top:{rowHeight/2-7}px"></input> -->
 
@@ -366,12 +393,16 @@
                   href={ btn.href || '#' }
                   onclick={parent.parent.action_click(parent.col, btn)}>{ btn.label }</a>
               </virtual>
+
+              <!-- notation -->
+              <span if={col.notation} class="rtable-notation {col.notation.type}" title={col.notation.title}></span>
+
             </div>
           </div>
         </div>
       </div>
 
-      <div if={rows.length==0} data-is="rtable-raw" value={noData} class="rtable-nodata"
+      <div if={rows.length==0 && noData} data-is="rtable-raw" value={noData} class="rtable-nodata"
         style="top:{height/2-header_height/2+rowHeight/2}px;"></div>
 
       <div style="display:none;top:{height/2-header_height/2+rowHeight/2}px" class="rtable-loading"></div>
@@ -402,7 +433,6 @@
   this.checkColFrozen = opts.checkColFrozen || false
   this.multiSelect = opts.multiSelect || false
   this.visCells = []
-  this.selected_rows = []
   this.sort_cols = []
   this.clickSelect = opts.clickSelect === undefined ? 'row' : opts.clickSelect
   this.noData = opts.noData || 'No Data'
@@ -413,6 +443,7 @@
   this.theme = opts.theme || 'zebra'
   this.minColWidth = opts.minColWidth || 5
   this.contextMenu = opts.contextMenu || []
+  this.virtual = opts.virtual || false
 
   this.onUpdate = opts.onUpdate || function(){}
   this.onSort = opts.onSort || function(){}
@@ -424,21 +455,20 @@
   this.onDeselected = opts.onDeselected || function(){}
   this.onLoadData = opts.onLoadData || function(parent){}
   this.onCheckable = opts.onCheckable || function(row){return true} //是否显示checkbox
+  this.onEditable = opts.onEditable || function(row, col){return self.editable} //是否允许单元格编辑
 
   //tree options
   this.tree = opts.tree
   this.showIcon = opts.showIcon === undefined ? true : opts.showIcon //if display icon by default
   if (opts.useFontAwesome) {
-    this.openIcon = '<i class="fa fa-minus-square-o"></i>'
-    this.closeIcon = '<i class="fa fa-plus-square-o"></i>'
+    this.openIcon = opts.openIcon || '<i class="fa fa-minus-square-o"></i>'
+    this.closeIcon = opts.closeIcon || '<i class="fa fa-plus-square-o"></i>'
   } else {
     this.openIcon = opts.openIcon || '-'
     this.closeIcon = opts.closeIcon || '+'
   }
   this.iconInden = 16
   this.expanded = opts.expanded === undefined ? false: opts.expanded
-  this.parents_expand_status = {}
-  this.loaded_status = {} //remember node loaded status
   this.idField = opts.idField || 'id'
   this.parentField = opts.parentField || 'parent'
   this.orderField = opts.orderField || 'order'
@@ -446,6 +476,12 @@
   this.hasChildrenField = opts.hasChildrenField || 'has_children'
   this.indentWidth = 16
   this.colspanValue = opts.colspanValue || '--'
+
+  //中间状态数据
+  this.selected_rows = [] //选中状态
+  this.parents_expand_status = {} //父结点展开状态
+  this.loaded_status = {} //结点装入状态
+  this.notations = {} //数据单元格指示器保存
 
   var _opts = {tree:opts.tree, idField:this.idField, parentField:this.parentField,
     levelField:this.levelField, orderField:this.orderField, hasChildrenField:this.hasChildrenField}
@@ -472,10 +508,21 @@
   }
 
   this.show_loading = function (flag) {
-    if (flag)
+    if (flag) {
       $(this.root).find('.rtable-loading').html(this.loading).show()
+      $(this.root).find('.rtable-nodata').hide()
+    }
     else
       $(this.root).find('.rtable-loading').hide()
+    <!-- this.update() -->
+  }
+
+  //装入前清理
+  this.load_clear = function() {
+    self.selected_rows = [] //选中状态
+    self.parents_expand_status = {} //父结点展开状态
+    self.loaded_status = {} //结点装入状态
+    self.notations = {} //数据单元格指示器保存
   }
 
   this.bind = function () {
@@ -491,8 +538,8 @@
       }
       if (r == 'loading') {
         self.show_loading(true)
-        self.parents_expand_status = {}
-        self.loaded_status = {} //remember node loaded status
+        self.load_clear() //清理中间状态数据
+        return //不更新界面
       } else if (r == 'load'){
         self.show_loading(false)
       }
@@ -550,19 +597,25 @@
       self.scrolling(e)
     }, {passive:true})
 
-    this.content.addEventListener('mousewheel', function(e){
+    <!-- this.content.addEventListener('mousewheel', function(e){
       if (self.mousewheel(e))
         e.preventDefault()
     })
 
     this.content_fixed.addEventListener('mousewheel', function(e){
       self.mousewheel(e)
-    }, {passive:true})
+    }, {passive:true}) -->
 
     $(this.content).on('click', '.rtable-cell', this.click_handler)
       .on('dblclick', '.rtable-cell', this.dblclick_handler)
+    $(this.content).on('mouseenter', '.rtable-row', this.hover_handler1)
+      .on('mouseleave', '.rtable-row', this.hover_handler2)
+
     $(this.content_fixed).on('click', '.rtable-cell', this.click_handler)
       .on('dblclick', '.rtable-cell', this.dblclick_handler)
+    $(this.content_fixed).on('hover', '.rtable-cell', this.hover_handler)
+      .on('mouseleave', '.rtable-row', this.hover_handler2)
+
     this.dnd()
 
     this.bind_contextmenu()
@@ -575,6 +628,18 @@
     this.bind()       //monitor data change
     this.update()
   })
+
+  this.hover_handler1 = function (e) {
+    var index = $(this).index()
+    $(self.content_fixed).find('.rtable-row:eq('+index+')').addClass('hover')
+    $(self.content).find('.rtable-row:eq('+index+')').addClass('hover')
+  }
+
+  this.hover_handler2 = function (e) {
+    var index = $(this).index()
+    $(self.content_fixed).find('.rtable-row:eq('+index+')').removeClass('hover')
+    $(self.content).find('.rtable-row:eq('+index+')').removeClass('hover')
+  }
 
   this.dnd = function (reset) {
     var el = $(this.root)
@@ -777,6 +842,8 @@
       e.preventDefault()
       if (opts.editable) {
         if (!col.editor) return
+        //判断单元格是否可以编辑
+        if (!self.onEditable(col.row, col)) return
         e.preventUpdate = true
         document.selection && document.selection.empty && ( document.selection.empty(), 1)
         || window.getSelection && window.getSelection().removeAllRanges();
@@ -1194,8 +1261,13 @@
     r1.bottom = r1.top + this.height - this.header_height - this.scrollbar_width
     r1.right = r1.left + this.width - this.fix_width - this.scrollbar_width
 
-    first = Math.max(Math.floor(this.content.scrollTop / this.rowHeight), 0)
-    last = Math.ceil((this.content.scrollTop+this.height-this.header_height) / this.rowHeight)
+    if (this.virtual) {
+      first = Math.max(Math.floor(this.content.scrollTop / this.rowHeight), 0)
+      last = Math.ceil((this.content.scrollTop+this.height-this.header_height) / this.rowHeight)
+    } else {
+      first = 0
+      last = this.rows.length
+    }
 
     var b = new Date().getTime()
 
@@ -1269,7 +1341,8 @@
           class:col.class,
           tag:col.tag,
           editor:col.editor,
-          name:col.name
+          name:col.name,
+          notation:this.get_col_notation(row, col)
         }
 
         //记录上一次的colspan单元格
@@ -1332,8 +1405,12 @@
         }
         else {
           //test column
-          if (!(d.left > r1.right || d.right < r1.left))
+          if (this.virtual) {
+            if (!(d.left > r1.right || d.right < r1.left))
+              v_row.cols.push(d)
+          } else {
             v_row.cols.push(d)
+          }
         }
       }
 
@@ -1346,14 +1423,29 @@
     }
   }
 
+  this.get_col_notation = function(row, col) {
+    var key = row.id + ':' + col.name
+    return this.notations[key] || null
+  }
+
+  /* notation value should be
+   * {type:error|warning|success|info, title:'infomation'}
+   */
+  this.set_notation = function(row, field, notation) {
+    var id = this.getId(row)
+    var key = id + ':' + field
+    this.notations[key] = notation
+  }
+
   this.get_sorted = function(name) {
     var col
 
     for(var i=0, len=this.sort_cols.length; i<len; i++) {
       col = this.sort_cols[i]
       if (col.name == name && col.direction)
-        return col.direction
+        return 'fa-sort-' + col.direction
     }
+    return 'fa-sort'
   }
 
   this.getId = function(row) {
@@ -1385,7 +1477,7 @@
       for(id in self.parents_expand_status) {
         self.parents_expand_status[id] = expanded
         if (expanded)
-          self.load_node(row)
+          self.load_node(self._data.get(id))
       }
     } else {
       if (Array.isArray(row)) {
@@ -1394,14 +1486,14 @@
           if (self.parents_expand_status.hasOwnProperty(id))
             self.parents_expand_status[id] = expanded
             if (expanded)
-              self.load_node(row)
+              self.load_node(self._data.get(id))
         }
       } else {
         id = self.getId(row)
         if (self.parents_expand_status.hasOwnProperty(id))
           self.parents_expand_status[id] = expanded
           if (expanded)
-            self.load_node(row)
+            self.load_node(self._data.get(id))
       }
     }
     <!-- self.update() -->
@@ -1438,7 +1530,8 @@
   this.scrolling = function(e) {
     self.header.scrollLeft = self.content.scrollLeft
     self.content_fixed.scrollTop = self.content.scrollTop
-    return self.update()
+    if (this.virtual)
+      return self.update()
   }
 
   var normalizeWheel = function (event) {
@@ -1606,7 +1699,7 @@
       }
       for(var i=selected_rows.length-1; i>-1; i--){
         row = selected_rows[i]
-        if (!self.onCheckable(row)) return
+        if (!self.onCheckable(this._data.get(row))) return
         index = items.indexOf(row)
         if (index != -1){
           selected_rows.splice(i, 1)
@@ -1683,6 +1776,7 @@
   this.root.diff = data_proxy('diff')
   this.root.save = data_proxy('save')
   this.root.refresh = proxy('update')
+  this.root.set_notation = proxy('set_notation')
 
   <!-- this.root.load = function(newrows){
     self._data.clear()
@@ -1733,6 +1827,8 @@
     cls = this.onRowClass(row, index)
     if (cls)
       klass.push(cls)
+    if (this.is_selected(row))
+      klass.push('selected')
     return klass.join(' ')
   }
 

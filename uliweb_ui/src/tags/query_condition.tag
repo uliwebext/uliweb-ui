@@ -40,6 +40,9 @@
         .condition-more.visible {
           border-top:1px solid #ddd;
         }
+        .condition-more.visible.hover {
+          border-top:1px solid red;
+        }
         .condition-more span {
           position: absolute;
           left:0;
@@ -47,13 +50,17 @@
           top:-1px;
           width:100px;
           border: 1px solid #ddd;
-          border-top: 1px solid white;;
+          border-top: 1px solid white;
           margin: 0 auto;
           cursor: pointer;
           font-size: 80%;
           background-color: white;
           line-height: 22px;
           height:22px;
+        }
+        .condition-more span:hover {
+          border: 1px solid red;
+          border-top: 1px solid white;
         }
         .form-control {
           display:inline-block;
@@ -95,8 +102,8 @@
               <button class="btn btn-primary btn-flat" type="submit"><i class="fa fa-search"></i> {searchTitle}</button>
               <button class="btn btn-link btn-flat" type="button" onclick={reset}>{clearTitle}</button>
             </div>
-            <div if={layout.length > 1} class={condition-more:true, visible:layout.length>1}>
-              <span href="#" onclick={ click }>
+            <div if={layout.length > 1} class={condition-more:true, visible:layout.length>1, hover:hover}>
+              <span href="#" onclick={ click } onmouseenter={mouseenter} onmouseleave={mouseleave}>
                 { show? moreTitle[0] : moreTitle[1] }
                 <i class={fa:true, fa-angle-up:show, fa-angle-down:!show}></i>
               </span>
@@ -122,6 +129,7 @@
         v._width = v.width ? v.width+'px' : (v.range?'auto':'100%')
       })
       this.show = false
+      self.hover = false
       // 使用 query_string 初始化值, 定义在uliweb-ui.js中
       this.data = $.extend({}, $.query_string.urlParams, opts.data)
 
@@ -136,6 +144,14 @@
 
       this.click = function(e){
         self.show = !self.show
+      }
+
+      this.mouseenter = function(e) {
+        self.hover = true
+      }
+
+      this.mouseleave = function(e) {
+        self.hover = false
       }
 
       this.reset = function(e){
@@ -258,41 +274,58 @@
             });
           } else {
             // 动态
-            var trigger_name = opts.field.relate_from;
-            var trigger = $($('[name="' + trigger_name + '"]')[0]);
+            var trigger_name_list = [];
             var actor = $($('[name="' + opts.field.name + '"]')[0]);
-
-            $('body').on('change', '[name="' + trigger_name + '"]', function(){
-              var trigger_selected = trigger.val();
-              if (!!trigger_selected && typeof(trigger_selected) == 'object') {
-                if (trigger_selected.length >= 2) {
-                  trigger_selected = trigger_selected.join(',');
-                } else if (trigger_selected.length == 1) {
-                  trigger_selected = trigger_selected[0];
-                } else {
-                  trigger_selected = "-1";
-                }
-              } else {
-                if (!("" + trigger_selected)){
-                  trigger_selected = "-1";
-                }
-              }
-              $.ajax({
-                method: "post",
-                url: opts.field.choices_url + '/' + trigger_selected,
-                async: false,
-                success: function(result) {
-                  opts.field.choices = result;
-
-                  self.update();
-                  if ($.fn.multiselect) {
-                    actor.multiselect('rebuild');
+            if (typeof(opts.field.relate_from) == 'string'){
+              trigger_name_list.push(opts.field.relate_from);
+            } else if (typeof(opts.field.relate_from) == 'object'){
+              trigger_name_list = opts.field.relate_from;
+            }
+            var len = trigger_name_list.length;
+            for (var t = 0; t < len; t++){
+              $('body').on('change', '[name="' + trigger_name_list[t] + '"]', function(){
+                var trigger_selected_list = [];
+                for (var tt = 0; tt < len; tt++){
+                  var trigger_selected = $('[name=' + trigger_name_list[tt] + ']').val();
+                  console.log('[name=' + trigger_name_list[tt] + ']', trigger_selected);
+                  if (!!trigger_selected && typeof(trigger_selected) == 'object') {
+                    if (trigger_selected.length >= 2) {
+                      trigger_selected = trigger_selected.join(',');
+                    } else if (trigger_selected.length == 1) {
+                      trigger_selected = trigger_selected[0];
+                    } else {
+                      trigger_selected = "-1";
+                    }
+                  } else {
+                    if (trigger_selected === undefined || trigger_selected === null || !("" + trigger_selected)){
+                      trigger_selected = "-1";
+                    }
                   }
+
+                  trigger_selected_list.push(trigger_selected);
                 }
-              }); // END OF AJAX
+
+                var trigger_selected_url_string = trigger_selected_list.join('/');
+                console.log('trigger_selected_url_string=', trigger_selected_url_string);
+                $.ajax({
+                  method: "post",
+                  url: opts.field.choices_url + '/' + trigger_selected_url_string,
+                  async: false,
+                  success: function(result) {
+                    opts.field.choices = result;
+                    self.update();
+                    if ($.fn.multiselect) {
+                      actor.multiselect('rebuild');
+                    }
+                  }
+                });
+              });
+            }
+
+            $.each(trigger_name_list, function(){
+              $('[name=' + this + ']').trigger('change');
             });
-          } // END OF ELSE
-          trigger.trigger("change");
+          }
         }
 
         load('ui.bootstrap.multiselect', function(){

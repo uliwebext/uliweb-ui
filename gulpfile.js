@@ -1,5 +1,5 @@
 var gulp = require('gulp'),
-    minifycss = require('gulp-minify-css'),
+    cleancss = require('gulp-clean-css'),
     jshint = require('gulp-jshint'),
     uglify = require('gulp-uglify'),
     concat = require('gulp-concat'),
@@ -16,7 +16,7 @@ gulp.task('css', function() {
     .pipe(concat('uliweb-ui.css'))
     .pipe(gulp.dest('uliweb_ui/static/modules/'))
     .pipe(rename({suffix: '.min'}))
-    .pipe(minifycss())
+    .pipe(cleancss())
     .pipe(gulp.dest('uliweb_ui/static/modules/'))
     // .pipe(notify({ message: 'css process completed!' }));
 });
@@ -62,9 +62,8 @@ gulp.task('tags-js', function() {
 
 gulp.task('watch', ['default'], function() {
   gulp.watch('uliweb_ui/src/tags/*.tag', ['tags']);
-  // Watch .css files
+  gulp.watch('uliweb_ui/src/tags/*.js', ['tags-js']);
   gulp.watch('uliweb_ui/src/utils/css/*.css', ['css']);
-  // Watch .js files
   gulp.watch('uliweb_ui/src/utils/js/*.js', ['js']);
 });
 

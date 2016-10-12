@@ -8,13 +8,13 @@
   <!-- 条件 -->
   <query-condition if={has_query} rules={query_ules} fields={query_fields} layout={query_layout} data={query_data}></query-condition>
   <!-- 按钮生成 -->
-  <div class="btn-toolbar">
-    <div if={left_tools} class="rgrid-tools pull-left">
+  <div if={left_tools.length>0 || right_tools.length>0} class="btn-toolbar">
+    <div if={left_tools.length>0} class="rgrid-tools pull-left">
       <div each={btn_group in left_tools} class={btn_group_class}>
         <button each={btn in btn_group} data-is="rgrid-button" btn={btn}></button>
       </div>
     </div>
-    <div if={right_tools} class="rgrid-tools pull-right">
+    <div if={right_tools.length>0} class="rgrid-tools pull-right">
       <div each={btn_group in right_tools} class={btn_group_class}>
         <button each={btn in btn_group} data-is="rgrid-button" btn={btn}></button>
       </div>
@@ -27,7 +27,7 @@
   <div class="clearfix tools">
     <pagination if={pagination} data={data} url={url} page={page} total={total} observable={observable}
       limit={limit} onpagechanged={onpagechanged} onbeforepage={onbeforepage}></pagination>
-    <div if={footer_tools} class="pull-right {btn_group_class}">
+    <div if={footer_tools.length>0} class="pull-right {btn_group_class}">
       <button each={btn in footer_tools} data-is="rgrid-button" btn={btn}></button>
     </div>
   </div>
@@ -97,12 +97,14 @@
     })
   }
 
-  this.onbeforepage = function () {
+  this.onbeforepage = function (page) {
+    self.page = page
     self.table.show_loading(true)
+    self.start = (page - 1) * self.limit
   }
 
   this.rtable_options = {
-    theme : opts.theme,
+    theme : opts.theme || 'zebra',
     combineCols : opts.combineCols,
     nameField : opts.nameField || 'name',
     labelField : opts.labelField || 'title',
@@ -115,6 +117,7 @@
     minHeight: opts.minHeight,
     height: opts.height,
     width: opts.width,
+    clickSelect: opts.clickSelect,
     rowHeight: opts.rowHeight,
     container: $(this.root).parent(),
     noData: opts.noData,
@@ -127,6 +130,8 @@
     levelField: opts.levelField,
     treeField: opts.treeField,
     hasChildrenField: opts.hasChildrenField,
+    virtual: opts.virtual,
+    contextMenu: opts.contextMenu,
     onDblclick: opts.onDblclick,
     onClick: opts.onClick,
     onMove: opts.onMove,
@@ -138,17 +143,18 @@
     onLoadData: opts.onLoadData || this.onloaddata,
     onSort: opts.onSort || this.onsort,
     onCheckable: opts.onCheckable,
+    onEditable: opts.onEditable,
     colspanValue: opts.colspanValue,
     draggable: opts.draggable,
     editable: opts.editable,
     remoteSort: opts.remoteSort
   }
 
-  this.onpagechanged = function (page) {
+  <!-- this.onpagechanged = function (page) {
     self.start = (page - 1) * self.limit
     self.update()
   }
-
+ -->
   this.on('mount', function(){
     var item, items
     var tools = this.left_tools.concat(this.right_tools).concat([this.footer_tools])
@@ -196,7 +202,7 @@
     this.root.instance = this
     if (this.url && this.autoLoad) {
       this.table.show_loading(true)
-      this.load()
+      setTimeout(function(){self.load()}, 100)
     }
 
     this.observable.on('selected deselected', function(row) {
@@ -214,15 +220,18 @@
   })
 
   this.load = function(url, param){
-    var f
+    var f, url
     param = param || {}
     var _f = function(r){
       return r.rows
     }
 
     self.url = url || self.url
-    if (opts.tree) f = self.data.load_tree(self.url, param, _f)
-    else f = self.data.load(self.url, param, this.onLoaded || _f)
+    if (self.pagination) {
+      url = get_url(self.url, {limit:self.limit, page:self.page})
+    } else url = self.url
+    if (opts.tree) f = self.data.load_tree(url, param, _f)
+    else f = self.data.load(url, param, this.onLoaded || _f)
     f.done(function(r){
       self.total = r.total
       self.update()

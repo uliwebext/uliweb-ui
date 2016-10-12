@@ -6,7 +6,7 @@
     <li if={has_first} class="first"><a href="#" onclick={go(1)}><pagination-raw content={first}></pagination-raw></a></li>
     <li if={has_prev} class="prev"><a href="#" onclick={go(page-1)}><pagination-raw content={prev}></pagination-raw></a></li>
     <li class={page:true, active:p==page} each={p in pages}><a href="#" onclick={go(p)}>{p}</a></li>
-    <li if={has_next} class="next"><a href="#" onclick={go(page+1)}><pagination-raw content="{console.log(next)||next}"></pagination-raw></a></li>
+    <li if={has_next} class="next"><a href="#" onclick={go(page+1)}><pagination-raw content="{next}"></pagination-raw></a></li>
     <li if={has_last} class="last"><a href="#" onclick={go(totalPages)}><pagination-raw content={last}></pagination-raw></a></li>
     <li if={refresh} class="refresh"><a href="#" onclick={go(page)}><pagination-raw content={refresh}></pagination-raw></a></li>
   </ul>
@@ -65,13 +65,13 @@
       e.preventDefault()
       self.page = page
       if (opts.onbeforepage && typeof opts.onbeforepage === 'function') {
-        opts.onbeforepage.call(self)
+        opts.onbeforepage.call(self, page)
       }
       if (self.onpage && typeof self.onpage === 'function') {
         $.when(self.onpage.call(self, page)).done(function(data){
           self.show(page)
           if (self.onpagechanged) {
-            self.onpagechanged(page)
+            self.onpagechanged.call(self, page)
           }
         })
       } else {
