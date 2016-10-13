@@ -87,6 +87,8 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
   this.contextMenu = opts.contextMenu || []
   this.virtual = opts.virtual || false
 
+  this.minColWidth = opts.minColWidth || 100
+
   this.onUpdate = opts.onUpdate || function(){}
   this.onSort = opts.onSort || function(){}
   this.onRowClass = opts.onRowClass || function(){}
@@ -745,7 +747,15 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
 
     if (cal_cols.length > 0) {
       var w = this.width-width-this.yscroll_fix
-      var dw = Math.floor(w/cal_cols.length)
+      var dw, lw
+      lw = this.minColWidth*cal_cols.length
+
+      if (w > lw) {
+        dw = Math.floor(w/cal_cols.length)
+      } else {
+        dw = this.minColWidth
+        w = lw
+      }
       for(var i=0, len=cal_cols.length; i<len; i++) {
         cal_cols[i].width = dw
         if (i == cal_cols.length - 1)
