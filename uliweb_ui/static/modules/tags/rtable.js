@@ -927,7 +927,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
           selected:this.is_selected(row),
           render:col.render,
           buttons:col.buttons,
-          index:this.start+index,
+          index:first+this.start+index,
           sor:col.sort,
           align:col.align,
           class:col.class,
