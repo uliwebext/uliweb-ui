@@ -27,6 +27,9 @@
   <div class="clearfix tools">
     <pagination if={pagination} data={data} url={url} page={page} total={total} observable={observable}
       limit={limit} onpagechanged={onpagechanged} onbeforepage={onbeforepage} buttons={footer_tools} theme={page_theme}></pagination>
+    <div if={!pagination && footer_tools.length>0} class="pull-right {btn_group_class}">
+      <button each={btn in footer_tools} data-is="rgrid-button" btn={btn}></button>
+    </div>
   </div>
 
   /*
