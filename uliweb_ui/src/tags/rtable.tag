@@ -426,6 +426,7 @@
   this.cols = opts.cols.slice()
   this.combineCols = opts.combineCols || []
   this.headerRowHeight = opts.headerRowHeight || 34
+  this.height = opts.height || 'auto'
   this.rowHeight = opts.rowHeight || 34
   this.indexColWidth = opts.indexColWidth || 40
   this.indexColFrozen = opts.indexColFrozen || false
