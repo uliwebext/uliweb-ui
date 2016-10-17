@@ -1146,7 +1146,7 @@
       var dw, lw
       lw = this.minColWidth*cal_cols.length
       //剩余宽度大小剩余列总宽度，则平分
-      if (w > lw) {
+      if (w >= lw) {
         dw = Math.floor(w/cal_cols.length)
       } else {
         dw = this.minColWidth

@@ -750,7 +750,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
       var dw, lw
       lw = this.minColWidth*cal_cols.length
 
-      if (w > lw) {
+      if (w >= lw) {
         dw = Math.floor(w/cal_cols.length)
       } else {
         dw = this.minColWidth

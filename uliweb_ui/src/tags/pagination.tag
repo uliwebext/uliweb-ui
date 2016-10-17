@@ -3,8 +3,9 @@
 
   <style scoped>
     .pagination {margin-right:5px;}
-    .pagination>li>a.page_input {padding: 3px 12px;}
     .pagination>li.disabled>a {color:#999;}
+    .page_input {padding:0px 12px; line-height: 34px; height:34px;}
+    .page_input input {height:20px;}
     .message {line-height: 34px;line:34px;margin:0 auto;}
   </style>
 
@@ -21,14 +22,14 @@
     <button each={btn in buttons} data-is="pagination-button" btn={btn}></button>
   </div>
 
-  <ul if={theme=='simple'} class="pagination pull-left">
-    <li class="first {disabled:totalPages<=1 || page==1}"><a href="#" onclick={go(1)} title={first_title}><pagination-raw content={first}></pagination-raw></a></li>
-    <li class="prev {disabled:!has_prev}"><a href="#" onclick={go(page-1)} title={prev_title}><pagination-raw content={prev}></pagination-raw></a></li>
-    <li class="page"><a class="page_input">第 <input type="text" onkeyup={page_input_click} value={page} style="width:40px"> 页/共{totalPages}页</input></a></li>
-    <li class="next {disabled:!has_next}"><a href="#" onclick={go(page+1)} title={next_title}><pagination-raw content="{next}"></pagination-raw></a></li>
-    <li class="last {disabled:totalPages<=1 || page==totalPages}"><a href="#" onclick={go(totalPages)} title={last_title}><pagination-raw content={last}></pagination-raw></a></li>
-    <li if={refresh} class="refresh"><a href="#" onclick={go(page)} title={refresh_title}><pagination-raw content={refresh}></pagination-raw></a></li>
-  </ul>
+  <div if={theme=='simple'} class="{btn_group_class} pull-left pagination">
+    <a class="btn btn-default {disabled:totalPages<=1 || page==1}" onclick={go(1)} title={first_title}><pagination-raw content={first}></pagination-raw></a>
+    <a class="btn btn-default {disabled:!has_prev}" onclick={go(page-1)} title={prev_title}><pagination-raw content={prev}></pagination-raw></a>
+    <a class="btn btn-default page_input">第 <input type="text" onkeyup={page_input_click} value={page} style="width:40px"> 页/共{totalPages}页</input></a>
+    <a class="btn btn-default {disabled:!has_next}" onclick={go(page+1)} title={next_title}><pagination-raw content="{next}"></pagination-raw></a>
+    <a class="btn btn-default {disabled:totalPages<=1 || page==totalPages}" onclick={go(totalPages)} title={last_title}><pagination-raw content={last}></pagination-raw></a>
+    <a if={refresh} class="btn btn-default" onclick={go(page)} title={refresh_title}><pagination-raw content={refresh}></pagination-raw></a>
+  </div>
   <div if={theme=='simple' && buttons.length>0} class="pull-left {btn_group_class}">
     <button each={btn in buttons} data-is="pagination-button" btn={btn}></button>
   </div>
