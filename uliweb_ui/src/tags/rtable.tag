@@ -444,6 +444,9 @@
   this.minColWidth = opts.minColWidth || 5
   this.contextMenu = opts.contextMenu || []
   this.virtual = opts.virtual || false
+  //最小列宽度，当未给出列宽度时，如果剩余宽度>无宽度列数*最小列宽度时，平均分配剩余宽度，否则
+  //每列宽度为最小宽度
+  this.minColWidth = opts.minColWidth || 100
 
   this.onUpdate = opts.onUpdate || function(){}
   this.onSort = opts.onSort || function(){}
@@ -1140,7 +1143,15 @@
     //计算无width的列
     if (cal_cols.length > 0) {
       var w = this.width-width-this.yscroll_fix
-      var dw = Math.floor(w/cal_cols.length)
+      var dw, lw
+      lw = this.minColWidth*cal_cols.length
+      //剩余宽度大小剩余列总宽度，则平分
+      if (w >= lw) {
+        dw = Math.floor(w/cal_cols.length)
+      } else {
+        dw = this.minColWidth
+        w = lw
+      }
       for(var i=0, len=cal_cols.length; i<len; i++) {
         cal_cols[i].width = dw
         if (i == cal_cols.length - 1)
@@ -1335,7 +1346,7 @@
           selected:this.is_selected(row),
           render:col.render,
           buttons:col.buttons,
-          index:this.start+index,
+          index:first+this.start+index,
           sor:col.sort,
           align:col.align,
           class:col.class,
