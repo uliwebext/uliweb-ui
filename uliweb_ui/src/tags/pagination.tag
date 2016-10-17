@@ -5,7 +5,7 @@
     .pagination {margin-right:5px;}
     .pagination>li.disabled>a {color:#999;}
     .page_input {padding:0px 12px; line-height: 34px; height:34px;}
-    .page_input input {height:20px;}
+    .page_input input {height:20px;line-height:20px}
     .message {line-height: 34px;line:34px;margin:0 auto;}
   </style>
 
