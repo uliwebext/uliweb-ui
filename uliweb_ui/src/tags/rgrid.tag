@@ -6,7 +6,8 @@
   </style>
 
   <!-- 条件 -->
-  <query-condition if={has_query} rules={query_ules} fields={query_fields} layout={query_layout} data={query_data}></query-condition>
+  <query-condition if={has_query} rules={query_ules}
+    fields={query_fields} layout={query_layout} data={query_data}></query-condition>
   <!-- 按钮生成 -->
   <div if={left_tools.length>0 || right_tools.length>0} class="btn-toolbar">
     <div if={left_tools.length>0} class="rgrid-tools pull-left">
