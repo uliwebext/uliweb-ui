@@ -68,6 +68,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
   this.cols = opts.cols.slice()
   this.combineCols = opts.combineCols || []
   this.headerRowHeight = opts.headerRowHeight || 34
+  this.height = opts.height || 'auto'
   this.rowHeight = opts.rowHeight || 34
   this.indexColWidth = opts.indexColWidth || 40
   this.indexColFrozen = opts.indexColFrozen || false
@@ -1062,13 +1063,18 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
   }
 
   this._expand = function(row, expanded) {
-    var item, i, len, id, self=this
+    var item, i, len, id, rows, row
 
     if (!row) {
-      for(id in self.parents_expand_status) {
-        self.parents_expand_status[id] = expanded
-        if (expanded)
-          self.load_node(self._data.get(id))
+      rows = self._data.get()
+      for(var i=0, len=rows.length; i<len; i++) {
+        row = rows[i]
+        id = self.getId(row)
+        if (row[self.hasChildrenField]) {
+          self.parents_expand_status[id] = expanded
+          if (expanded)
+            self.load_node(self._data.get(id))
+        }
       }
     } else {
       if (Array.isArray(row)) {

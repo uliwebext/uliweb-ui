@@ -10,11 +10,11 @@ var string_editor = function (parent, row, col) {
     height:h,
     margin:0,
     padding:0,
-    border:'none',
+    border:'1 solid gray',
     boxSizing:'border-box',
     zIndex:1000,
     fontSize:14,
-    backgroundColor:'#ffefd5',
+    backgroundColor:'white'
   })
   $p.append(input)
   input.focus().select()
@@ -68,11 +68,11 @@ var select_editor = function (parent, row, col) {
     height:h,
     margin:0,
     padding:0,
-    border:'none',
+    border:'1 solid gray',
     boxSizing:'border-box',
     zIndex:1000,
     fontSize:14,
-    backgroundColor:'#ffefd5'
+    backgroundColor:'white'
   })
   $p.append(input)
   input.focus()
@@ -108,11 +108,11 @@ var date_editor = function (parent, row, col) {
     height:h,
     margin:0,
     padding:0,
-    border:'none',
+    border:'1 solid gray',
     boxSizing:'border-box',
     zIndex:1000,
     fontSize:14,
-    backgroundColor:'#ffefd5'
+    backgroundColor:'white'
   })
   $p.append(input)
   input.focus().select().pikaday({
@@ -194,11 +194,11 @@ var select2_editor = function (parent, row, col) {
     height:h,
     margin:0,
     padding:0,
-    border:'none',
+    border:'1 solid gray',
     boxSizing:'border-box',
     zIndex:1000,
     fontSize:14,
-    backgroundColor:'#ffefd5'
+    backgroundColor:'white'
   })
   $p.append(input)
   input.focus()

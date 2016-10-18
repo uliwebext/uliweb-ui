@@ -316,6 +316,16 @@ DataSet.prototype._insert = function (data, target, position) {
   return addedIds;
 };
 
+DataSet.prototype._findLastFirstLevelNode = function () {
+  var i, len, node
+
+  for(len=this._data.length, i=len-1; i>-1; i--) {
+    node = this._data[i]
+    if (!node[this._parentField] || node[this._parentField] == 0) {
+      return node
+    }
+  }
+}
 /**
  * Insert a single item before index. Will fail when an item with the same id already exists.
  * @param {Object} item
@@ -363,18 +373,39 @@ DataSet.prototype._insertItem = function (item, index, position, delta, parent) 
   this.length++;
   var last_order, level, x
   if (this._isTree) {
-    d[this._parentField] = parent || node[this._parentField]
-    if (!d[this._levelField])
-      d[this._levelField] = node[this._levelField]
-    if (position == 'after')
-      d[this._orderField] = node[this._orderField] + 1
-    else
-      d[this._orderField] = node[this._orderField]
+    if (node) {
+      d[this._parentField] = parent || node[this._parentField]
+      if (!d[this._levelField])
+        d[this._levelField] = node[this._levelField]
+      if (!d[this._orderField]) {
+        if (position == 'after')
+          d[this._orderField] = node[this._orderField] + 1
+        else
+          d[this._orderField] = node[this._orderField]
+      }
 
-    level = node[this._levelField]
-    last_order = d[this._orderField]
+      level = node[this._levelField]
+      last_order = d[this._orderField]
 
-    this._reOrder(index+1, level, last_order)
+      this._reOrder(index+1, level, last_order)
+
+    } else {
+      d[this._parentField] = 0
+      if (!d[this._levelField])
+        d[this._levelField] = 0
+      if (!d[this._orderField]) {
+        if (position == 'after') {
+          node = this._findLastFirstLevelNode()
+          if (node) {
+            d[this._orderField] = node.order
+          } else {
+            d[this._orderField] = 1
+          }
+        } else
+          d[this._orderField] = 1
+      }
+    }
+
   }
 
   return {id:id, index:index};
@@ -464,6 +495,7 @@ DataSet.prototype._move = function (item, target, position) {
  * @param {Number} Index for element
  */
 DataSet.prototype._findNext = function (index) {
+  if (!index) return -1
   var n = index + 1
 
   if (n >= this.length) return -1
