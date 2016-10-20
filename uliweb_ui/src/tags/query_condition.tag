@@ -287,7 +287,6 @@
                 var trigger_selected_list = [];
                 for (var tt = 0; tt < len; tt++){
                   var trigger_selected = $('[name=' + trigger_name_list[tt] + ']').val();
-                  console.log('[name=' + trigger_name_list[tt] + ']', trigger_selected);
                   if (!!trigger_selected && typeof(trigger_selected) == 'object') {
                     if (trigger_selected.length >= 2) {
                       trigger_selected = trigger_selected.join(',');
@@ -306,7 +305,6 @@
                 }
 
                 var trigger_selected_url_string = trigger_selected_list.join('/');
-                console.log('trigger_selected_url_string=', trigger_selected_url_string);
                 $.ajax({
                   method: "post",
                   url: opts.field.choices_url + '/' + trigger_selected_url_string,
