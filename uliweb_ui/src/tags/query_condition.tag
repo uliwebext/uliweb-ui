@@ -84,7 +84,7 @@
     </style>
 
     <div class="query-condition">
-        <form method="get" action="{ opts.action }">
+        <form method="get" action="{ opts.url }">
             <div each={row, i in layout} show={i==0 || show} class={condition-row:true, condition-row-more:i>0}>
                 <div each={field in row} class="condition-cell">
                    <span class="condition-label {nomore:i==0 &&!show}" style="min-width:{!show?0:labelWidth}px">{ fields[this.field].label || field }</span>
@@ -120,6 +120,8 @@
       this.searchTitle = opts.searchTitle || '查询'
       this.clearTitle = opts.clearTitle || '清除条件'
       this.moreTitle = opts.moreTitle || ['收起', '更多条件']
+      this.ajax = opts.ajax
+      this.url = opts.url
 
       // 初始化fields.name
       opts.fields.forEach(function(v){
@@ -131,7 +133,8 @@
       this.show = false
       self.hover = false
       // 使用 query_string 初始化值, 定义在uliweb-ui.js中
-      this.data = $.extend({}, $.query_string.urlParams, opts.data)
+      var query = new QueryString(this.url)
+      this.data = $.extend({}, query.urlParams, opts.data)
 
       if (!this.layout) {
           this.layout = []
@@ -169,6 +172,20 @@
             $('[name='+k+']', self.root).val(null)
         }
       }
+
+      //增加对ajax模式的处理
+      this.on('mount', function(){
+        if (self.ajax) {
+          $(':submit', self.root).click(function (e) {
+            e.preventDefault()
+            var d = serializeObject(self.root)
+            var url = get_url(self.url, d)
+            push_url(url)
+            self.parent.page = 1
+            self.parent.load(url)
+          })
+        }
+      })
 
       // this.on('mount', function(){
       //   for (k in self.data){

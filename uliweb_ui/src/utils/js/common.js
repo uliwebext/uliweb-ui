@@ -367,6 +367,10 @@ function get_choice(choices, value) {
   return ''
 }
 
+function push_url (url) {
+  if(history && history.pushState) history.pushState(null, null, url)
+}
+
 
 /* jquery init function
 */
