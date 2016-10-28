@@ -180,7 +180,7 @@
             e.preventDefault()
             var d = serializeObject(self.root)
             var url = get_url(self.url, d)
-            push_url(url)
+            //push_url(url)
             self.parent.page = 1
             self.parent.load(url)
           })
