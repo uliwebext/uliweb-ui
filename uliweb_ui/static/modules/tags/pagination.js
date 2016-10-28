@@ -51,6 +51,7 @@ riot.tag2('pagination', '<ul if="{theme==\'long\'}" class="pagination"> <li if="
   this.on('update', function(){
     this.url = opts.url
     this.total = opts.total
+    this.page = opts.page
     this.show()
   })
 

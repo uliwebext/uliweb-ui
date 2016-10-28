@@ -85,6 +85,7 @@
   this.on('update', function(){
     this.url = opts.url           //数据展示URL
     this.total = opts.total
+    this.page = opts.page
     this.show()
   })
 
