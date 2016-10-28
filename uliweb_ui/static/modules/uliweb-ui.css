@@ -55,7 +55,7 @@ legend {margin-bottom:0; border-bottom:none;}
         display: initial;
     }
 }
-.label-default {line-height: 27px;}
+/* .label-default {line-height: 27px;} */
 
 
 /* fix AdminLTE */

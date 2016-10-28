@@ -138,8 +138,8 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
                 actor.multiselect('rebuild');
               }
             });
-            trigger.trigger("change");
           } else {
+
             var trigger_name_list = [];
             var actor = $($('[name="' + opts.field.name + '"]')[0]);
             if (typeof(opts.field.relate_from) == 'string'){
@@ -194,9 +194,8 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
 
         load('ui.bootstrap.multiselect', function(){
           var el = $('[name='+opts.field.name+']', self.root).multiselect(_opts);
-          if (opts.data[opts.field.name]){
-            el.multiselect('select', opts.data[opts.field.name]);
-          }
+          if (opts.data[opts.field.name])
+            el.multiselect('select', opts.data[opts.field.name])
         })
       } else if (opts.type == 'date') {
         var _opts = {format: 'YYYY-MM-DD', showTime:false, i18n:i18n};
@@ -212,7 +211,7 @@ riot.tag2('input-field', '<input type="text" name="{opts.field.name}" class="for
       }
       if (opts.data[opts.field.name])
         if (opts.type == "select" || typeof(opts.data[opts.field.name]) == "string") {
-          $('[name='+opts.field.name+']').val(opts.data[opts.field.name]);
+          $('[name='+opts.field.name+']').val(opts.data[opts.field.name])
         } else {
           $($('[name='+opts.field.name+']')[0]).val(opts.data[opts.field.name][0]);
           $($('[name='+opts.field.name+']')[1]).val(opts.data[opts.field.name][1]);
