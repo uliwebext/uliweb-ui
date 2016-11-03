@@ -413,7 +413,7 @@ DataSet.prototype._insertItem = function (item, index, position, delta, parent) 
 
 DataSet.prototype._reOrder = function (index, level, last_order) {
   var i, len, item, _l;
-  for(i=index, len=this.length; i<len; i++) {
+  for(i=index, len=this._data.length; i<len; i++) {
     item = this._data[i]
     _l = item[this._levelField]
     if (_l>level) continue
@@ -1398,7 +1398,7 @@ DataSet.prototype._addItem = function (item, parent, position) {
           this._data.splice(index+1, 0, d)
           level = d[this._levelField]
           last_order = d[this._orderField]
-          this._reOrder(index+1, level, last_order)
+          this._reOrder(index+2, level, last_order)
         } else {
           index = this._findNext(index)
           if (index == -1) {
@@ -1417,6 +1417,15 @@ DataSet.prototype._addItem = function (item, parent, position) {
     } else {
       if (!d[this._levelField])
         d[this._levelField] = 0
+      //查找最后的order
+      order = 1
+      for(var ii=this.length-2; ii>-1; ii--) {
+        if (this._data[ii][this._levelField] == 0){
+          order = this._data[ii][this._orderField] + 1
+          break
+        }
+      }
+      d[this._orderField] = order
     }
   }
 
