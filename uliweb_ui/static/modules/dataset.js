@@ -495,7 +495,7 @@ DataSet.prototype._move = function (item, target, position) {
  * @param {Number} Index for element
  */
 DataSet.prototype._findNext = function (index) {
-  if (!index) return -1
+  if (index === undefined) return -1
   var n = index + 1
 
   if (n >= this.length) return -1
