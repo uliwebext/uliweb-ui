@@ -144,6 +144,7 @@
     onEdit: opts.onEdit,
     onEdited: opts.onEdited,
     onSelect: opts.onSelect,
+    onDeselect: opts.onDeselect,
     onSelected: opts.onSelected,
     onDeselected: opts.onDeselected,
     onLoadData: opts.onLoadData || this.onloaddata,
@@ -205,6 +206,8 @@
     this.root.diff = this.table.diff
     this.root.getButton = this.getButton
     this.root.refresh = this.update
+    this.root.select = this.table.select
+    this.root.deselect = this.table.deselect
     this.root.instance = this
     if (this.url && this.autoLoad) {
       this.table.show_loading(true)

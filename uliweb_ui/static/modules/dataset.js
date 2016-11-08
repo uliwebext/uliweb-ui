@@ -845,6 +845,10 @@ DataSet.prototype.tree = function (options) {
     parentId = item[parentField] || 0
     if (parentId) {
       parent = ids[parentId]
+      if (!parent){
+        console.log(item)
+        throw new Error(id + ' parent ' + parentId + ' is not existed')
+      }
       if (parent.hasOwnProperty(childrenField)) {
         parent[childrenField].push(item)
       } else {

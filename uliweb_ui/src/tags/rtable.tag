@@ -456,6 +456,7 @@
   this.onEdited = opts.onEdited || function(){return true}
   this.onSelected = opts.onSelected || function(){}
   this.onSelect = opts.onSelect || function(){return true}
+  this.onDeselect = opts.onDeselect || function(){return true}
   this.onDeselected = opts.onDeselected || function(){}
   this.onLoadData = opts.onLoadData || function(parent){}
   this.onCheckable = opts.onCheckable || function(row){return true} //是否显示checkbox
@@ -1701,10 +1702,7 @@
   this.deselect = function(rows) {
     var r = [], row, selected_rows = this.selected_rows, index, items = [], id
     if (!rows) {
-      this.selected_rows = []
-      this.onDeselected()
-      if (this.observable)
-        this.observable.trigger('deselected')
+      items = this.selected_rows.slice()
     }
     else {
       if (!Array.isArray(rows))
@@ -1719,14 +1717,14 @@
         if (!self.onCheckable(this._data.get(row))) return
         index = items.indexOf(row)
         if (index != -1){
-          selected_rows.splice(i, 1)
-          items.splice(index, 1)
-          this.onDeselected(this._data.get(row))
-          if (this.observable)
-            this.observable.trigger('deselected', this._data.get(row))
+          if (this.onDeselect(this._data.get(row))) {
+            selected_rows.splice(i, 1)
+            items.splice(index, 1)
+            this.onDeselected(this._data.get(row))
+            if (this.observable)
+              this.observable.trigger('deselected', this._data.get(row))
+          }
         }
-        if (rows.length == 0)
-          break
       }
     }
     <!-- this.update() -->
@@ -1761,6 +1759,8 @@
   this.root.expand = proxy('expand')
   this.root.collapse = proxy('collapse')
   this.root.show_loading = proxy('show_loading')
+  this.root.select = proxy('select')
+  this.root.deselect = proxy('deselect')
 
   /* resize width and height */
   this.resize = function () {
