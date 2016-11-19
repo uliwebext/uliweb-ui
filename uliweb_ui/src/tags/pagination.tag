@@ -5,7 +5,7 @@
     .pagination {margin-right:5px;}
     .pagination>li.disabled>a {color:#999;}
     .page_input {padding:0px 12px; line-height: 34px; height:34px;}
-    .page_input input {height:20px;line-height:20px}
+    .page_input input {height:20px;line-height:20px;margin:0;}
     .message {line-height: 34px;line:34px;margin:0 auto;}
   </style>
 
@@ -51,7 +51,7 @@
   this.onpage = opts.onPage || function () {
     return self.data.load(self.get_url(), function(data){
       self.total = data.total   //根据反回值修改total
-      self.push_url(self.get_url())
+      <!-- self.push_url(self.get_url()) -->
       return data.rows
     })
   }    //页面事件回调,缺省使用data作为数据源

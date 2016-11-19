@@ -149,6 +149,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
     this.root.update = this.table.update
     this.root.remove = this.table.remove
     this.root.get = this.table.get
+    this.root._get = this.table._get
     this.root.load = this.load
     this.root.insertBefore = this.table.insertBefore
     this.root.insertAfter = this.table.insertAfter
@@ -163,6 +164,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
     this.root.refresh = this.update
     this.root.select = this.table.select
     this.root.deselect = this.table.deselect
+    this.root.resize = this.table.resize
     this.root.instance = this
     if (this.url && this.autoLoad) {
       this.table.show_loading(true)
@@ -195,7 +197,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
       url = get_url(self.url, {limit:self.limit, page:self.page})
     } else url = self.url
     if (opts.tree) f = self.data.load_tree(url, param, _f)
-    else f = self.data.load(url, param, this.onLoaded || _f)
+    else f = self.data.load(url, param, self.onLoaded || _f)
     f.done(function(r){
       self.total = r.total
       self.update()

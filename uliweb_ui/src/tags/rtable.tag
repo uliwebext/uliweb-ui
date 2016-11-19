@@ -167,9 +167,10 @@
     .rtable-row.hover .rtable-cell {
       background-color: #e1eff8;
     }
+    /* 选中状态hover不处理为选中背景色
     .rtable-row.selected.hover .rtable-cell {
       background-color: #ffefd5;
-    }
+    }*/
 
     .rtable-row.selected .rtable-cell {
       background-color:#ffefd5;
@@ -184,15 +185,15 @@
       border-bottom:none;
       border-right:1px solid #ddd;
     }
-    .rtable-root.zebra .rtable-row.even.hover .rtable-cell {
-      background-color: #e1eff8;
-    }
     .rtable-root.zebra .rtable-row.odd .rtable-cell {
       border-bottom:none;
       border-right:1px solid #ddd;
     }
-    .rtable-root.zebra .rtable-row.even.selected .rtable-cell {
+    .rtable-root.zebra .rtable-row.selected .rtable-cell {
       background-color: #ffefd5;
+    }
+    .rtable-root.zebra .rtable-row.hover .rtable-cell {
+      background-color: #e1eff8;
     }
     .rtable-root.zebra .rtable-header .rtable-cell {
       background-color: #f2f2f2;
@@ -201,11 +202,11 @@
     /*simple*/
     .rtable-root.simple .rtable-row.even .rtable-cell {
     }
-    .rtable-root.simple .rtable-row.even.hover .rtable-cell {
-    }
     .rtable-root.simple .rtable-row.odd .rtable-cell {
     }
-    .rtable-root.simple .rtable-row.even.selected .rtable-cell {
+    .rtable-root.simple .rtable-row.selected .rtable-cell {
+    }
+    .rtable-root.simple .rtable-row.hover .rtable-cell {
     }
     .rtable-root.simple .rtable-header .rtable-cell {
       background-color: #f2f2f2;
@@ -219,7 +220,7 @@
     }
     .rtable-root.table .rtable-row.odd .rtable-cell {
     }
-    .rtable-root.table .rtable-row.even.selected .rtable-cell {
+    .rtable-root.table .rtable-row.selected .rtable-cell {
       background-color: #ffefd5;
     }
     .rtable-root.table .rtable-header .rtable-cell {
@@ -240,13 +241,12 @@
       background-color: #f9f9f9;
       border-bottom:none;
     }
-    .rtable-root.table-striped .rtable-row.even.hover .rtable-cell {
-      background-color: #e1eff8;
-    }
     .rtable-root.table-striped .rtable-row.odd .rtable-cell {
       border-bottom:none;
     }
-    .rtable-root.table-striped .rtable-row.even.selected .rtable-cell {
+    .rtable-root.table-striped .rtable-row.selected .rtable-cell {
+    }
+    .rtable-root.table-striped .rtable-row.hover .rtable-cell {
     }
     .rtable-root.table-striped .rtable-header .rtable-cell {
     }
@@ -295,9 +295,12 @@
         <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" value={title}
           style="{sort?'padding-right:22px':''}" title={tooltip}></div>
         <!-- checkbox -->
-        <i if={type=='check' && parent.multiSelect} onclick={checkall}
-          class="fa {parent.selected_rows.length>0 ? 'fa-check-square-o' : 'fa-square-o'}"
-          style="cursor:pointer;height:{headerRowHeight}px;line-height:{headerRowHeight}px"></i>
+        <div if={type=='check'}>
+          <i if={parent.multiSelect} onclick={checkall}
+            class="fa {parent.selected_rows.length>0 ? 'fa-check-square-o' : 'fa-square-o'}"
+            style="cursor:pointer;height:{headerRowHeight}px;line-height:{headerRowHeight}px"></i>
+          <span if={title}>{title}</span>
+        </div>
 
         <!-- <input if={type=='check' && parent.multiSelect} type="checkbox" onclick={checkall}
           class="rtable-check" style="margin-top:{headerRowHeight/2-7}px" checked={parent.selected_rows.length>0}></input> -->
@@ -316,9 +319,12 @@
         <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" value={title}
           style="{sort?'padding-right:22px':''}" title={tooltip}></div>
         <!-- checkbox -->
-        <i if={type=='check' && parent.multiSelect} onclick={checkall}
-          class="fa {parent.selected_rows.length>0 ? 'fa-check-square-o' : 'fa-square-o'}"
-          style="cursor:pointer;height:{headerRowHeight}px;line-height:{headerRowHeight}px"></i>
+        <div if={type=='check'}>
+          <i if={parent.multiSelect} onclick={checkall}
+            class="fa {parent.selected_rows.length>0 ? 'fa-check-square-o' : 'fa-square-o'}"
+            style="cursor:pointer;height:{headerRowHeight}px;line-height:{headerRowHeight}px"></i>
+          <span if={title}>{title}</span>
+        </div>
         <!-- <input if={type=='check' && parent.multiSelect} type="checkbox" onclick={checkall}
           class="rtable-check" style="margin-top:{headerRowHeight/2-7}px"
           checked={parent.selected_rows.length>0}></input> -->
@@ -431,6 +437,7 @@
   this.indexColWidth = opts.indexColWidth || 40
   this.indexColFrozen = opts.indexColFrozen || false
   this.checkColWidth = opts.checkColWidth || 30
+  this.checkColTitle = opts.checkColTitle || ''
   this.checkColFrozen = opts.checkColFrozen || false
   this.multiSelect = opts.multiSelect || false
   this.visCells = []
@@ -618,7 +625,7 @@
 
     $(this.content_fixed).on('click', '.rtable-cell', this.click_handler)
       .on('dblclick', '.rtable-cell', this.dblclick_handler)
-    $(this.content_fixed).on('hover', '.rtable-cell', this.hover_handler)
+    $(this.content_fixed).on('mouseenter', '.rtable-row', this.hover_handler1)
       .on('mouseleave', '.rtable-row', this.hover_handler2)
 
     this.dnd()
@@ -902,6 +909,22 @@
     return top
   }
 
+  this.create_col_drag_helper = function () {
+    var root = $(this.root).find('.rtable-root')
+    if (!this.col_drag_helper) {
+      this.col_drag_helper = helper = document.createElement('div')
+      root.append(helper)
+      helper.style.position = 'absolute'
+      helper.className = 'rtable-col-draggable-helper'
+      helper.style.zIndex = 1000
+      helper.style.border = '1px solid green'
+      helper.style.height = root.height()+'px'
+      helper.style.top = 0
+      helper.style.display = 'block'
+    } else {
+      this.col_drag_helper.style.display = 'block'
+    }
+  }
   this.colresize = function (e) {
     var start = e.clientX
     var header = $(this.header)
@@ -916,17 +939,22 @@
         return false;
     };
     header.css('-moz-user-select','none');
+    self.create_col_drag_helper()
+    self.col_drag_helper.style.left = e.clientX-5
 
     root.on('mousemove', function(e){
       d = Math.max(width + e.clientX - start, self.minColWidth)
       col.real_col.width = d
-      self.resize()
+      self.col_drag_helper.style.left = e.clientX-5
+      // self.resize()
     }).on('mouseup', function(e){
+        self.col_drag_helper.style.display = 'none'
         document.body.onselectstart = function(){
             return true;//开启文字选择
         };
         header.css('-moz-user-select','text');
         root.off('mousemove').off('mouseup')
+        self.resize()
     })
   }
 
@@ -1106,7 +1134,7 @@
         frozen: has_frozen
       }
       col[this.nameField] = '__check_col__'
-      col[this.titleField] = '_check'
+      col[this.titleField] = opts.checkColTitle || ''
       if (!opts.indexCol)
         this.cols.unshift(col)
       else
@@ -1123,7 +1151,7 @@
       else
         cols.push(col)
       col.name = col[this.nameField]
-      col.title = col[this.titleField] || col.name //如果没有设label，则使用name
+      col.title = col[this.titleField]
       col.subs = col.title.split('/')
       max_level = Math.max(max_level, col.subs.length)
       if (!col.width)
@@ -1773,6 +1801,8 @@
     self.update()
   }
 
+  this.root.resize = proxy('resize')
+
   function data_proxy (funcname) {
     return function() { return self._data[funcname].apply(self._data, arguments)}
   }
@@ -1782,6 +1812,7 @@
   this.root.update = data_proxy('update')
   this.root.remove = data_proxy('remove')
   this.root.get = data_proxy('get')
+  this.root._get = data_proxy('_get')
   this.root.load = data_proxy('load')
   this.root.insertBefore = data_proxy('insertBefore')
   this.root.insertAfter = data_proxy('insertAfter')

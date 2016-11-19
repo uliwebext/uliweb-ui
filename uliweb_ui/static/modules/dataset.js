@@ -818,6 +818,14 @@ DataSet.prototype.get = function (args) {
   }
 };
 
+DataSet.prototype._get = function (id) {
+  var index = this._ids[id];
+  var raw = this._data[index];
+  if (!raw) {
+    return null;
+  }
+  return raw
+}
 
 DataSet.prototype.tree = function (options) {
   var me = this;
