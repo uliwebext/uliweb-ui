@@ -974,11 +974,11 @@
   }
   this.colresize = function (e) {
     var start = e.clientX
-    var header = $(this.header)
+    var header = $(self.header)
     var root = $(document)
     var col = e.item
     var width = col.width, d
-    var root = $(this.root).find('.rtable-root')
+    var root = $(self.root).find('.rtable-root')
     var left = root.offset()['left']
 
     //取消文字选择
