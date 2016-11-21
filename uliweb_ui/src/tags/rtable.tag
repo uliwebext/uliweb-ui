@@ -978,7 +978,8 @@
     var root = $(document)
     var col = e.item
     var width = col.width, d
-    var left = $(this.root).offset()['left']
+    var root = $(this.root).find('.rtable-root')
+    var left = root.offset()['left']
 
     //取消文字选择
     document.selection && document.selection.empty && ( document.selection.empty(), 1)
