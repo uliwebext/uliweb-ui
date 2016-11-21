@@ -468,6 +468,7 @@
   this.onLoadData = opts.onLoadData || function(parent){}
   this.onCheckable = opts.onCheckable || function(row){return true} //是否显示checkbox
   this.onEditable = opts.onEditable || function(row, col){return self.editable} //是否允许单元格编辑
+  this.onInitData = opts.onInitData || function(dataset) {return}
 
   //tree options
   this.tree = opts.tree
@@ -497,29 +498,6 @@
   this.xscroll_fix = 0 //X滚动条修正值
   this.yscroll_fix = 0 //Y滚动条修正值
 
-  var _opts = {tree:opts.tree, idField:this.idField, parentField:this.parentField,
-    levelField:this.levelField, orderField:this.orderField, hasChildrenField:this.hasChildrenField}
-  var d
-  if (opts.data) {
-    if (Array.isArray(opts.data)) {
-      this._data = new DataSet()
-      d = opts.data
-    }
-    else {
-      var d = opts.data.get()
-      this._data = opts.data
-    }
-    if (opts.tree) {
-      this._data.setOption(_opts)
-      this._data.load_tree(d, {parentField:this.parentField,
-        orderField:this.orderField, levelField:this.levelField,
-        hasChildrenField:this.hasChildrenField, plain:true})
-    } else
-      this._data.load(d)
-
-  } else {
-    this._data = new DataSet(_opts)
-  }
 
   this.show_loading = function (flag) {
     if (flag) {
@@ -555,12 +533,18 @@
         self.load_clear() //清理中间状态数据
         return //不更新界面
       } else if (r == 'load'){
+        //执行数据初始化工作
+        self.init_data()
         self.show_loading(false)
       }
       self.ready_data()
       self.calData()
       self.update()
     })
+  }
+
+  this.init_data = function() {
+    this.onInitData.call(this, this._data)
   }
 
   this.ready_data = function(){
@@ -594,6 +578,24 @@
   }
 
   this.on('mount', function() {
+
+    //装入数据
+    var _opts = {tree:opts.tree, idField:this.idField, parentField:this.parentField,
+      levelField:this.levelField, orderField:this.orderField, hasChildrenField:this.hasChildrenField}
+    var d
+    if (opts.data) {
+      if (Array.isArray(opts.data)) {
+        this._data = new DataSet()
+        d = opts.data
+      }
+      else {
+        var d = opts.data.get()
+        this._data = opts.data
+      }
+    } else {
+      this._data = new DataSet(_opts)
+    }
+
     this.content = this.root.querySelectorAll(".rtable-body.rtable-main")[0]
     this.header = this.root.querySelectorAll(".rtable-header.rtable-main")[0]
     this.content_fixed = this.root.querySelectorAll(".rtable-body.rtable-fixed")[0]
@@ -640,6 +642,17 @@
     this.calData()    //calculate data position -->
     <!-- this.calScrollbar() -->
     this.bind()       //monitor data change
+
+    if (opts.data) {
+      if (opts.tree) {
+        this._data.setOption(_opts)
+        this._data.load_tree(d, {parentField:this.parentField,
+          orderField:this.orderField, levelField:this.levelField,
+          hasChildrenField:this.hasChildrenField, plain:true})
+      } else
+        this._data.load(d)
+    }
+
     <!-- this.update() -->
   })
 
@@ -1748,6 +1761,10 @@
     }
   }
 
+  this.set_selected = function (row_ids) {
+    this.selected_rows = row_ids
+  }
+
   /* select one or more rows
   */
   this.select = function(rows) {
@@ -1833,6 +1850,7 @@
     })
   }
   this.root.get_selected = proxy('get_selected')
+  this.root.set_selected = proxy('set_selected')
   this.root.expand = proxy('expand')
   this.root.collapse = proxy('collapse')
   this.root.show_loading = proxy('show_loading')

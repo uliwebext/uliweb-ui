@@ -153,6 +153,7 @@
     onSort: opts.onSort || this.onsort,
     onCheckable: opts.onCheckable,
     onEditable: opts.onEditable,
+    onInitData: opts.onInitData,
     colspanValue: opts.colspanValue,
     draggable: opts.draggable,
     editable: opts.editable,
@@ -211,6 +212,7 @@
     this.root.refresh = this.update
     this.root.select = this.table.select
     this.root.deselect = this.table.deselect
+    this.root.set_selected = this.table.set_selected
     this.root.resize = this.table.resize
     this.root.instance = this
     if (this.url && this.autoLoad) {
