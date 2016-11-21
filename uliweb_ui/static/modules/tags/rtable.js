@@ -103,6 +103,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
   this.onLoadData = opts.onLoadData || function(parent){}
   this.onCheckable = opts.onCheckable || function(row){return true}
   this.onEditable = opts.onEditable || function(row, col){return self.editable}
+  this.onInitData = opts.onInitData || function(dataset) {return}
 
   this.tree = opts.tree
   this.showIcon = opts.showIcon === undefined ? true : opts.showIcon
@@ -129,30 +130,6 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
   this.notations = {}
   this.xscroll_fix = 0
   this.yscroll_fix = 0
-
-  var _opts = {tree:opts.tree, idField:this.idField, parentField:this.parentField,
-    levelField:this.levelField, orderField:this.orderField, hasChildrenField:this.hasChildrenField}
-  var d
-  if (opts.data) {
-    if (Array.isArray(opts.data)) {
-      this._data = new DataSet()
-      d = opts.data
-    }
-    else {
-      var d = opts.data.get()
-      this._data = opts.data
-    }
-    if (opts.tree) {
-      this._data.setOption(_opts)
-      this._data.load_tree(d, {parentField:this.parentField,
-        orderField:this.orderField, levelField:this.levelField,
-        hasChildrenField:this.hasChildrenField, plain:true})
-    } else
-      this._data.load(d)
-
-  } else {
-    this._data = new DataSet(_opts)
-  }
 
   this.show_loading = function (flag) {
     if (flag) {
@@ -187,12 +164,18 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
         self.load_clear()
         return
       } else if (r == 'load'){
+
+        self.init_data()
         self.show_loading(false)
       }
       self.ready_data()
       self.calData()
       self.update()
     })
+  }
+
+  this.init_data = function() {
+    this.onInitData.call(this, this._data)
   }
 
   this.ready_data = function(){
@@ -226,6 +209,23 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
   }
 
   this.on('mount', function() {
+
+    var _opts = {tree:opts.tree, idField:this.idField, parentField:this.parentField,
+      levelField:this.levelField, orderField:this.orderField, hasChildrenField:this.hasChildrenField}
+    var d
+    if (opts.data) {
+      if (Array.isArray(opts.data)) {
+        this._data = new DataSet()
+        d = opts.data
+      }
+      else {
+        var d = opts.data.get()
+        this._data = opts.data
+      }
+    } else {
+      this._data = new DataSet(_opts)
+    }
+
     this.content = this.root.querySelectorAll(".rtable-body.rtable-main")[0]
     this.header = this.root.querySelectorAll(".rtable-header.rtable-main")[0]
     this.content_fixed = this.root.querySelectorAll(".rtable-body.rtable-fixed")[0]
@@ -259,6 +259,16 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
     this.ready_data()
 
     this.bind()
+
+    if (opts.data) {
+      if (opts.tree) {
+        this._data.setOption(_opts)
+        this._data.load_tree(d, {parentField:this.parentField,
+          orderField:this.orderField, levelField:this.levelField,
+          hasChildrenField:this.hasChildrenField, plain:true})
+      } else
+        this._data.load(d)
+    }
 
   })
 
@@ -1305,6 +1315,10 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
     }
   }
 
+  this.set_selected = function (row_ids) {
+    this.selected_rows = row_ids
+  }
+
   this.select = function(rows) {
     var row, id
 
@@ -1385,6 +1399,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
     })
   }
   this.root.get_selected = proxy('get_selected')
+  this.root.set_selected = proxy('set_selected')
   this.root.expand = proxy('expand')
   this.root.collapse = proxy('collapse')
   this.root.show_loading = proxy('show_loading')
