@@ -585,7 +585,8 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
     var root = $(document)
     var col = e.item
     var width = col.width, d
-    var left = $(this.root).offset()['left']
+    var root = $(this.root).find('.rtable-root')
+    var left = root.offset()['left']
 
     document.selection && document.selection.empty && ( document.selection.empty(), 1)
     || window.getSelection && window.getSelection().removeAllRanges();
