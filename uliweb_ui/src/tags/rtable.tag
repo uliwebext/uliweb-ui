@@ -287,7 +287,7 @@
 
   <yield/>
 
-  <div class="rtable-root {theme}" style="width:{width-1}px;height:{height-1+xscroll_fix}px">
+  <div class="rtable-root {theme}" style="width:{width-1}px;height:{height-1}px">
     <div class="rtable-header rtable-fixed" style="width:{fix_width}px;height:{header_height}px">
       <div each={fix_columns} no-reorder class={rtable-cell:true}
         style="width:{width}px;height:{height}px;left:{left}px;top:{top}px;line-height:{height}px;">
@@ -494,6 +494,8 @@
   this.parents_expand_status = {} //父结点展开状态
   this.loaded_status = {} //结点装入状态
   this.notations = {} //数据单元格指示器保存
+  this.xscroll_fix = 0 //X滚动条修正值
+  this.yscroll_fix = 0 //Y滚动条修正值
 
   var _opts = {tree:opts.tree, idField:this.idField, parentField:this.parentField,
     levelField:this.levelField, orderField:this.orderField, hasChildrenField:this.hasChildrenField}
@@ -633,12 +635,12 @@
     this.bind_contextmenu()
     this.scrollbar_width = getScrollbarWidth()
     this.ready_data() //prepare data
-    this.calSize()
+    <!-- this.calSize()
     this.calHeader()  //calculate header positions
-    this.calData()    //calculate data position
+    this.calData()    //calculate data position -->
     <!-- this.calScrollbar() -->
     this.bind()       //monitor data change
-    this.update()
+    <!-- this.update() -->
   })
 
   this.hover_handler1 = function (e) {
@@ -808,11 +810,44 @@
 
   this.on('updated', function(){
     if (!this._updated) {
-      this._updated = true
-      this.resize()
+      this.update()
     }
     <!-- console.log('update') -->
   })
+
+  this.on('update', function(){
+    this.start = opts.start || 0
+    if (!self.content)
+      return
+    if (!this._updated && this._updated != 1) {
+      //设置初始宽度高度
+      this._updated = 1 //正在处理
+      this.calSize()
+      this.calHeaderHeight()
+      this.calData()
+      <!-- this.width -= this.scrollbar_width -->
+
+      setTimeout(function(){
+        self._updated = 2
+        self.resize()
+      }, 0)
+      // console.log('update')
+    } else if(this._updated == 2 ){
+      self.calVis()
+    }
+  })
+
+  /* resize width and height */
+  this.resize = function () {
+    self.calSize()
+    self.calHeader()  //calculate header positions
+    self.calData()    //calculate data position
+    <!-- self.calScrollbar() -->
+    self.header.scrollLeft = self.content.scrollLeft
+    self.content_fixed.scrollTop = self.content.scrollTop
+    this.calVis()
+    self.update()
+  }
 
   this.click_handler = function(e) {
     var ret, tag = e.target._tag
@@ -911,19 +946,18 @@
 
   this.create_col_drag_helper = function () {
     var root = $(this.root).find('.rtable-root')
-    if (!this.col_drag_helper) {
-      this.col_drag_helper = helper = document.createElement('div')
-      root.append(helper)
-      helper.style.position = 'absolute'
-      helper.className = 'rtable-col-draggable-helper'
-      helper.style.zIndex = 1000
-      helper.style.border = '1px solid green'
-      helper.style.height = root.height()+'px'
-      helper.style.top = 0
-      helper.style.display = 'block'
-    } else {
-      this.col_drag_helper.style.display = 'block'
-    }
+    if (this.col_drag_helper) this.col_drag_helper.remove()
+    this.col_drag_helper = helper = $('<div></div>')
+    root.append(helper)
+    helper.css({
+      position:'absolute',
+      zIndex:1000,
+      border:'1px solid green',
+      height:root.height(),
+      top:0,
+      display:'block'
+    })
+    helper.addClass('rtable-col-draggable-helper')
   }
   this.colresize = function (e) {
     var start = e.clientX
@@ -938,17 +972,18 @@
     document.body.onselectstart = function () {
         return false;
     };
-    header.css('-moz-user-select','none');
+    header.css('-moz-user-select', 'none');
     self.create_col_drag_helper()
-    self.col_drag_helper.style.left = e.clientX-5
+    self.col_drag_helper.css('left', e.clientX-5)
 
     root.on('mousemove', function(e){
       d = Math.max(width + e.clientX - start, self.minColWidth)
       col.real_col.width = d
-      self.col_drag_helper.style.left = e.clientX-5
+      self.col_drag_helper.css('left', e.clientX-5)
       // self.resize()
     }).on('mouseup', function(e){
-        self.col_drag_helper.style.display = 'none'
+        self.col_drag_helper.remove()
+        self.col_drag_helper = null
         document.body.onselectstart = function(){
             return true;//开启文字选择
         };
@@ -971,14 +1006,6 @@
       document.body.removeChild(oP);
       return scrollbarWidth;
   }
-  this.on('update', function(){
-    this.start = opts.start || 0
-    if (!this.content)
-      return
-    this.calVis()
-    // console.log('update')
-  })
-
   function _parse_header(cols, max_level, frozen){
     var columns = [], //保存每行的最后有效列
       columns_width = {}, //保存每行最右坐标
@@ -1077,6 +1104,19 @@
     return r
   }
 
+  /* 计算表头高度
+  */
+  this.calHeaderHeight = function () {
+    var i, len, col, max_level=0, cols
+    cols = this.opts.cols
+    for (i=0, len=cols.length; i<len; i++){
+      col = cols[i]
+      max_level = Math.max(max_level, col.title.split('/').length)
+    }
+    this.max_level = max_level
+    this.header_height = max_level * this.headerRowHeight
+  }
+
   /* 计算表头
   将 [a/b/c， a/b/d] 形式的表头处理为 [[{a, colspan=1}],[{b, colspan=1}], [{c, colspan=1}]]
   */
@@ -1164,15 +1204,18 @@
     this.calData()
 
     //计算滚动修正值
-    if (this.rowHeight * this.rows.length > this.height - this.header_height)
+    if ((this.rowHeight * this.rows.length > this.height - this.header_height))
       this.yscroll_fix = this.scrollbar_width
     else
       this.yscroll_fix = 0
 
-
     //计算无width的列
     if (cal_cols.length > 0) {
-      var w = this.width-width-this.yscroll_fix
+      var w = this.width-width
+      if (!this.browser.ie && this.container[0].scrollHeight > this.container[0].clientHeight)
+        w -= this.yscroll_fix
+      else if (this.browser.ie)
+        w -= this.yscroll_fix
       var dw, lw
       lw = this.minColWidth*cal_cols.length
       //剩余宽度大小剩余列总宽度，则平分
@@ -1186,6 +1229,8 @@
         cal_cols[i].width = dw
         if (i == cal_cols.length - 1)
           cal_cols[i].width = w - (cal_cols.length-1)*dw
+          // if (!this.browser.ie)
+          //   cal_cols[i].width -= 16 //this.scrollbar_width -1
       }
     }
 
@@ -1213,10 +1258,9 @@
     this.main_width = main_width //内容区宽度
 
     //计算滚动修正值
-    if (this.main_width > this.width - this.fix_width)
-      this.xscroll_fix = this.scrollbar_width
-    else
-      this.xscroll_fix = 0
+    if (!this.browser.ie) {
+      //this.xscroll_fix = this.scrollbar_width
+    }
 
   }
 
@@ -1255,6 +1299,11 @@
     if (opts.height == 'auto') {
       //if no data, then the length is 1, used for "no data" display
       this.height = Math.max(1, this.rows.length) * this.rowHeight + this.header_height
+      <!-- if (!this.browser.ie && this.container[0].scrollHeight > this.container[0].clientHeight) { -->
+      //非ie调整大小
+      if (!this.browser.ie) {
+        this.height += this.scrollbar_width
+      }
       if (opts.maxHeight)
         this.height = Math.min(opts.maxHeight, this.height)
       if (this.rows.length==0 && opts.minHeight)
@@ -1789,17 +1838,6 @@
   this.root.show_loading = proxy('show_loading')
   this.root.select = proxy('select')
   this.root.deselect = proxy('deselect')
-
-  /* resize width and height */
-  this.resize = function () {
-    self.calSize()
-    self.calHeader()  //calculate header positions
-    self.calData()    //calculate data position
-    <!-- self.calScrollbar() -->
-    self.header.scrollLeft = self.content.scrollLeft
-    self.content_fixed.scrollTop = self.content.scrollTop
-    self.update()
-  }
 
   this.root.resize = proxy('resize')
 
