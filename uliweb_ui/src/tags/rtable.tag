@@ -978,6 +978,7 @@
     var root = $(document)
     var col = e.item
     var width = col.width, d
+    var left = $(this.root).offset()['left']
 
     //取消文字选择
     document.selection && document.selection.empty && ( document.selection.empty(), 1)
@@ -987,12 +988,12 @@
     };
     header.css('-moz-user-select', 'none');
     self.create_col_drag_helper()
-    self.col_drag_helper.css('left', e.clientX-5)
+    self.col_drag_helper.css('left', e.clientX-left)
 
     root.on('mousemove', function(e){
       d = Math.max(width + e.clientX - start, self.minColWidth)
       col.real_col.width = d
-      self.col_drag_helper.css('left', e.clientX-5)
+      self.col_drag_helper.css('left', e.clientX-left)
       // self.resize()
     }).on('mouseup', function(e){
         self.col_drag_helper.remove()
