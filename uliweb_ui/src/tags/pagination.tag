@@ -110,10 +110,8 @@
    *               然后再调用show，需要有jquery的支持
    */
   this.go_page = function (page) {
-    if (page < 1 || page > self.totalPages) return
     var old_page = self.page
     self.page = page
-    if (old_page == page) return
     if (self.totalPages == 0) return
     if (opts.onbeforepage && typeof opts.onbeforepage === 'function') {
       opts.onbeforepage.call(self, page)
