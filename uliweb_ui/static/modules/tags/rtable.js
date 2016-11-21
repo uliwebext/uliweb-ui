@@ -585,6 +585,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
     var root = $(document)
     var col = e.item
     var width = col.width, d
+    var left = $(this.root).offset()['left']
 
     document.selection && document.selection.empty && ( document.selection.empty(), 1)
     || window.getSelection && window.getSelection().removeAllRanges();
@@ -593,12 +594,12 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
     };
     header.css('-moz-user-select', 'none');
     self.create_col_drag_helper()
-    self.col_drag_helper.css('left', e.clientX-5)
+    self.col_drag_helper.css('left', e.clientX-left)
 
     root.on('mousemove', function(e){
       d = Math.max(width + e.clientX - start, self.minColWidth)
       col.real_col.width = d
-      self.col_drag_helper.css('left', e.clientX-5)
+      self.col_drag_helper.css('left', e.clientX-left)
 
     }).on('mouseup', function(e){
         self.col_drag_helper.remove()
