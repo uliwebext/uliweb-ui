@@ -197,7 +197,17 @@
                 return iframe && $(iframe[0].body).text();
             },
             'iframe json': function (iframe) {
-                return iframe && $.parseJSON($(iframe[0].body).text());
+                if (!!iframe) {
+                    var html_str = jQuery(iframe).find('body').html();
+                    if (!!html_str) {
+                        var h1_str = html_str.match(/<h1>([\s\S]*)<\/h1>/)[1];
+                        var resp_code = h1_str.split(' ')[0];
+                        var resp_msg = h1_str.replace(resp_code + ' ', '');
+                        throw {'resp_code': resp_code, 'resp_msg': resp_msg};
+                    }
+                } else {
+                    return iframe && $.parseJSON($(iframe[0].body).text());
+                }
             },
             'iframe html': function (iframe) {
                 return iframe && $(iframe[0].body).html();
