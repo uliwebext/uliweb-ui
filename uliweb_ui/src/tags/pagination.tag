@@ -114,6 +114,7 @@
     var old_page = self.page
     self.page = page
     if (self.totalPages == 0) return
+    this.observable.trigger('beforepage', page)
     if (opts.onbeforepage && typeof opts.onbeforepage === 'function') {
       opts.onbeforepage.call(self, page)
     }
