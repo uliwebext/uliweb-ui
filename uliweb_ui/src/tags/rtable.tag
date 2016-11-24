@@ -287,7 +287,7 @@
 
   <yield/>
 
-  <div class="rtable-root {theme}" style="width:{width-1}px;height:{height-1}px">
+  <div class="rtable-root {theme}" style="width:{width-1}px;height:{height-1+(browser.ie?xscroll_fix:0)}px">
     <div class="rtable-header rtable-fixed" style="width:{fix_width}px;height:{header_height}px">
       <div each={fix_columns} no-reorder class={rtable-cell:true}
         style="width:{width}px;height:{height}px;left:{left}px;top:{top}px;line-height:{height}px;">
@@ -338,7 +338,7 @@
     </div>
 
     <div class="rtable-body rtable-fixed"
-      style="width:{fix_width}px;bottom:0;padding-bottom:{xscroll_fix}px;top:{header_height}px;height:{height-header_height}px;">
+      style="width:{fix_width}px;bottom:0;padding-bottom:{browser.ie?xscroll_fix:0}px;top:{header_height}px;height:{height-header_height+(browser.ie?xscroll_fix:-xscroll_fix)}px;">
       <!-- transform:translate3d(0px,{0-content.scrollTop}px,0px); -->
       <div class="rtable-content" style="width:{fix_width}px;height:{rows.length*rowHeight}px;">
         <div each={row in visCells.fixed} no-reorder class="{get_row_class(row.row, row.line)}">
@@ -369,7 +369,7 @@
       </div>
     </div>
     <div class="rtable-body rtable-main"
-      style="left:{fix_width}px;top:{header_height}px;bottom:0px;right:0px;width:{width-fix_width+(browser.ie?yscroll_fix:0)}px;height:{height-header_height+(browser.ie?2*xscroll_fix:xscroll_fix)}px;">
+      style="left:{fix_width}px;top:{header_height}px;bottom:0px;right:0px;width:{width-fix_width+(browser.ie?yscroll_fix:0)}px;height:{height-header_height+(browser.ie?xscroll_fix:0)+(height_opt=='auto' && browser.ie?xscroll_fix:0)}px;">
       <!-- transform:translate3d({0-content.scrollLeft}px,{0-content.scrollTop}px,0px); -->
       <div class="rtable-content" style="width:{main_width}px;height:{rows.length*rowHeight}px;">
         <div each={row in visCells.main} no-reorder class="{get_row_class(row.row, row.line)}">
@@ -432,7 +432,8 @@
   this.cols = opts.cols.slice()
   this.combineCols = opts.combineCols || []
   this.headerRowHeight = opts.headerRowHeight || 34
-  this.height = opts.height || 'auto'
+  this.height_opt = opts.height || 'auto'
+  this.width_opt = opts.width || 'auto'
   this.rowHeight = opts.rowHeight || 34
   this.indexColWidth = opts.indexColWidth || 40
   this.indexColFrozen = opts.indexColFrozen || false
@@ -604,7 +605,7 @@
 
     this._updated = false
     window.addEventListener('resize', function(){
-      if (opts.width == 'auto' || !opts.width || !opts.height)
+      if (this.width_opt == 'auto' || this.height_opt == 'auto')
         self.resize()
     })
 
@@ -855,7 +856,7 @@
     self.calSize()
     self.calHeader()  //calculate header positions
     self.calData()    //calculate data position
-    <!-- self.calScrollbar() -->
+    self.calScrollbar()
     self.header.scrollLeft = self.content.scrollLeft
     self.content_fixed.scrollTop = self.content.scrollTop
     this.calVis()
@@ -1272,11 +1273,6 @@
     this.fix_width = fix_width
     this.main_width = main_width //内容区宽度
 
-    //计算滚动修正值
-    if (!this.browser.ie) {
-      //this.xscroll_fix = this.scrollbar_width
-    }
-
   }
 
   /* calculate width and height */
@@ -1286,32 +1282,38 @@
     } else {
       this.width = opts.width
     }
-    // if opts.height is null or undefined, it'll be parent().height
     // if opts.height is 'auto', the height will be automatically increased according number of rows
-    if (!opts.height) {
-      this.height = $(this.container).height()
-    } else if (opts.height == 'auto'){
+    if (this.height_opt == 'auto'){
       //calculate later
       //in calHeader, calData
     } else {
-      this.height = opts.height
+      this.height = this.height_opt
     }
   }
 
   this.calScrollbar = function () {
     this.has_yscroll = this.content.scrollHeight > this.content.clientHeight || (this.rows.length * this.rowHeight > (this.height - this.header_height))
+    // if (this.height_opt == 'auto' && (!opts.maxHeight || this.rows.length * this.rowHeight < opts.maxHeight - this.header_height))
+    if (this.height_opt == 'auto' && (!opts.maxHeight || (this.rows.length * this.rowHeight < opts.maxHeight - this.header_height)))
+      this.has_yscroll = false
     this.has_xscroll = this.content.scrollWidth > this.content.clientWidth || this.main_width > (this.width - this.fix_width)
     this.xscroll_width = this.has_xscroll ? this.scrollbar_width : 0
     this.yscroll_width = this.has_yscroll ? this.scrollbar_width : 0
-    <!-- this.xscroll_fix = this.browser.ie && this.has_xscroll ? this.xscroll_width : 0
-    this.yscroll_fix = this.browser.ie && this.has_yscroll ? this.yscroll_width : 0 -->
+    this.xscroll_fix = this.has_xscroll ? this.xscroll_width : 0 // this.browser.ie && this.has_xscroll ? this.xscroll_width : 0
+    this.yscroll_fix = this.has_yscroll ? this.yscroll_width : 0 // this.browser.ie && this.has_yscroll ? this.yscroll_width : 0
+    // console.log('=====:height_opt=', this.height_opt, ',height=', this.height, ',width=', this.width, ',scrollHeight=', this.content.scrollHeight,
+    //   ',clientHeight=', this.content.clientHeight,
+    //   ',scrollWidth=', this.content.scrollWidth, ',clientWidth=',
+    //   this.content.clientWidth, ',has_yscroll=', this.has_yscroll, ',has_xscroll=', this.has_xscroll,
+    //   ',xscroll_width=', this.xscroll_width, ',yscroll_width=',
+    //   this.yscroll_width, ',xscroll_fix=', this.xscroll_fix, ',yscroll_fix=', this.yscroll_fix)
   }
 
   /* Calculate data relative position
   */
   this.calData = function() {
     //process height if value is 'auto'
-    if (opts.height == 'auto') {
+    if (this.height_opt == 'auto') {
       //if no data, then the length is 1, used for "no data" display
       this.height = Math.max(1, this.rows.length) * this.rowHeight + this.header_height
       <!-- if (!this.browser.ie && this.container[0].scrollHeight > this.container[0].clientHeight) { -->
