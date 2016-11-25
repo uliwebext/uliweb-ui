@@ -108,7 +108,7 @@
     self.table.show_loading(true)
     self.start = (page - 1) * self.limit
 
-    this.onBeforePage(page)
+    return this.onBeforePage(page)
   }
 
   this.rtable_options = {
