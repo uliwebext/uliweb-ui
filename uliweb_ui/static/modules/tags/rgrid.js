@@ -34,7 +34,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
   this.btn_group_class = opts.btn_group_class || 'btn-group btn-group-sm'
   this.onLoaded = opts.onLoaded
   this.autoLoad = opts.audoLoad || true
-  this.onBeforePage = opts.onBeforePage || function (page) return {}
+  this.onBeforePage = opts.onBeforePage || function (page){ return }
   this.page_theme = opts.page_theme || 'simple'
 
   this.onsort = function (sorts) {
@@ -67,6 +67,8 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
     self.page = page
     self.table.show_loading(true)
     self.start = (page - 1) * self.limit
+
+    this.onBeforePage(page)
   }
 
   this.rtable_options = {

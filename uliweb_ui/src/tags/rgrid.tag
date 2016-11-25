@@ -74,7 +74,7 @@
   this.btn_group_class = opts.btn_group_class || 'btn-group btn-group-sm'
   this.onLoaded = opts.onLoaded
   this.autoLoad = opts.audoLoad || true
-  this.onBeforePage = opts.onBeforePage || function (page) return {}
+  this.onBeforePage = opts.onBeforePage || function (page){ return }
   this.page_theme = opts.page_theme || 'simple'
 
   this.onsort = function (sorts) {
