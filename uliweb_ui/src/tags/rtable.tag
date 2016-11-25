@@ -539,6 +539,7 @@
         self.show_loading(false)
       }
       self.ready_data()
+      self.calScrollbar()
       self.calData()
       self.update()
     })
