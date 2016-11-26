@@ -86,6 +86,8 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
     checkColWidth: opts.checkColWidth,
     indexColFrozen: opts.indexColFrozen,
     checkColFrozen: opts.checkColFrozen,
+    showSelected: opts.showSelected,
+    checkAll: opts.checkAll,
     multiSelect: opts.multiSelect,
     maxHeight: opts.maxHeight,
     minHeight: opts.minHeight,

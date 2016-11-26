@@ -444,8 +444,8 @@
   this.visCells = []
   this.sort_cols = []
   this.clickSelect = opts.clickSelect === undefined ? 'row' : opts.clickSelect
-  this.showSelected = opts.showSelected === undefined ? true : false //显示选中状态，反显
-  this.checkAll = opts.checkAll === undefined ? true : false //显示全选checkbox
+  this.showSelected = opts.showSelected === undefined ? true : opts.showSelected //显示选中状态，反显
+  this.checkAll = opts.checkAll === undefined ? true : opts.checkAll //显示全选checkbox
   this.noData = opts.noData || 'No Data'
   this.loading = opts.loading || 'Loading... <i class="fa fa-spinner fa-pulse fa-spin"></i>'
   this.container = opts.container || $(this.root).parent()
