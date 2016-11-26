@@ -65,10 +65,14 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
 
   this.onbeforepage = function (page) {
     self.page = page
-    self.table.show_loading(true)
-    self.start = (page - 1) * self.limit
-
-    return self.onBeforePage(page)
+    var r = self.onBeforePage(page)
+    if (r) {
+      self.table.show_loading(true)
+      self.start = (page - 1) * self.limit
+      return true
+    } else {
+      return false
+    }
   }
 
   this.rtable_options = {
