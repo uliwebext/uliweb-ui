@@ -127,7 +127,8 @@ function dialog(url, options) {
                 form_widgets(form)
 
               //处理表单校验
-              dialog_validate_submit(dialog, {ajax_submit:dialog_ajax_submit, onBeforeSubmit:onBeforeSubmit})
+              if (!options.disableValidate)
+                dialog_validate_submit(dialog, {ajax_submit:dialog_ajax_submit, onBeforeSubmit:onBeforeSubmit})
             }
           })
 
