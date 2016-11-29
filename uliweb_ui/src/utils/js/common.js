@@ -348,7 +348,15 @@ function serializeObject(el) {
   var d = {}
   var data = $(':input', el).serializeArray()
   for(var i=0, len=data.length; i<len; i++) {
-    d[data[i].name] = data[i].value
+    if (d.hasOwnProperty(data[i].name)) {
+      if (Array.isArray(d[data[i].name]))
+        d[data[i].name].push(data[i].value)
+      else {
+        d[data[i].name] = [d[data[i].name], data[i].value]
+      }
+    } else {
+      d[data[i].name] = data[i].value
+    }
   }
   return d
 }
