@@ -12,3 +12,38 @@ def load_jquery(**kwargs):
         a.append('modules/jquery/jquery-migrate-1.2.1.min.js')
 
     return a
+
+def init_static_combine():
+
+    from uliweb import settings
+    from hashlib import md5
+    import os
+
+    PLUGINS = settings.get_var("TEMPLATE_GULP")
+
+    d = {}
+
+
+    if settings.get_var('STATIC_COMBINE_CONFIG/enable', False):
+        # for k, v in settings.get('STATIC_COMBINE', {}).items():
+        #     key = '_cmb_' + md5(''.join(v)).hexdigest() + os.path.splitext(v[0])[1]
+        #     d[key] = v
+        from uliweb.contrib.template.tags import find
+        for k, v in PLUGINS.items():
+            js_list = []
+            css_list = []
+            for x in v:
+                s = find(x)
+                m = s[0] + s[1]
+                for i in m:
+                    if not i.startswith('<!--'):
+                        e = os.path.splitext(i)[1]
+                        if e == ".css":
+                            css_list.append(i)
+                        elif e == ".js":
+                            js_list.append(i)
+            if js_list:
+                d[k+".js"] = js_list
+            if css_list:
+                d[k + ".css"] = css_list
+    return d
