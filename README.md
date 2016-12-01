@@ -45,15 +45,15 @@ you_want_name = [ "plugin name", ... ]
 
 Step.2 Enter a command in CLI of your uliweb project
 
-'''
+```
 uliweb gulpplugins -d app_name
-'''
+```
 
 Then you will find some files in the folder(you_want_name.js && you_want_name.css)
 
-'''
+```
 .../your_project/apps/app_name/static/
-'''
+```
 
 Step.3 In the template file, use plugin with command "{{use 'plugin name'}}" , you_want_name.js and you_want_name.css will loaded
        
