@@ -34,3 +34,26 @@ project, and just add `uliweb_ui` to `INSTALLED_APPS`, and run the command.
 Uliweb_ui is already create `jsmodule.js` for you. But if you want to add more ui components
 to settings.ini, and also want to use `load` to process them, you should recreate `jsmodules.js`
 yourself.
+
+## Concat plugins
+Step.1 Write some configuration in 'settings.ini' of your uliweb project. like that:
+
+'''
+[TEMPLATE_GULP]
+you_want_name = [ "plugin name", ... ]
+'''
+
+Step.2 Enter a command in CLI of your uliweb project
+
+'''
+uliweb gulpplugins -d app_name
+'''
+
+Then you will find some files in the folder(you_want_name.js && you_want_name.css)
+
+'''
+.../your_project/apps/app_name/static/
+'''
+
+Step.3 In the template file, use plugin with command "{{use 'plugin name'}}" , you_want_name.js and you_want_name.css will loaded
+       
