@@ -38,10 +38,10 @@ yourself.
 ## Concat plugins
 Step.1 Write some configuration in 'settings.ini' of your uliweb project. like that:
 
-'''
+```
 [TEMPLATE_GULP]
 you_want_name = [ "plugin name", ... ]
-'''
+```
 
 Step.2 Enter a command in CLI of your uliweb project
 
