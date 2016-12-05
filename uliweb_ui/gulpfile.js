@@ -18,7 +18,7 @@ var minimist = require("minimist"); //命令行
 
 var knownOptions = {
     string: 'dist',
-    string: 'settings',
+    string: 'settings'
 };
 
 var options = minimist(process.argv.slice(2), knownOptions);
@@ -27,70 +27,6 @@ if((!options.dist) || (!options.settings)){
     console.log("Please give two arguments(--dist, --settings)");
     return false;
 }
-
-//ui和layout
-var path = {
-    uliweb_ui: '/Users/HoseaLee/Workspace/Uliwebext/uliweb-ui/uliweb_ui',
-    uliweb_layout: '/Users/HoseaLee/Workspace/Uliwebext/uliweb-layout/uliweb_layout/'
-};
-
-//插件版本信息,需要时从该对象中取
-var ui_versions = {
-    'ui.bootstrap3': '3.3.6',
-    'ui.fontawesome': '4.6.3',
-    'ui.ionicons': '2.0.1',
-    'ui.jquery': '1.12.4',
-    'ui.jqueryui': '1.11.4',
-    'ui.lodash': '3.10.1',
-    'ui.riot': '2.6.2',
-    'ui.ag-grid': '4.2.5',
-    'ui.ueditor': '1.4.3.3',
-    'ui.echarts': '3.2.3',
-    'ui.ztree': '3.5.24'
-};
-
-var common_css_list = [
-    {
-        project: "ui",
-        path: path['uliweb_ui'] + '/static/modules/jquery-ui/' + ui_versions['ui.jqueryui'] + '/jquery-ui.min.css'
-    },
-    {
-        project: "ui",
-        path: path['uliweb_ui'] + '/static/modules/bootstrap/' + ui_versions['ui.bootstrap3'] + '/css/bootstrap.min.css'
-    },
-    {
-        project: "ui",
-        path: path['uliweb_ui'] + '/static/modules/font-awesome/' + ui_versions['ui.fontawesome'] + '/css/font-awesome.min.css'
-    },
-    {
-        project: "ui",
-        path: path['uliweb_ui'] + '/static/modules/ionicons/' + ui_versions['ui.ionicons'] + '/css/ionicons.min.css'
-    },
-    {project: "layout", path: path['uliweb_layout'] + '/layout/static/adminlte/2.3.2/css/AdminLTE.min.css'},
-    {project: "layout", path: path['uliweb_layout'] + '/layout/static/adminlte/2.3.2/css/skins/_all-skins.min.css'},
-    {project: "layout", path: path['uliweb_layout'] + '/layout/static/layout.css'}
-];
-
-gulp.task("css_old", function () {
-
-    var ui = [], //存储uliweb_ui中需要拼接的css文件路径
-        layout = []; //存储uliweb_layout中需要拼接的css文件路径
-
-    //遍历common_css_list, 根据属性project判断属于ui还是layout,并将属性path的值放入对应数组待处理
-    for (var i = 0, len = common_css_list.length; i < len; i++) {
-        (common_css_list[i]['project'] == "ui") ? ui.push(common_css_list[i]['path']) : '';
-        (common_css_list[i]['project'] == "layout") ? layout.push(common_css_list[i]['path']) : '';
-    }
-
-    gulp.src(ui)
-        .pipe(concat("uliweb_ui.css"))
-        .pipe(gulp.dest("./dist"));
-
-    gulp.src(layout)
-        .pipe(concat("uliweb_layout.css"))
-        .pipe(gulp.dest("./dist"));
-
-});
 
 /*settings配置文件的格式:
     [template_use.jqueryui]
