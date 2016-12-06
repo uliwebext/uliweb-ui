@@ -107,8 +107,10 @@ class GulpPlugins(Command):
         from uliweb import settings
 
         if options.dest:
+            module = options.dest
             filename = pkg.resource_filename(options.dest, 'gulp_settings.ini')
         else:
+            module = options.app
             filename = pkg.resource_filename(options.app, 'gulp_settings.ini')
 
         with open(filename, 'wb') as f:
@@ -129,12 +131,10 @@ class GulpPlugins(Command):
                         f.write("dist = " + item_dist + "\r\n")
                     f.write("\r\n")
 
-        gulp_dist = pkg.resource_filename(options.dest, '/static');
+        gulp_dist = pkg.resource_filename(module, '/static');
         gulp_settings = filename
         gulp_path = pkg.resource_filename("uliweb_ui","")
         import os
         terminal_command = "cd "+gulp_path+ " && gulp  --dist " + gulp_dist + " --settings " + gulp_settings
+        print ">>> {}".format(terminal_command)
         os.system(terminal_command)
-
-
-

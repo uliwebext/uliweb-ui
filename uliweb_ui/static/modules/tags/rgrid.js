@@ -1,9 +1,7 @@
-riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url="{query_url}" ajax="{query_ajax}" fields="{query_fields}" layout="{query_layout}" data="{query_data}"></query-condition> <div if="{left_tools.length>0 || right_tools.length>0}" class="btn-toolbar"> <div if="{left_tools.length>0}" class="rgrid-tools pull-left"> <div each="{btn_group in left_tools}" class="{btn_group_class}"> <button each="{btn in btn_group}" data-is="rgrid-button" btn="{btn}"></button> </div> </div> <div if="{right_tools.length>0}" class="rgrid-tools pull-right"> <div each="{btn_group in right_tools}" class="{btn_group_class}"> <button each="{btn in btn_group}" data-is="rgrid-button" btn="{btn}"></button> </div> </div> </div> <yield></yield> <rtable cols="{cols}" options="{rtable_options}" data="{data}" start="{start}" observable="{observable}"></rtable> <div class="clearfix tools"> <pagination if="{pagination}" data="{data}" url="{url}" page="{page}" total="{total}" observable="{observable}" limit="{limit}" onpagechanged="{onpagechanged}" onbeforepage="{onbeforepage}" buttons="{footer_tools}" theme="{page_theme}"></pagination> <div if="{!pagination && footer_tools.length>0}" class="pull-right {btn_group_class}"> <button each="{btn in footer_tools}" data-is="rgrid-button" btn="{btn}"></button> </div> </div>', 'rgrid .rgrid-tools,[riot-tag="rgrid"] .rgrid-tools,[data-is="rgrid"] .rgrid-tools{margin-bottom:5px;padding-left:5px;} rgrid .btn-toolbar .btn-group,[riot-tag="rgrid"] .btn-toolbar .btn-group,[data-is="rgrid"] .btn-toolbar .btn-group{margin-right:8px;}', '', function(opts) {
+riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url="{query_url}" ajax="{query_ajax}" fields="{query_fields}" layout="{query_layout}" data="{query_data}"></query-condition> <div if="{left_tools.length>0 || right_tools.length>0}" class="btn-toolbar"> <div if="{left_tools.length>0}" class="rgrid-tools pull-left"> <div each="{btn_group in left_tools}" class="{btn_group_class}"> <button each="{btn in btn_group}" data-is="rgrid-button" btn="{btn}"></button> </div> </div> <div if="{right_tools.length>0}" class="rgrid-tools pull-right"> <div each="{btn_group in right_tools}" class="{btn_group_class}"> <button each="{btn in btn_group}" data-is="rgrid-button" btn="{btn}"></button> </div> </div> </div> <yield></yield> <rtable cols="{cols}" options="{rtable_options}" data="{data}" start="{start}" observable="{observable}"></rtable> <div class="clearfix tools"> <pagination if="{pagination}" data="{data}" url="{url}" page="{page}" total="{total}" observable="{observable}" limit="{limit}" onpagechanged="{onpagechanged}" onbeforepage="{onbeforepage}" buttons="{footer_tools}" theme="{page_theme}"></pagination> <div if="{!pagination && footer_tools.length>0}" class="pull-right {btn_group_class}"> <button each="{btn in footer_tools}" data-is="rgrid-button" btn="{btn}"></button> </div> </div>', 'rgrid .rgrid-tools,[data-is="rgrid"] .rgrid-tools{margin-bottom:5px;padding-left:5px;} rgrid .btn-toolbar .btn-group,[data-is="rgrid"] .btn-toolbar .btn-group{margin-right:8px;}', '', function(opts) {
 
 
   var self = this
-
-  this.observable = riot.observable()
 
   if (opts.data) {
     if (Array.isArray(opts.data)) {
@@ -16,6 +14,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
   this.url = opts.url
 
   var query = new QueryString(this.url)
+  this.observable = opts.observable || riot.observable()
   this.page = opts.page || parseInt(query.get('page')) || 1
   this.limit = opts.limit || 10
   this.total = opts.total || 0
@@ -35,6 +34,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
   this.btn_group_class = opts.btn_group_class || 'btn-group btn-group-sm'
   this.onLoaded = opts.onLoaded
   this.autoLoad = opts.audoLoad || true
+  this.onBeforePage = opts.onBeforePage || function (page){ return true }
   this.page_theme = opts.page_theme || 'simple'
 
   this.onsort = function (sorts) {
@@ -65,8 +65,13 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
 
   this.onbeforepage = function (page) {
     self.page = page
-    self.table.show_loading(true)
-    self.start = (page - 1) * self.limit
+    var r = self.onBeforePage(page)
+    if (r) {
+      self.start = (page - 1) * self.limit
+      return true
+    } else {
+      return false
+    }
   }
 
   this.rtable_options = {
@@ -76,8 +81,12 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
     labelField : opts.labelField || 'title',
     indexCol: opts.indexCol,
     checkCol: opts.checkCol,
+    checkColTitle: opts.checkColTitle,
+    checkColWidth: opts.checkColWidth,
     indexColFrozen: opts.indexColFrozen,
     checkColFrozen: opts.checkColFrozen,
+    showSelected: opts.showSelected,
+    checkAll: opts.checkAll,
     multiSelect: opts.multiSelect,
     maxHeight: opts.maxHeight,
     minHeight: opts.minHeight,
@@ -104,12 +113,14 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
     onEdit: opts.onEdit,
     onEdited: opts.onEdited,
     onSelect: opts.onSelect,
+    onDeselect: opts.onDeselect,
     onSelected: opts.onSelected,
     onDeselected: opts.onDeselected,
     onLoadData: opts.onLoadData || this.onloaddata,
     onSort: opts.onSort || this.onsort,
     onCheckable: opts.onCheckable,
     onEditable: opts.onEditable,
+    onInitData: opts.onInitData,
     colspanValue: opts.colspanValue,
     draggable: opts.draggable,
     editable: opts.editable,
@@ -117,6 +128,8 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
   }
 
   this.on('mount', function(){
+    this.table = this.root.querySelector('rtable')
+
     var item, items
     var tools = this.left_tools.concat(this.right_tools).concat([this.footer_tools])
     for(var i=0, len=tools.length; i<len; i++){
@@ -142,12 +155,13 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
           item.class = 'btn ' + (item.class || 'btn-primary')
         }
     }
-    this.table = this.root.querySelector('rtable')
+
     this.root.add = this.table.add
     this.root.addFirstChild = this.table.addFirstChild
     this.root.update = this.table.update
     this.root.remove = this.table.remove
     this.root.get = this.table.get
+    this.root._get = this.table._get
     this.root.load = this.load
     this.root.insertBefore = this.table.insertBefore
     this.root.insertAfter = this.table.insertAfter
@@ -160,6 +174,10 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
     this.root.diff = this.table.diff
     this.root.getButton = this.getButton
     this.root.refresh = this.update
+    this.root.select = this.table.select
+    this.root.deselect = this.table.deselect
+    this.root.set_selected = this.table.set_selected
+    this.root.resize = this.table.resize
     this.root.instance = this
     if (this.url && this.autoLoad) {
       this.table.show_loading(true)
@@ -192,7 +210,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
       url = get_url(self.url, {limit:self.limit, page:self.page})
     } else url = self.url
     if (opts.tree) f = self.data.load_tree(url, param, _f)
-    else f = self.data.load(url, param, this.onLoaded || _f)
+    else f = self.data.load(url, param, self.onLoaded || _f)
     f.done(function(r){
       self.total = r.total
       self.update()
@@ -205,5 +223,5 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
   }
 });
 
-riot.tag2('rgrid-button', '<i if="{opts.btn.icon}" class="{opts.btn.icon}"></i> <span>{opts.btn.label}</span>', '', 'class="{opts.btn.class}" id="{opts.btn.id}" type="button" __disabled="{opts.btn.disabled(btn)}" onclick="{opts.btn.onclick}"', function(opts) {
+riot.tag2('rgrid-button', '<i if="{opts.btn.icon}" class="{opts.btn.icon}"></i> <span>{opts.btn.label}</span>', '', 'class="{opts.btn.class}" id="{opts.btn.id}" type="button" disabled="{opts.btn.disabled && opts.btn.disabled(btn)}" onclick="{opts.btn.onclick}"', function(opts) {
 });

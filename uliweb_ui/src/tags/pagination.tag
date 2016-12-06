@@ -2,11 +2,12 @@
 <pagination>
 
   <style scoped>
-    .pagination {margin-right:5px;}
+    .pagination {margin:0px;margin-right:5px;}
     .pagination>li.disabled>a {color:#999;}
     .page_input {padding:0px 12px; line-height: 34px; height:34px;}
-    .page_input input {height:20px;line-height:20px}
+    .page_input input {height:20px;line-height:20px;margin:0;}
     .message {line-height: 34px;line:34px;margin:0 auto;}
+    .btn.disabled {cursor:not-allowed;}
   </style>
 
   <ul if={theme=='long'} class="pagination">
@@ -23,11 +24,11 @@
   </div>
 
   <div if={theme=='simple'} class="{btn_group_class} pull-left pagination">
-    <a class="btn btn-default {disabled:totalPages<=1 || page==1}" onclick={go(1)} title={first_title}><pagination-raw content={first}></pagination-raw></a>
-    <a class="btn btn-default {disabled:!has_prev}" onclick={go(page-1)} title={prev_title}><pagination-raw content={prev}></pagination-raw></a>
+    <a class="btn btn-default" disabled="{totalPages<=1 || page==1}" onclick={go(1)} title={first_title}><pagination-raw content={first}></pagination-raw></a>
+    <a class="btn btn-default" disabled="{!has_prev}" onclick={go(page-1)} title={prev_title}><pagination-raw content={prev}></pagination-raw></a>
     <a class="btn btn-default page_input">第 <input type="text" onkeyup={page_input_click} value={page} style="width:40px"> 页/共{totalPages}页</input></a>
-    <a class="btn btn-default {disabled:!has_next}" onclick={go(page+1)} title={next_title}><pagination-raw content="{next}"></pagination-raw></a>
-    <a class="btn btn-default {disabled:totalPages<=1 || page==totalPages}" onclick={go(totalPages)} title={last_title}><pagination-raw content={last}></pagination-raw></a>
+    <a class="btn btn-default" disabled="{!has_next}" onclick={go(page+1)} title={next_title}><pagination-raw content="{next}"></pagination-raw></a>
+    <a class="btn btn-default" disabled="{totalPages<=1 || page==totalPages}" onclick={go(totalPages)} title={last_title}><pagination-raw content={last}></pagination-raw></a>
     <a if={refresh} class="btn btn-default" onclick={go(page)} title={refresh_title}><pagination-raw content={refresh}></pagination-raw></a>
   </div>
   <div if={theme=='simple' && buttons.length>0} class="pull-left {btn_group_class}">
@@ -51,7 +52,7 @@
   this.onpage = opts.onPage || function () {
     return self.data.load(self.get_url(), function(data){
       self.total = data.total   //根据反回值修改total
-      self.push_url(self.get_url())
+      <!-- self.push_url(self.get_url()) -->
       return data.rows
     })
   }    //页面事件回调,缺省使用data作为数据源
@@ -110,14 +111,14 @@
    *               然后再调用show，需要有jquery的支持
    */
   this.go_page = function (page) {
-    if (page < 1 || page > self.totalPages) return
     var old_page = self.page
-    self.page = page
-    if (old_page == page) return
     if (self.totalPages == 0) return
+    this.observable.trigger('beforepage', page)
     if (opts.onbeforepage && typeof opts.onbeforepage === 'function') {
-      opts.onbeforepage.call(self, page)
+      if (!opts.onbeforepage.call(self, page))
+        return
     }
+    self.page = page
     if (self.onpage && typeof self.onpage === 'function') {
       $.when(self.onpage.call(self, page)).done(function(data){
         self.show(page)

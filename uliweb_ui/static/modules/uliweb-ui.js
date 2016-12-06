@@ -461,7 +461,15 @@ function serializeObject(el) {
   var d = {}
   var data = $(':input', el).serializeArray()
   for(var i=0, len=data.length; i<len; i++) {
-    d[data[i].name] = data[i].value
+    if (d.hasOwnProperty(data[i].name)) {
+      if (Array.isArray(d[data[i].name]))
+        d[data[i].name].push(data[i].value)
+      else {
+        d[data[i].name] = [d[data[i].name], data[i].value]
+      }
+    } else {
+      d[data[i].name] = data[i].value
+    }
   }
   return d
 }
@@ -635,7 +643,8 @@ function dialog(url, options) {
                 form_widgets(form)
 
               //处理表单校验
-              dialog_validate_submit(dialog, {ajax_submit:dialog_ajax_submit, onBeforeSubmit:onBeforeSubmit})
+              if (!options.disableValidate)
+                dialog_validate_submit(dialog, {ajax_submit:dialog_ajax_submit, onBeforeSubmit:onBeforeSubmit})
             }
           })
 

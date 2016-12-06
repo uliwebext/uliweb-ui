@@ -167,9 +167,10 @@
     .rtable-row.hover .rtable-cell {
       background-color: #e1eff8;
     }
+    /* 选中状态hover不处理为选中背景色
     .rtable-row.selected.hover .rtable-cell {
       background-color: #ffefd5;
-    }
+    }*/
 
     .rtable-row.selected .rtable-cell {
       background-color:#ffefd5;
@@ -184,15 +185,15 @@
       border-bottom:none;
       border-right:1px solid #ddd;
     }
-    .rtable-root.zebra .rtable-row.even.hover .rtable-cell {
-      background-color: #e1eff8;
-    }
     .rtable-root.zebra .rtable-row.odd .rtable-cell {
       border-bottom:none;
       border-right:1px solid #ddd;
     }
-    .rtable-root.zebra .rtable-row.even.selected .rtable-cell {
+    .rtable-root.zebra .rtable-row.selected .rtable-cell {
       background-color: #ffefd5;
+    }
+    .rtable-root.zebra .rtable-row.hover .rtable-cell {
+      background-color: #e1eff8;
     }
     .rtable-root.zebra .rtable-header .rtable-cell {
       background-color: #f2f2f2;
@@ -201,11 +202,11 @@
     /*simple*/
     .rtable-root.simple .rtable-row.even .rtable-cell {
     }
-    .rtable-root.simple .rtable-row.even.hover .rtable-cell {
-    }
     .rtable-root.simple .rtable-row.odd .rtable-cell {
     }
-    .rtable-root.simple .rtable-row.even.selected .rtable-cell {
+    .rtable-root.simple .rtable-row.selected .rtable-cell {
+    }
+    .rtable-root.simple .rtable-row.hover .rtable-cell {
     }
     .rtable-root.simple .rtable-header .rtable-cell {
       background-color: #f2f2f2;
@@ -219,7 +220,7 @@
     }
     .rtable-root.table .rtable-row.odd .rtable-cell {
     }
-    .rtable-root.table .rtable-row.even.selected .rtable-cell {
+    .rtable-root.table .rtable-row.selected .rtable-cell {
       background-color: #ffefd5;
     }
     .rtable-root.table .rtable-header .rtable-cell {
@@ -240,13 +241,12 @@
       background-color: #f9f9f9;
       border-bottom:none;
     }
-    .rtable-root.table-striped .rtable-row.even.hover .rtable-cell {
-      background-color: #e1eff8;
-    }
     .rtable-root.table-striped .rtable-row.odd .rtable-cell {
       border-bottom:none;
     }
-    .rtable-root.table-striped .rtable-row.even.selected .rtable-cell {
+    .rtable-root.table-striped .rtable-row.selected .rtable-cell {
+    }
+    .rtable-root.table-striped .rtable-row.hover .rtable-cell {
     }
     .rtable-root.table-striped .rtable-header .rtable-cell {
     }
@@ -287,17 +287,20 @@
 
   <yield/>
 
-  <div class="rtable-root {theme}" style="width:{width-1}px;height:{height-1+xscroll_fix}px">
+  <div class="rtable-root {theme}" style="width:{width-1}px;height:{height-1+(browser.ie?xscroll_fix:0)}px">
     <div class="rtable-header rtable-fixed" style="width:{fix_width}px;height:{header_height}px">
       <div each={fix_columns} no-reorder class={rtable-cell:true}
         style="width:{width}px;height:{height}px;left:{left}px;top:{top}px;line-height:{height}px;">
         <!-- table header column -->
-        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" value={title}
+        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" content={title}
           style="{sort?'padding-right:22px':''}" title={tooltip}></div>
         <!-- checkbox -->
-        <i if={type=='check' && parent.multiSelect} onclick={checkall}
-          class="fa {parent.selected_rows.length>0 ? 'fa-check-square-o' : 'fa-square-o'}"
-          style="cursor:pointer;height:{headerRowHeight}px;line-height:{headerRowHeight}px"></i>
+        <div if={type=='check'}>
+          <i if={multiSelect && checkAll} onclick={checkall}
+            class="fa {selected_rows.length>0 ? 'fa-check-square-o' : 'fa-square-o'}"
+            style="cursor:pointer;height:{headerRowHeight}px;line-height:{headerRowHeight}px"></i>
+          <span if={title}>{title}</span>
+        </div>
 
         <!-- <input if={type=='check' && parent.multiSelect} type="checkbox" onclick={checkall}
           class="rtable-check" style="margin-top:{headerRowHeight/2-7}px" checked={parent.selected_rows.length>0}></input> -->
@@ -313,12 +316,15 @@
       <div each={main_columns} no-reorder class={rtable-cell:true}
         style="width:{width}px;height:{height}px;left:{left}px;top:{top}px;line-height:{height}px;">
         <!-- table header column -->
-        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" value={title}
+        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" content={title}
           style="{sort?'padding-right:22px':''}" title={tooltip}></div>
         <!-- checkbox -->
-        <i if={type=='check' && parent.multiSelect} onclick={checkall}
-          class="fa {parent.selected_rows.length>0 ? 'fa-check-square-o' : 'fa-square-o'}"
-          style="cursor:pointer;height:{headerRowHeight}px;line-height:{headerRowHeight}px"></i>
+        <div if={type=='check'}>
+          <i if={parent.multiSelect && checkAll} onclick={checkall}
+            class="fa {parent.selected_rows.length>0 ? 'fa-check-square-o' : 'fa-square-o'}"
+            style="cursor:pointer;height:{headerRowHeight}px;line-height:{headerRowHeight}px"></i>
+          <span if={title}>{title}</span>
+        </div>
         <!-- <input if={type=='check' && parent.multiSelect} type="checkbox" onclick={checkall}
           class="rtable-check" style="margin-top:{headerRowHeight/2-7}px"
           checked={parent.selected_rows.length>0}></input> -->
@@ -332,7 +338,7 @@
     </div>
 
     <div class="rtable-body rtable-fixed"
-      style="width:{fix_width}px;bottom:0;padding-bottom:{xscroll_fix}px;top:{header_height}px;height:{height-header_height}px;">
+      style="width:{fix_width}px;bottom:0;padding-bottom:{browser.ie?xscroll_fix:0}px;top:{header_height}px;height:{height-header_height+(browser.ie?xscroll_fix:-xscroll_fix)}px;">
       <!-- transform:translate3d(0px,{0-content.scrollTop}px,0px); -->
       <div class="rtable-content" style="width:{fix_width}px;height:{rows.length*rowHeight}px;">
         <div each={row in visCells.fixed} no-reorder class="{get_row_class(row.row, row.line)}">
@@ -341,7 +347,7 @@
 
             <!-- cell content -->
             <div data-is="rtable-cell" if={col.type!='check' && !col.buttons} tag={col.tag}
-              value={col.__value__} row={col.row} col={col}
+              content={col.__value__} row={col.row} col={col}
               style={col.indentWidth} title={col.tooltip}></div>
 
             <!-- expander -->
@@ -363,7 +369,7 @@
       </div>
     </div>
     <div class="rtable-body rtable-main"
-      style="left:{fix_width}px;top:{header_height}px;bottom:0px;right:0px;width:{width-fix_width+(browser.ie?yscroll_fix:0)}px;height:{height-header_height+(browser.ie?2*xscroll_fix:xscroll_fix)}px;">
+      style="left:{fix_width}px;top:{header_height}px;bottom:0px;right:0px;width:{width-fix_width+(browser.ie?yscroll_fix:0)}px;height:{height-header_height+(browser.ie?xscroll_fix:0)+(height_opt=='auto' && browser.ie?xscroll_fix:0)}px;">
       <!-- transform:translate3d({0-content.scrollLeft}px,{0-content.scrollTop}px,0px); -->
       <div class="rtable-content" style="width:{main_width}px;height:{rows.length*rowHeight}px;">
         <div each={row in visCells.main} no-reorder class="{get_row_class(row.row, row.line)}">
@@ -372,11 +378,11 @@
 
               <!-- cell content -->
               <div data-is="rtable-cell" if={col.type!='check' && !col.buttons} tag={col.tag}
-                value={col.__value__} row={col.row} col={col}
+                content={col.__value__} row={col.row} col={col}
                 style={col.indentWidth} title={col.tooltip}></div>
 
               <!-- expander -->
-              <span if={col.expander} data-is='rtable-raw' value={col.expander} class="rtable-expander"
+              <span if={col.expander} data-is='rtable-raw' content={col.expander} class="rtable-expander"
                 style="left:{col.indent-12}px;" onclick={toggle_expand}></span>
 
               <!-- display checkbox -->
@@ -402,7 +408,7 @@
         </div>
       </div>
 
-      <div if={rows.length==0 && noData} data-is="rtable-raw" value={noData} class="rtable-nodata"
+      <div if={rows.length==0 && noData} data-is="rtable-raw" content={noData} class="rtable-nodata"
         style="top:{height/2-header_height/2+rowHeight/2}px;"></div>
 
       <div style="display:none;top:{height/2-header_height/2+rowHeight/2}px" class="rtable-loading"></div>
@@ -426,16 +432,20 @@
   this.cols = opts.cols.slice()
   this.combineCols = opts.combineCols || []
   this.headerRowHeight = opts.headerRowHeight || 34
-  this.height = opts.height || 'auto'
+  this.height_opt = opts.height || 'auto'
+  this.width_opt = opts.width || 'auto'
   this.rowHeight = opts.rowHeight || 34
   this.indexColWidth = opts.indexColWidth || 40
   this.indexColFrozen = opts.indexColFrozen || false
   this.checkColWidth = opts.checkColWidth || 30
+  this.checkColTitle = opts.checkColTitle || ''
   this.checkColFrozen = opts.checkColFrozen || false
   this.multiSelect = opts.multiSelect || false
   this.visCells = []
   this.sort_cols = []
   this.clickSelect = opts.clickSelect === undefined ? 'row' : opts.clickSelect
+  this.showSelected = opts.showSelected === undefined ? true : opts.showSelected //显示选中状态，反显
+  this.checkAll = opts.checkAll === undefined ? true : opts.checkAll //显示全选checkbox
   this.noData = opts.noData || 'No Data'
   this.loading = opts.loading || 'Loading... <i class="fa fa-spinner fa-pulse fa-spin"></i>'
   this.container = opts.container || $(this.root).parent()
@@ -456,10 +466,12 @@
   this.onEdited = opts.onEdited || function(){return true}
   this.onSelected = opts.onSelected || function(){}
   this.onSelect = opts.onSelect || function(){return true}
+  this.onDeselect = opts.onDeselect || function(){return true}
   this.onDeselected = opts.onDeselected || function(){}
   this.onLoadData = opts.onLoadData || function(parent){}
   this.onCheckable = opts.onCheckable || function(row){return true} //是否显示checkbox
   this.onEditable = opts.onEditable || function(row, col){return self.editable} //是否允许单元格编辑
+  this.onInitData = opts.onInitData || function(dataset) {return}
 
   //tree options
   this.tree = opts.tree
@@ -486,30 +498,11 @@
   this.parents_expand_status = {} //父结点展开状态
   this.loaded_status = {} //结点装入状态
   this.notations = {} //数据单元格指示器保存
+  this.xscroll_fix = 0 //X滚动条修正值
+  this.yscroll_fix = 0 //Y滚动条修正值
+  this.rows = []
 
-  var _opts = {tree:opts.tree, idField:this.idField, parentField:this.parentField,
-    levelField:this.levelField, orderField:this.orderField, hasChildrenField:this.hasChildrenField}
-  var d
-  if (opts.data) {
-    if (Array.isArray(opts.data)) {
-      this._data = new DataSet()
-      d = opts.data
-    }
-    else {
-      var d = opts.data.get()
-      this._data = opts.data
-    }
-    if (opts.tree) {
-      this._data.setOption(_opts)
-      this._data.load_tree(d, {parentField:this.parentField,
-        orderField:this.orderField, levelField:this.levelField,
-        hasChildrenField:this.hasChildrenField, plain:true})
-    } else
-      this._data.load(d)
-
-  } else {
-    this._data = new DataSet(_opts)
-  }
+  this.browser = test_browser()
 
   this.show_loading = function (flag) {
     if (flag) {
@@ -545,12 +538,19 @@
         self.load_clear() //清理中间状态数据
         return //不更新界面
       } else if (r == 'load'){
+        //执行数据初始化工作
+        self.init_data()
         self.show_loading(false)
       }
       self.ready_data()
+      self.calScrollbar()
       self.calData()
       self.update()
     })
+  }
+
+  this.init_data = function() {
+    this.onInitData.call(this, this._data)
   }
 
   this.ready_data = function(){
@@ -584,15 +584,31 @@
   }
 
   this.on('mount', function() {
+
+    //装入数据
+    var _opts = {tree:opts.tree, idField:this.idField, parentField:this.parentField,
+      levelField:this.levelField, orderField:this.orderField, hasChildrenField:this.hasChildrenField}
+    var d
+    if (opts.data) {
+      if (Array.isArray(opts.data)) {
+        this._data = new DataSet()
+        d = opts.data
+      }
+      else {
+        var d = opts.data.get()
+        this._data = opts.data
+      }
+    } else {
+      this._data = new DataSet(_opts)
+    }
+
     this.content = this.root.querySelectorAll(".rtable-body.rtable-main")[0]
     this.header = this.root.querySelectorAll(".rtable-header.rtable-main")[0]
     this.content_fixed = this.root.querySelectorAll(".rtable-body.rtable-fixed")[0]
 
-    this.browser = test_browser()
-
     this._updated = false
     window.addEventListener('resize', function(){
-      if (opts.width == 'auto' || !opts.width || !opts.height)
+      if (this.width_opt == 'auto' || this.height_opt == 'auto')
         self.resize()
     })
 
@@ -617,7 +633,7 @@
 
     $(this.content_fixed).on('click', '.rtable-cell', this.click_handler)
       .on('dblclick', '.rtable-cell', this.dblclick_handler)
-    $(this.content_fixed).on('hover', '.rtable-cell', this.hover_handler)
+    $(this.content_fixed).on('mouseenter', '.rtable-row', this.hover_handler1)
       .on('mouseleave', '.rtable-row', this.hover_handler2)
 
     this.dnd()
@@ -625,12 +641,23 @@
     this.bind_contextmenu()
     this.scrollbar_width = getScrollbarWidth()
     this.ready_data() //prepare data
-    this.calSize()
+    <!-- this.calSize()
     this.calHeader()  //calculate header positions
-    this.calData()    //calculate data position
+    this.calData()    //calculate data position -->
     <!-- this.calScrollbar() -->
     this.bind()       //monitor data change
-    this.update()
+
+    if (opts.data) {
+      if (opts.tree) {
+        this._data.setOption(_opts)
+        this._data.load_tree(d, {parentField:this.parentField,
+          orderField:this.orderField, levelField:this.levelField,
+          hasChildrenField:this.hasChildrenField, plain:true})
+      } else
+        this._data.load(d)
+    }
+
+    <!-- this.update() -->
   })
 
   this.hover_handler1 = function (e) {
@@ -800,11 +827,44 @@
 
   this.on('updated', function(){
     if (!this._updated) {
-      this._updated = true
-      this.resize()
+      this.update()
     }
     <!-- console.log('update') -->
   })
+
+  this.on('update', function(){
+    this.start = opts.start || 0
+    if (!self.content)
+      return
+    if (!this._updated && this._updated != 1) {
+      //设置初始宽度高度
+      this._updated = 1 //正在处理
+      this.calSize()
+      this.calHeaderHeight()
+      this.calData()
+      <!-- this.width -= this.scrollbar_width -->
+
+      setTimeout(function(){
+        self._updated = 2
+        self.resize()
+      }, 0)
+      // console.log('update')
+    } else if(this._updated == 2 ){
+      self.calVis()
+    }
+  })
+
+  /* resize width and height */
+  this.resize = function () {
+    self.calSize()
+    self.calHeader()  //calculate header positions
+    self.calData()    //calculate data position
+    self.calScrollbar()
+    self.header.scrollLeft = self.content.scrollLeft
+    self.content_fixed.scrollTop = self.content.scrollTop
+    this.calVis()
+    self.update()
+  }
 
   this.click_handler = function(e) {
     var ret, tag = e.target._tag
@@ -901,12 +961,29 @@
     return top
   }
 
+  this.create_col_drag_helper = function () {
+    var root = $(this.root).find('.rtable-root')
+    if (this.col_drag_helper) this.col_drag_helper.remove()
+    this.col_drag_helper = helper = $('<div></div>')
+    root.append(helper)
+    helper.css({
+      position:'absolute',
+      zIndex:1000,
+      border:'1px solid green',
+      height:root.height(),
+      top:0,
+      display:'block'
+    })
+    helper.addClass('rtable-col-draggable-helper')
+  }
   this.colresize = function (e) {
     var start = e.clientX
-    var header = $(this.header)
+    var header = $(self.header)
     var root = $(document)
     var col = e.item
     var width = col.width, d
+    var root = $(self.root).find('.rtable-root')
+    var left = root.offset()['left']
 
     //取消文字选择
     document.selection && document.selection.empty && ( document.selection.empty(), 1)
@@ -914,18 +991,24 @@
     document.body.onselectstart = function () {
         return false;
     };
-    header.css('-moz-user-select','none');
+    header.css('-moz-user-select', 'none');
+    self.create_col_drag_helper()
+    self.col_drag_helper.css('left', e.clientX-left)
 
     root.on('mousemove', function(e){
       d = Math.max(width + e.clientX - start, self.minColWidth)
       col.real_col.width = d
-      self.resize()
+      self.col_drag_helper.css('left', e.clientX-left)
+      // self.resize()
     }).on('mouseup', function(e){
+        self.col_drag_helper.remove()
+        self.col_drag_helper = null
         document.body.onselectstart = function(){
             return true;//开启文字选择
         };
         header.css('-moz-user-select','text');
         root.off('mousemove').off('mouseup')
+        self.resize()
     })
   }
 
@@ -942,14 +1025,6 @@
       document.body.removeChild(oP);
       return scrollbarWidth;
   }
-  this.on('update', function(){
-    this.start = opts.start || 0
-    if (!this.content)
-      return
-    this.calVis()
-    // console.log('update')
-  })
-
   function _parse_header(cols, max_level, frozen){
     var columns = [], //保存每行的最后有效列
       columns_width = {}, //保存每行最右坐标
@@ -1048,6 +1123,19 @@
     return r
   }
 
+  /* 计算表头高度
+  */
+  this.calHeaderHeight = function () {
+    var i, len, col, max_level=0, cols
+    cols = this.opts.cols
+    for (i=0, len=cols.length; i<len; i++){
+      col = cols[i]
+      max_level = Math.max(max_level, col.title.split('/').length)
+    }
+    this.max_level = max_level
+    this.header_height = max_level * this.headerRowHeight
+  }
+
   /* 计算表头
   将 [a/b/c， a/b/d] 形式的表头处理为 [[{a, colspan=1}],[{b, colspan=1}], [{c, colspan=1}]]
   */
@@ -1105,7 +1193,7 @@
         frozen: has_frozen
       }
       col[this.nameField] = '__check_col__'
-      col[this.titleField] = '_check'
+      col[this.titleField] = opts.checkColTitle || ''
       if (!opts.indexCol)
         this.cols.unshift(col)
       else
@@ -1122,7 +1210,7 @@
       else
         cols.push(col)
       col.name = col[this.nameField]
-      col.title = col[this.titleField] || col.name //如果没有设label，则使用name
+      col.title = col[this.titleField]
       col.subs = col.title.split('/')
       max_level = Math.max(max_level, col.subs.length)
       if (!col.width)
@@ -1135,15 +1223,18 @@
     this.calData()
 
     //计算滚动修正值
-    if (this.rowHeight * this.rows.length > this.height - this.header_height)
+    if ((this.rowHeight * this.rows.length > this.height - this.header_height))
       this.yscroll_fix = this.scrollbar_width
     else
       this.yscroll_fix = 0
 
-
     //计算无width的列
     if (cal_cols.length > 0) {
-      var w = this.width-width-this.yscroll_fix
+      var w = this.width-width
+      if (!this.browser.ie && this.container[0].scrollHeight > this.container[0].clientHeight)
+        w -= this.yscroll_fix
+      else if (this.browser.ie)
+        w -= this.yscroll_fix
       var dw, lw
       lw = this.minColWidth*cal_cols.length
       //剩余宽度大小剩余列总宽度，则平分
@@ -1157,6 +1248,8 @@
         cal_cols[i].width = dw
         if (i == cal_cols.length - 1)
           cal_cols[i].width = w - (cal_cols.length-1)*dw
+          // if (!this.browser.ie)
+          //   cal_cols[i].width -= 16 //this.scrollbar_width -1
       }
     }
 
@@ -1183,12 +1276,6 @@
     this.fix_width = fix_width
     this.main_width = main_width //内容区宽度
 
-    //计算滚动修正值
-    if (this.main_width > this.width - this.fix_width)
-      this.xscroll_fix = this.scrollbar_width
-    else
-      this.xscroll_fix = 0
-
   }
 
   /* calculate width and height */
@@ -1198,34 +1285,45 @@
     } else {
       this.width = opts.width
     }
-    // if opts.height is null or undefined, it'll be parent().height
     // if opts.height is 'auto', the height will be automatically increased according number of rows
-    if (!opts.height) {
-      this.height = $(this.container).height()
-    } else if (opts.height == 'auto'){
+    if (this.height_opt == 'auto'){
       //calculate later
       //in calHeader, calData
     } else {
-      this.height = opts.height
+      this.height = this.height_opt
     }
   }
 
   this.calScrollbar = function () {
     this.has_yscroll = this.content.scrollHeight > this.content.clientHeight || (this.rows.length * this.rowHeight > (this.height - this.header_height))
+    // if (this.height_opt == 'auto' && (!opts.maxHeight || this.rows.length * this.rowHeight < opts.maxHeight - this.header_height))
+    if (this.height_opt == 'auto' && (!opts.maxHeight || (this.rows.length * this.rowHeight < opts.maxHeight - this.header_height)))
+      this.has_yscroll = false
     this.has_xscroll = this.content.scrollWidth > this.content.clientWidth || this.main_width > (this.width - this.fix_width)
     this.xscroll_width = this.has_xscroll ? this.scrollbar_width : 0
     this.yscroll_width = this.has_yscroll ? this.scrollbar_width : 0
-    <!-- this.xscroll_fix = this.browser.ie && this.has_xscroll ? this.xscroll_width : 0
-    this.yscroll_fix = this.browser.ie && this.has_yscroll ? this.yscroll_width : 0 -->
+    this.xscroll_fix = this.has_xscroll ? this.xscroll_width : 0 // this.browser.ie && this.has_xscroll ? this.xscroll_width : 0
+    this.yscroll_fix = this.has_yscroll ? this.yscroll_width : 0 // this.browser.ie && this.has_yscroll ? this.yscroll_width : 0
+    // console.log('=====:height_opt=', this.height_opt, ',height=', this.height, ',width=', this.width, ',scrollHeight=', this.content.scrollHeight,
+    //   ',clientHeight=', this.content.clientHeight,
+    //   ',scrollWidth=', this.content.scrollWidth, ',clientWidth=',
+    //   this.content.clientWidth, ',has_yscroll=', this.has_yscroll, ',has_xscroll=', this.has_xscroll,
+    //   ',xscroll_width=', this.xscroll_width, ',yscroll_width=',
+    //   this.yscroll_width, ',xscroll_fix=', this.xscroll_fix, ',yscroll_fix=', this.yscroll_fix)
   }
 
   /* Calculate data relative position
   */
   this.calData = function() {
     //process height if value is 'auto'
-    if (opts.height == 'auto') {
+    if (this.height_opt == 'auto') {
       //if no data, then the length is 1, used for "no data" display
       this.height = Math.max(1, this.rows.length) * this.rowHeight + this.header_height
+      <!-- if (!this.browser.ie && this.container[0].scrollHeight > this.container[0].clientHeight) { -->
+      //非ie调整大小
+      if (!this.browser.ie) {
+        this.height += this.scrollbar_width
+      }
       if (opts.maxHeight)
         this.height = Math.min(opts.maxHeight, this.height)
       if (this.rows.length==0 && opts.minHeight)
@@ -1670,6 +1768,10 @@
     }
   }
 
+  this.set_selected = function (row_ids) {
+    this.selected_rows = row_ids
+  }
+
   /* select one or more rows
   */
   this.select = function(rows) {
@@ -1701,10 +1803,7 @@
   this.deselect = function(rows) {
     var r = [], row, selected_rows = this.selected_rows, index, items = [], id
     if (!rows) {
-      this.selected_rows = []
-      this.onDeselected()
-      if (this.observable)
-        this.observable.trigger('deselected')
+      items = this.selected_rows.slice()
     }
     else {
       if (!Array.isArray(rows))
@@ -1719,14 +1818,14 @@
         if (!self.onCheckable(this._data.get(row))) return
         index = items.indexOf(row)
         if (index != -1){
-          selected_rows.splice(i, 1)
-          items.splice(index, 1)
-          this.onDeselected(this._data.get(row))
-          if (this.observable)
-            this.observable.trigger('deselected', this._data.get(row))
+          if (this.onDeselect(this._data.get(row))) {
+            selected_rows.splice(i, 1)
+            items.splice(index, 1)
+            this.onDeselected(this._data.get(row))
+            if (this.observable)
+              this.observable.trigger('deselected', this._data.get(row))
+          }
         }
-        if (rows.length == 0)
-          break
       }
     }
     <!-- this.update() -->
@@ -1758,20 +1857,14 @@
     })
   }
   this.root.get_selected = proxy('get_selected')
+  this.root.set_selected = proxy('set_selected')
   this.root.expand = proxy('expand')
   this.root.collapse = proxy('collapse')
   this.root.show_loading = proxy('show_loading')
+  this.root.select = proxy('select')
+  this.root.deselect = proxy('deselect')
 
-  /* resize width and height */
-  this.resize = function () {
-    self.calSize()
-    self.calHeader()  //calculate header positions
-    self.calData()    //calculate data position
-    <!-- self.calScrollbar() -->
-    self.header.scrollLeft = self.content.scrollLeft
-    self.content_fixed.scrollTop = self.content.scrollTop
-    self.update()
-  }
+  this.root.resize = proxy('resize')
 
   function data_proxy (funcname) {
     return function() { return self._data[funcname].apply(self._data, arguments)}
@@ -1782,6 +1875,7 @@
   this.root.update = data_proxy('update')
   this.root.remove = data_proxy('remove')
   this.root.get = data_proxy('get')
+  this.root._get = data_proxy('_get')
   this.root.load = data_proxy('load')
   this.root.insertBefore = data_proxy('insertBefore')
   this.root.insertAfter = data_proxy('insertAfter')
@@ -1844,7 +1938,7 @@
     cls = this.onRowClass(row, index)
     if (cls)
       klass.push(cls)
-    if (this.is_selected(row))
+    if (this.is_selected(row) && this.showSelected)
       klass.push('selected')
     return klass.join(' ')
   }
@@ -1918,7 +2012,7 @@
       return
     }
     <!-- this.prevtag = opts.tag -->
-    <!-- return this.mountedTag = riot.mount(this.root.querySelector('div'), opts.tag, opts)[0] -->
+    return this.mountedTag = riot.mount(this.root.querySelector('div'), opts.tag, opts)[0]
   });
 
   this.on('update', function() {
@@ -1947,9 +2041,9 @@
 <rtable-raw>
   <span></span>
   this.on('mount', function(){
-    this.root.innerHTML = opts.value
+    this.root.innerHTML = opts.content
   })
   this.on('update', function () {
-    this.root.innerHTML = opts.value
+    this.root.innerHTML = opts.content
   })
 </rtable-raw>

@@ -43,8 +43,6 @@
    */
   var self = this
 
-  this.observable = riot.observable()
-
   if (opts.data) {
     if (Array.isArray(opts.data)) {
       this.data = new DataSet(opts.data)
@@ -56,6 +54,7 @@
   this.url = opts.url
   //解析url中的page参数
   var query = new QueryString(this.url)
+  this.observable = opts.observable || riot.observable()
   this.page = opts.page || parseInt(query.get('page')) || 1
   this.limit = opts.limit || 10
   this.total = opts.total || 0
@@ -75,6 +74,7 @@
   this.btn_group_class = opts.btn_group_class || 'btn-group btn-group-sm'
   this.onLoaded = opts.onLoaded
   this.autoLoad = opts.audoLoad || true
+  this.onBeforePage = opts.onBeforePage || function (page){ return true }
   this.page_theme = opts.page_theme || 'simple'
 
   this.onsort = function (sorts) {
@@ -105,8 +105,13 @@
 
   this.onbeforepage = function (page) {
     self.page = page
-    self.table.show_loading(true)
-    self.start = (page - 1) * self.limit
+    var r = self.onBeforePage(page)
+    if (r) {
+      self.start = (page - 1) * self.limit
+      return true
+    } else {
+      return false
+    }
   }
 
   this.rtable_options = {
@@ -116,8 +121,12 @@
     labelField : opts.labelField || 'title',
     indexCol: opts.indexCol,
     checkCol: opts.checkCol,
+    checkColTitle: opts.checkColTitle,
+    checkColWidth: opts.checkColWidth,
     indexColFrozen: opts.indexColFrozen,
     checkColFrozen: opts.checkColFrozen,
+    showSelected: opts.showSelected,
+    checkAll: opts.checkAll,
     multiSelect: opts.multiSelect,
     maxHeight: opts.maxHeight,
     minHeight: opts.minHeight,
@@ -144,12 +153,14 @@
     onEdit: opts.onEdit,
     onEdited: opts.onEdited,
     onSelect: opts.onSelect,
+    onDeselect: opts.onDeselect,
     onSelected: opts.onSelected,
     onDeselected: opts.onDeselected,
     onLoadData: opts.onLoadData || this.onloaddata,
     onSort: opts.onSort || this.onsort,
     onCheckable: opts.onCheckable,
     onEditable: opts.onEditable,
+    onInitData: opts.onInitData,
     colspanValue: opts.colspanValue,
     draggable: opts.draggable,
     editable: opts.editable,
@@ -162,6 +173,8 @@
   }
  -->
   this.on('mount', function(){
+    this.table = this.root.querySelector('rtable')
+
     var item, items
     var tools = this.left_tools.concat(this.right_tools).concat([this.footer_tools])
     for(var i=0, len=tools.length; i<len; i++){
@@ -187,12 +200,13 @@
           item.class = 'btn ' + (item.class || 'btn-primary')
         }
     }
-    this.table = this.root.querySelector('rtable')
+
     this.root.add = this.table.add
     this.root.addFirstChild = this.table.addFirstChild
     this.root.update = this.table.update
     this.root.remove = this.table.remove
     this.root.get = this.table.get
+    this.root._get = this.table._get
     this.root.load = this.load
     this.root.insertBefore = this.table.insertBefore
     this.root.insertAfter = this.table.insertAfter
@@ -205,6 +219,10 @@
     this.root.diff = this.table.diff
     this.root.getButton = this.getButton
     this.root.refresh = this.update
+    this.root.select = this.table.select
+    this.root.deselect = this.table.deselect
+    this.root.set_selected = this.table.set_selected
+    this.root.resize = this.table.resize
     this.root.instance = this
     if (this.url && this.autoLoad) {
       this.table.show_loading(true)
@@ -237,7 +255,7 @@
       url = get_url(self.url, {limit:self.limit, page:self.page})
     } else url = self.url
     if (opts.tree) f = self.data.load_tree(url, param, _f)
-    else f = self.data.load(url, param, this.onLoaded || _f)
+    else f = self.data.load(url, param, self.onLoaded || _f)
     f.done(function(r){
       self.total = r.total
       self.update()
@@ -251,7 +269,7 @@
 </rgrid>
 
 <rgrid-button class="{opts.btn.class}" id={opts.btn.id} type="button"
-  disabled={opts.btn.disabled(btn)} onclick={opts.btn.onclick}>
+  disabled={opts.btn.disabled && opts.btn.disabled(btn)} onclick={opts.btn.onclick}>
   <i if={opts.btn.icon} class={opts.btn.icon}></i>
   <span>{opts.btn.label}</span>
 </rgrid-button>

@@ -1032,3 +1032,6 @@
 .jstree-disabled .jstree-checkbox {
   display: none;
 }
+.jstree-default-contextmenu{
+  z-index:999;
+}
