@@ -43,8 +43,6 @@
    */
   var self = this
 
-  this.observable = riot.observable()
-
   if (opts.data) {
     if (Array.isArray(opts.data)) {
       this.data = new DataSet(opts.data)
@@ -56,6 +54,7 @@
   this.url = opts.url
   //解析url中的page参数
   var query = new QueryString(this.url)
+  this.observable = opts.observable || riot.observable()
   this.page = opts.page || parseInt(query.get('page')) || 1
   this.limit = opts.limit || 10
   this.total = opts.total || 0
@@ -75,6 +74,7 @@
   this.btn_group_class = opts.btn_group_class || 'btn-group btn-group-sm'
   this.onLoaded = opts.onLoaded
   this.autoLoad = opts.audoLoad || true
+  this.onBeforePage = opts.onBeforePage || function (page){ return true }
   this.page_theme = opts.page_theme || 'simple'
 
   this.onsort = function (sorts) {
@@ -105,8 +105,13 @@
 
   this.onbeforepage = function (page) {
     self.page = page
-    self.table.show_loading(true)
-    self.start = (page - 1) * self.limit
+    var r = self.onBeforePage(page)
+    if (r) {
+      self.start = (page - 1) * self.limit
+      return true
+    } else {
+      return false
+    }
   }
 
   this.rtable_options = {
@@ -120,6 +125,8 @@
     checkColWidth: opts.checkColWidth,
     indexColFrozen: opts.indexColFrozen,
     checkColFrozen: opts.checkColFrozen,
+    showSelected: opts.showSelected,
+    checkAll: opts.checkAll,
     multiSelect: opts.multiSelect,
     maxHeight: opts.maxHeight,
     minHeight: opts.minHeight,

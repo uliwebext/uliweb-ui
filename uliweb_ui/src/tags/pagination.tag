@@ -112,11 +112,13 @@
    */
   this.go_page = function (page) {
     var old_page = self.page
-    self.page = page
     if (self.totalPages == 0) return
+    this.observable.trigger('beforepage', page)
     if (opts.onbeforepage && typeof opts.onbeforepage === 'function') {
-      opts.onbeforepage.call(self, page)
+      if (!opts.onbeforepage.call(self, page))
+        return
     }
+    self.page = page
     if (self.onpage && typeof self.onpage === 'function') {
       $.when(self.onpage.call(self, page)).done(function(data){
         self.show(page)
