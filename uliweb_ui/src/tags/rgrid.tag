@@ -104,10 +104,10 @@
   }
 
   this.onbeforepage = function (page) {
-    self.page = page
     var r = self.onBeforePage(page)
     if (r) {
       self.start = (page - 1) * self.limit
+      self.page = page
       return true
     } else {
       return false
