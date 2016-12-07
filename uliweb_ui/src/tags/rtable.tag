@@ -292,7 +292,7 @@
       <div each={fix_columns} no-reorder class={rtable-cell:true}
         style="width:{width}px;height:{height}px;left:{left}px;top:{top}px;line-height:{height}px;">
         <!-- table header column -->
-        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" value={title}
+        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" content={title}
           style="{sort?'padding-right:22px':''}" title={tooltip}></div>
         <!-- checkbox -->
         <div if={type=='check'}>
@@ -316,7 +316,7 @@
       <div each={main_columns} no-reorder class={rtable-cell:true}
         style="width:{width}px;height:{height}px;left:{left}px;top:{top}px;line-height:{height}px;">
         <!-- table header column -->
-        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" value={title}
+        <div if={type!='check'} data-is="rtable-raw" class="rtable-cell-text" content={title}
           style="{sort?'padding-right:22px':''}" title={tooltip}></div>
         <!-- checkbox -->
         <div if={type=='check'}>
@@ -347,7 +347,7 @@
 
             <!-- cell content -->
             <div data-is="rtable-cell" if={col.type!='check' && !col.buttons} tag={col.tag}
-              value={col.__value__} row={col.row} col={col}
+              content={col.__value__} row={col.row} col={col}
               style={col.indentWidth} title={col.tooltip}></div>
 
             <!-- expander -->
@@ -378,11 +378,11 @@
 
               <!-- cell content -->
               <div data-is="rtable-cell" if={col.type!='check' && !col.buttons} tag={col.tag}
-                value={col.__value__} row={col.row} col={col}
+                content={col.__value__} row={col.row} col={col}
                 style={col.indentWidth} title={col.tooltip}></div>
 
               <!-- expander -->
-              <span if={col.expander} data-is='rtable-raw' value={col.expander} class="rtable-expander"
+              <span if={col.expander} data-is='rtable-raw' content={col.expander} class="rtable-expander"
                 style="left:{col.indent-12}px;" onclick={toggle_expand}></span>
 
               <!-- display checkbox -->
@@ -408,7 +408,7 @@
         </div>
       </div>
 
-      <div if={rows.length==0 && noData} data-is="rtable-raw" value={noData} class="rtable-nodata"
+      <div if={rows.length==0 && noData} data-is="rtable-raw" content={noData} class="rtable-nodata"
         style="top:{height/2-header_height/2+rowHeight/2}px;"></div>
 
       <div style="display:none;top:{height/2-header_height/2+rowHeight/2}px" class="rtable-loading"></div>
@@ -500,7 +500,9 @@
   this.notations = {} //数据单元格指示器保存
   this.xscroll_fix = 0 //X滚动条修正值
   this.yscroll_fix = 0 //Y滚动条修正值
+  this.rows = []
 
+  this.browser = test_browser()
 
   this.show_loading = function (flag) {
     if (flag) {
@@ -603,8 +605,6 @@
     this.content = this.root.querySelectorAll(".rtable-body.rtable-main")[0]
     this.header = this.root.querySelectorAll(".rtable-header.rtable-main")[0]
     this.content_fixed = this.root.querySelectorAll(".rtable-body.rtable-fixed")[0]
-
-    this.browser = test_browser()
 
     this._updated = false
     window.addEventListener('resize', function(){
@@ -2012,7 +2012,7 @@
       return
     }
     <!-- this.prevtag = opts.tag -->
-    <!-- return this.mountedTag = riot.mount(this.root.querySelector('div'), opts.tag, opts)[0] -->
+    return this.mountedTag = riot.mount(this.root.querySelector('div'), opts.tag, opts)[0]
   });
 
   this.on('update', function() {
@@ -2041,9 +2041,9 @@
 <rtable-raw>
   <span></span>
   this.on('mount', function(){
-    this.root.innerHTML = opts.value
+    this.root.innerHTML = opts.content
   })
   this.on('update', function () {
-    this.root.innerHTML = opts.value
+    this.root.innerHTML = opts.content
   })
 </rtable-raw>

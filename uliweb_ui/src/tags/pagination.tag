@@ -2,7 +2,7 @@
 <pagination>
 
   <style scoped>
-    .pagination {margin-right:5px;}
+    .pagination {margin:0px;margin-right:5px;}
     .pagination>li.disabled>a {color:#999;}
     .page_input {padding:0px 12px; line-height: 34px; height:34px;}
     .page_input input {height:20px;line-height:20px;margin:0;}

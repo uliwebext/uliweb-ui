@@ -377,7 +377,7 @@ DataSet.prototype._insertItem = function (item, index, position, delta, parent) 
       d[this._parentField] = parent || node[this._parentField]
       if (!d[this._levelField])
         d[this._levelField] = node[this._levelField]
-      if (!d[this._orderField]) {
+      if (!d[this._orderField] || index + 1 == this.length) {
         if (position == 'after')
           d[this._orderField] = node[this._orderField] + 1
         else
@@ -878,18 +878,21 @@ DataSet.prototype.tree = function (options) {
       for(var i=0, len=d.length; i<len; i++) {
         x = d[i]
         x[levelField] = x[levelField] || level
-        if (x[orderField]){
-          if (last_order < x[orderField])
-            last_order = x[orderField]
-          else if (last_order == x[orderField])
-            x[orderField]++
-          else {
+        //是否重新排序
+        if (options.reorder) {
+          if (x[orderField]){
+            if (last_order < x[orderField])
+              last_order = x[orderField]
+            else if (last_order == x[orderField])
+              x[orderField]++
+            else {
+              x[orderField] = last_order
+            }
+          } else {
             x[orderField] = last_order
           }
-        } else {
-          x[orderField] = last_order
+          last_order ++
         }
-        last_order ++
         s.push(x)
         b = x[childrenField]
         if (b && b.length > 0) {
@@ -1389,7 +1392,7 @@ DataSet.prototype._addItem = function (item, parent, position) {
     this._ids[id] = this.length-1;
   }
 
-  var child, index, node
+  var child, index, node, _order, level, last_order
 
   if (this._isTree) {
     if (parent) {
@@ -1406,22 +1409,26 @@ DataSet.prototype._addItem = function (item, parent, position) {
         this._data.splice(index+1, 0, d)
       } else {
         if (position == 'first') {
-          d[this._orderField] = this._data[index+1][this._orderField]
+          _order = this._data[index+1][this._orderField]
           this._data.splice(index+1, 0, d)
           level = d[this._levelField]
-          last_order = d[this._orderField]
-          this._reOrder(index+2, level, last_order)
+          if (!d[this._orderField]) {
+            d[this._orderField] = _order
+            last_order = d[this._orderField]
+            this._reOrder(index+2, level, last_order)
+          }
         } else {
           index = this._findNext(index)
           if (index == -1) {
             this._data.push(d)
-            order = this._data[this.length-1][this._orderField] + 1
+            _order = this._data[this.length-1][this._orderField] + 1
             index = this._data.length
           } else {
-            order = this._data[index-1][this._orderField] + 1
+            _order = this._data[index-1][this._orderField] + 1
             this._data.splice(index, 0, d)
           }
-          d[this._orderField] = order
+          if (!d[this._orderField])
+            d[this._orderField] = _order
         }
       }
       this.length ++
@@ -1429,15 +1436,17 @@ DataSet.prototype._addItem = function (item, parent, position) {
     } else {
       if (!d[this._levelField])
         d[this._levelField] = 0
-      //查找最后的order
-      order = 1
-      for(var ii=this.length-2; ii>-1; ii--) {
-        if (this._data[ii][this._levelField] == 0){
-          order = this._data[ii][this._orderField] + 1
-          break
+      if (!d[this._orderField]) {
+        //查找最后的order
+        _order = 1
+        for(var ii=this.length-2; ii>-1; ii--) {
+          if (this._data[ii][this._levelField] == 0){
+            _order = this._data[ii][this._orderField] + 1
+            break
+          }
         }
+        d[this._orderField] = _order
       }
-      d[this._orderField] = order
     }
   }
 

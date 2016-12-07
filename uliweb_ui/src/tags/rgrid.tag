@@ -104,10 +104,10 @@
   }
 
   this.onbeforepage = function (page) {
-    self.page = page
     var r = self.onBeforePage(page)
     if (r) {
       self.start = (page - 1) * self.limit
+      self.page = page
       return true
     } else {
       return false
@@ -173,6 +173,8 @@
   }
  -->
   this.on('mount', function(){
+    this.table = this.root.querySelector('rtable')
+
     var item, items
     var tools = this.left_tools.concat(this.right_tools).concat([this.footer_tools])
     for(var i=0, len=tools.length; i<len; i++){
@@ -198,7 +200,7 @@
           item.class = 'btn ' + (item.class || 'btn-primary')
         }
     }
-    this.table = this.root.querySelector('rtable')
+
     this.root.add = this.table.add
     this.root.addFirstChild = this.table.addFirstChild
     this.root.update = this.table.update
@@ -267,7 +269,7 @@
 </rgrid>
 
 <rgrid-button class="{opts.btn.class}" id={opts.btn.id} type="button"
-  disabled={opts.btn.disabled(btn)} onclick={opts.btn.onclick}>
+  disabled={opts.btn.disabled && opts.btn.disabled(btn)} onclick={opts.btn.onclick}>
   <i if={opts.btn.icon} class={opts.btn.icon}></i>
   <span>{opts.btn.label}</span>
 </rgrid-button>
