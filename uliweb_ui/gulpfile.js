@@ -7,9 +7,9 @@ var gulp = require("gulp"),
     minifycss = require("gulp-minify-css"), //css压缩
     uglify = require("gulp-uglify"), //js压缩
     //jshint = require("gulp-jshint"), //js检测
-    htmlmin = require("gulp-htmlmin"), //html压缩
-    imagemin = require("gulp-imagemin"), //图片压缩
-    pngcrush = require("imagemin-pngcrush"),
+    //htmlmin = require("gulp-htmlmin"), //html压缩
+    //imagemin = require("gulp-imagemin"), //图片压缩
+    //pngcrush = require("imagemin-pngcrush"),
     rename = require("gulp-rename"),    //文件更名
     notify = require("gulp-notify");    //提示信息
 

@@ -64,10 +64,10 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
   }
 
   this.onbeforepage = function (page) {
-    self.page = page
     var r = self.onBeforePage(page)
     if (r) {
       self.start = (page - 1) * self.limit
+      self.page = page
       return true
     } else {
       return false
@@ -223,5 +223,5 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
   }
 });
 
-riot.tag2('rgrid-button', '<i if="{opts.btn.icon}" class="{opts.btn.icon}"></i> <span>{opts.btn.label}</span>', '', 'class="{opts.btn.class}" id="{opts.btn.id}" type="button" disabled="{opts.btn.disabled && opts.btn.disabled(btn)}" onclick="{opts.btn.onclick}"', function(opts) {
+riot.tag2('rgrid-button', '<i if="{opts.btn.icon}" class="{opts.btn.icon}"></i> <span>{opts.btn.label}</span>', '', 'class="{opts.btn.class}" id="{opts.btn.id}" type="button" disabled="{opts.btn.disabled ? opts.btn.disabled(btn) : false}" onclick="{opts.btn.onclick}"', function(opts) {
 });

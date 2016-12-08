@@ -209,7 +209,7 @@
 </pagination-raw>
 
 <pagination-button class="{opts.btn.class}" id={opts.btn.id} type="button"
-  disabled={opts.btn.disabled(btn)} onclick={opts.btn.onclick}>
+  disabled={opts.btn.disabled && opts.btn.disabled(btn)} onclick={opts.btn.onclick}>
   <i if={opts.btn.icon} class={opts.btn.icon}></i>
   <span>{opts.btn.label}</span>
 </pagination-button>
