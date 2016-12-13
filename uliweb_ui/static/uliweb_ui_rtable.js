@@ -4504,7 +4504,11 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
       setTimeout(function(){self.load()}, 100)
     }
 
-    this.observable.on('selected deselected', function(row) {
+    this.observable.on('selected', function(row) {
+      self.update()
+    })
+
+    this.observable.on('deselected', function(row) {
       self.update()
     })
 
