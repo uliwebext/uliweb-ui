@@ -1772,10 +1772,7 @@ function($) {
                         this.urlParams[k].push(v);
                     }
                     else {
-                        if (this.urlParams[k] == '')
-                            this.urlParams[k] = v;
-                        else
-                            this.urlParams[k] = [this.urlParams[k], v];
+                        this.urlParams[k] = [this.urlParams[k], v];
                     }
                 }
                 else
