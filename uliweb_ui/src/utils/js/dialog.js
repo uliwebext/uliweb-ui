@@ -174,12 +174,23 @@ function dialog(url, options) {
 
 function Confirm(message, callback) {
   load('ui.bootstrap.dialog', function(){
-    BootstrapDialog.confirm(message, callback);
+    BootstrapDialog.confirm({
+      title: '确认',
+      message: message,
+      callback: callback,
+      btnCancelLabel: '取消',
+      btnOKLabel: '确定'
+    });
   })
 }
 
 function Alert(message, callback) {
   load('ui.bootstrap.dialog', function(){
-    BootstrapDialog.alert(message, callback);
+    BootstrapDialog.alert({
+      title: '消息',
+      message: message,
+      callback: callback,
+      btnOKLabel: '确定'
+    });
   })
 }
