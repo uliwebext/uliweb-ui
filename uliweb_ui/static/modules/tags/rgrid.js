@@ -184,7 +184,11 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
       setTimeout(function(){self.load()}, 100)
     }
 
-    this.observable.on('selected deselected', function(row) {
+    this.observable.on('selected', function(row) {
+      self.update()
+    })
+
+    this.observable.on('deselected', function(row) {
       self.update()
     })
 
@@ -223,5 +227,5 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
   }
 });
 
-riot.tag2('rgrid-button', '<i if="{opts.btn.icon}" class="{opts.btn.icon}"></i> <span>{opts.btn.label}</span>', '', 'class="{opts.btn.class}" id="{opts.btn.id}" type="button" disabled="{opts.btn.disabled && opts.btn.disabled(btn)}" onclick="{opts.btn.onclick}"', function(opts) {
+riot.tag2('rgrid-button', '<i if="{opts.btn.icon}" class="{opts.btn.icon}"></i> <span>{opts.btn.label}</span>', '', 'class="{opts.btn.class}" id="{opts.btn.id}" type="button" disabled="{opts.btn.disabled ? opts.btn.disabled(btn) : false}" onclick="{opts.btn.onclick}"', function(opts) {
 });
