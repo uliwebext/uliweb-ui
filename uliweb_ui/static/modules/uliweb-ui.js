@@ -689,25 +689,37 @@ function dialog(url, options) {
 }
 
 function Confirm(message, callback) {
+  var opts
   load('ui.bootstrap.dialog', function(){
-    BootstrapDialog.confirm({
-      title: '确认',
-      message: message,
-      callback: callback,
-      btnCancelLabel: '取消',
-      btnOKLabel: '确定'
-    });
+    if (message instanceof Object){
+      opts = message
+    } else {
+      opts = {
+        title: '确认',
+        message: message,
+        callback: callback,
+        btnCancelLabel: '取消',
+        btnOKLabel: '确定'
+      }
+    }
+    BootstrapDialog.confirm(opts);
   })
 }
 
 function Alert(message, callback) {
+  var opts
   load('ui.bootstrap.dialog', function(){
-    BootstrapDialog.alert({
-      title: '消息',
-      message: message,
-      callback: callback,
-      btnOKLabel: '确定'
-    });
+    if (message instanceof Object){
+      opts = message
+    } else {
+      opts = {
+        title: '消息',
+        message: message,
+        callback: callback,
+        btnOKLabel: '确定'
+      }
+    }
+    BootstrapDialog.alert(opts);
   })
 }
 
