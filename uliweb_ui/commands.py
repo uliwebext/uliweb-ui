@@ -75,6 +75,8 @@ class GulpPlugins(Command):
     option_list = (
         make_option('-a', '--app', dest='app', help='App name which settings.ini will be parsed.'),
         make_option('-d', '--dest', help='Output file will be saved in this app/static directory'),
+        make_option('--no-js', dest='no_js', default=False, action='store_true',
+                    help='Not combine javascript files'),
     )
 
     help = 'Convert TEMPLATE_USE config to gulp_settings.ini, ' \
@@ -126,6 +128,9 @@ class GulpPlugins(Command):
                         m = s[0] + s[1]
                         f.write("[template_use." + name + "]\r\n")
                         for i in m:
+                            #if no_js then skip javascript files
+                            if options.no_js and (i.startswith('<!--') or i.endswith('.js')):
+                                continue
                             if not i.startswith('<!--'):
                                 f.write("toplinks[] = " + app.get_file(i, 'static') + "\r\n")
                         f.write("dist = " + item_dist + "\r\n")

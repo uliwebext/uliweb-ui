@@ -25,6 +25,7 @@ def init_static_combine():
 
 
     if settings.get_var('STATIC_COMBINE_CONFIG/enable', False):
+        include_js = settings.get_var('STATIC_COMBINE_CONFIG/include_js', False)
         # for k, v in settings.get('STATIC_COMBINE', {}).items():
         #     key = '_cmb_' + md5(''.join(v)).hexdigest() + os.path.splitext(v[0])[1]
         #     d[key] = v
@@ -36,6 +37,8 @@ def init_static_combine():
                 s = find(x)
                 m = s[0] + s[1]
                 for i in m:
+                    if not include_js and (i.startswith('<!--') or i.endswith('.js')):
+                        continue
                     if not i.startswith('<!--'):
                         e = os.path.splitext(i)[1]
                         if e == ".css":
