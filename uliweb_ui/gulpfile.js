@@ -58,6 +58,8 @@ gulp.task("css", function () {
             if (!dists[dist]) {
                 dists[dist] = {'css': [], 'js': []};
             }
+            if (!data[k].toplinks)
+                data[k].toplinks = []
             for (var i = 0, len = data[k]['toplinks'].length; i < len; i++) {
                 var link = data[k]['toplinks'][i];
                 if (link.indexOf(".css") > 0) {
