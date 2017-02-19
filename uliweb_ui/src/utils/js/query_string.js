@@ -96,7 +96,15 @@
     $.query_string = new QueryString();
 })(jQuery);
 
+/*
+ * get_url(url, {a:1})
+ * get_url({a:1}) == get_url(window.location.search, {a:1})
+ */
 function get_url(url, data) {
+  if (url instanceof Object) {
+    data = url
+    url = ''
+  }
   var query = new QueryString(url)
   query.merge(data)
   return query.url+query.toString()
