@@ -1,5 +1,5 @@
 
-riot.tag2('pagination', '<ul if="{theme==\'long\'}" class="pagination"> <li if="{totalMessage}" class="disabled total"><a>{totalMessage}</a></li> <li if="{has_first}" class="first"><a href="#" onclick="{go(1)}"><pagination-raw content="{first}"></pagination-raw></a></li> <li if="{has_prev}" class="prev"><a href="#" onclick="{go(page-1)}"><pagination-raw content="{prev}"></pagination-raw></a></li> <li class="{page:true, active:p==page}" each="{p in pages}"><a href="#" onclick="{go(p)}">{p}</a></li> <li if="{has_next}" class="next"><a href="#" onclick="{go(page+1)}"><pagination-raw content="{next}"></pagination-raw></a></li> <li if="{has_last}" class="last"><a href="#" onclick="{go(totalPages)}"><pagination-raw content="{last}"></pagination-raw></a></li> <li if="{refresh}" class="refresh"><a href="#" onclick="{go(page)}"><pagination-raw content="{refresh}"></pagination-raw></a></li> </ul> <div if="{theme==\'long\' && buttons.length>0}" class="pull-right {btn_group_class}"> <button each="{btn in buttons}" data-is="pagination-button" btn="{btn}"></button> </div> <div if="{theme==\'simple\'}" class="{btn_group_class} pull-left pagination"> <a class="btn btn-default" disabled="{totalPages<=1 || page==1}" onclick="{go(1)}" title="{first_title}"><pagination-raw content="{first}"></pagination-raw></a> <a class="btn btn-default" disabled="{!has_prev}" onclick="{go(page-1)}" title="{prev_title}"><pagination-raw content="{prev}"></pagination-raw></a> <a class="btn btn-default page_input">第 <input type="text" onkeyup="{page_input_click}" riot-value="{page}" style="width:40px"> 页/共{totalPages}页</input></a> <a class="btn btn-default" disabled="{!has_next}" onclick="{go(page+1)}" title="{next_title}"><pagination-raw content="{next}"></pagination-raw></a> <a class="btn btn-default" disabled="{totalPages<=1 || page==totalPages}" onclick="{go(totalPages)}" title="{last_title}"><pagination-raw content="{last}"></pagination-raw></a> <a if="{refresh}" class="btn btn-default" onclick="{go(page)}" title="{refresh_title}"><pagination-raw content="{refresh}"></pagination-raw></a> </div> <div if="{theme==\'simple\' && buttons.length>0}" class="pull-left {btn_group_class}"> <button each="{btn in buttons}" data-is="pagination-button" btn="{btn}"></button> </div> <p if="{theme==\'simple\'}" class="pull-right message">{totalMessage}</p>', 'pagination .pagination,[data-is="pagination"] .pagination{margin:0px;margin-right:5px;} pagination .pagination>li.disabled>a,[data-is="pagination"] .pagination>li.disabled>a{color:#999;} pagination .page_input,[data-is="pagination"] .page_input{padding:0px 12px; line-height: 34px; height:34px;} pagination .page_input input,[data-is="pagination"] .page_input input{height:20px;line-height:20px;margin:0;} pagination .message,[data-is="pagination"] .message{line-height: 34px;line:34px;margin:0 auto;} pagination .btn.disabled,[data-is="pagination"] .btn.disabled{cursor:not-allowed;}', '', function(opts) {
+riot.tag2('pagination', '<ul if="{theme==\'long\'}" class="pagination"> <li if="{totalMessage}" class="disabled total"><a>{totalMessage}</a></li> <li if="{has_first}" class="first"><a href="#" onclick="{go(1)}"><pagination-raw content="{first}"></pagination-raw></a></li> <li if="{has_prev}" class="prev"><a href="#" onclick="{go(page-1)}"><pagination-raw content="{prev}"></pagination-raw></a></li> <li class="{page:true, active:p==page}" each="{p in pages}"><a href="#" onclick="{go(p)}">{p}</a></li> <li if="{has_next}" class="next"><a href="#" onclick="{go(page+1)}"><pagination-raw content="{next}"></pagination-raw></a></li> <li if="{has_last}" class="last"><a href="#" onclick="{go(totalPages)}"><pagination-raw content="{last}"></pagination-raw></a></li> <li if="{refresh}" class="refresh"><a href="#" onclick="{go(page, true)}"><pagination-raw content="{refresh}"></pagination-raw></a></li> </ul> <div if="{theme==\'long\' && buttons.length>0}" class="pull-right {btn_group_class}"> <button each="{btn in buttons}" data-is="pagination-button" btn="{btn}"></button> </div> <div if="{theme==\'simple\'}" class="{btn_group_class} pull-left pagination"> <a class="btn btn-default" disabled="{totalPages<=1 || page==1}" onclick="{go(1)}" title="{first_title}"><pagination-raw content="{first}"></pagination-raw></a> <a class="btn btn-default" disabled="{!has_prev}" onclick="{go(page-1)}" title="{prev_title}"><pagination-raw content="{prev}"></pagination-raw></a> <a class="btn btn-default page_input">第 <input type="text" onkeyup="{page_input_click}" riot-value="{page}" style="width:40px"> 页/共{totalPages}页</input></a> <a class="btn btn-default" disabled="{!has_next}" onclick="{go(page+1)}" title="{next_title}"><pagination-raw content="{next}"></pagination-raw></a> <a class="btn btn-default" disabled="{totalPages<=1 || page==totalPages}" onclick="{go(totalPages)}" title="{last_title}"><pagination-raw content="{last}"></pagination-raw></a> <a if="{refresh}" class="btn btn-default" onclick="{go(page, true)}" title="{refresh_title}"><pagination-raw content="{refresh}"></pagination-raw></a> </div> <div if="{theme==\'simple\' && buttons.length>0}" class="pull-left {btn_group_class}"> <button each="{btn in buttons}" data-is="pagination-button" btn="{btn}"></button> </div> <p if="{theme==\'simple\'}" class="pull-right message">{totalMessage}</p>', 'pagination .pagination,[data-is="pagination"] .pagination{margin:0px;margin-right:5px;} pagination .pagination>li.disabled>a,[data-is="pagination"] .pagination>li.disabled>a{color:#999;} pagination .page_input,[data-is="pagination"] .page_input{padding:0px 12px; line-height: 34px; height:34px;} pagination .page_input input,[data-is="pagination"] .page_input input{height:20px;line-height:20px;margin:0;} pagination .message,[data-is="pagination"] .message{line-height: 34px;line:34px;margin:0 auto;} pagination .btn.disabled,[data-is="pagination"] .btn.disabled{cursor:not-allowed;}', '', function(opts) {
 
   var self = this
   this.observable = opts.observable
@@ -63,9 +63,14 @@ riot.tag2('pagination', '<ul if="{theme==\'long\'}" class="pagination"> <li if="
     if(history && history.pushState) history.pushState(null, null, url)
   }
 
-  this.go_page = function (page) {
+  this.go_page = function (page, force) {
     var old_page = self.page
-    if (self.totalPages == 0) return
+    if (self.totalPages == 0) {
+      return
+    }
+    if (!force && (page <= 0 || page > self.totalPages || self.page === page)) {
+      return
+    }
     this.observable.trigger('beforepage', page)
     if (opts.onbeforepage && typeof opts.onbeforepage === 'function') {
       if (!opts.onbeforepage.call(self, page))
@@ -84,10 +89,10 @@ riot.tag2('pagination', '<ul if="{theme==\'long\'}" class="pagination"> <li if="
     }
   }
 
-  this.go = function (page) {
+  this.go = function (page, force) {
     f = function (e) {
       e.preventDefault()
-      self.go_page(page)
+      self.go_page(page, force)
     }
     return f
   }

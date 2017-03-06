@@ -4,7 +4,7 @@
 
 var gulp = require("gulp"),
     concat = require("gulp-concat"), //文件合并
-    minifycss = require("gulp-minify-css"), //css压缩
+    minifycss = require("gulp-clean-css"), //css压缩
     uglify = require("gulp-uglify"), //js压缩
     //jshint = require("gulp-jshint"), //js检测
     //htmlmin = require("gulp-htmlmin"), //html压缩

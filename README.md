@@ -10,7 +10,7 @@ First install node.js, npm，then install gulp and dependencies:
 
 ```
 npm install gulp
-npm install gulp gulp-riot gulp-minify-css gulp-jshint gulp-uglify gulp-concat gulp-rename gulp-notify del riot uglify-js error jshint
+npm install gulp gulp-riot gulp-clean-css gulp-jshint gulp-uglify gulp-concat gulp-rename gulp-notify del riot uglify-js error jshint
 ```
 
 Run:
@@ -56,4 +56,3 @@ Then you will find some files in the folder(you_want_name.js && you_want_name.cs
 ```
 
 Step.3 In the template file, use plugin with command "{{use 'plugin name'}}" , you_want_name.js and you_want_name.css will loaded
-       
