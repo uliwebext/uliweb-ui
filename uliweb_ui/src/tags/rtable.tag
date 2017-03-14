@@ -1075,7 +1075,7 @@
         new_col.fixed = col.fixed
         new_col.style = col.style
         new_col.type = col.type
-        new_col.sort = col.sort
+        new_col.sort = col.sort || col.sortable
         new_col.align = col.align || 'left'
         new_col.class = col.class
         new_col.tag = col.tag || 'rtable-raw'
