@@ -90,7 +90,7 @@
                    <span class="condition-label {nomore:i==0 &&!show}" style="min-width:{!show?0:labelWidth}px">{ fields[this.field].label || field }</span>
                    <input-field field={ fields[field] } data={data}
                      type={ fields[this.field].type || 'str' }
-                     style="min-width:{!show?0:(field.width || inputWidth)}px">
+                     style="min-width:{field.width || inputWidth}px">
                    </input-field>
                 </div>
                 <div if={ i==0 && !show } class="condition-cell condition-buttons" >
