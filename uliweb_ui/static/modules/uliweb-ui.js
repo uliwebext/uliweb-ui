@@ -638,7 +638,7 @@ function dialog_ajax_submit(dialog, validator) {
               dialog.setClosable(false);
             },
             success: function (data) {
-                data = jQuery.parseJSON(jQuery(data).text());
+                //data = jQuery.parseJSON(jQuery(data).text());
                 if (data.success) {
                     el.trigger('success.form', data);
                     if (data.message)
