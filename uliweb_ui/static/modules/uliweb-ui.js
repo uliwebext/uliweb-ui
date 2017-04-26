@@ -638,10 +638,6 @@ function dialog_ajax_submit(dialog, validator) {
               dialog.setClosable(false);
             },
             success: function (data) {
-                if(data.indexOf("<pre>")>=0){
-                    data = jQuery.parseJSON(jQuery(data).text());
-                }
-                console.log(data);
                 if (data.success) {
                     el.trigger('success.form', data);
                     if (data.message)
