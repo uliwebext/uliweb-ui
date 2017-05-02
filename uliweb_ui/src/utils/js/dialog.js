@@ -17,6 +17,7 @@ function dialog_ajax_submit(dialog, validator) {
 
         var el = dialog.getModalBody().find('form');
         el.ajaxSubmit({
+            dataType: 'json',
             beforeSubmit: function () {
               dialog.enableButtons(false);
               dialog.setClosable(false);
