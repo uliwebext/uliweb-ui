@@ -983,6 +983,7 @@ function register_widgets(name, render) {
  *   }
  */
 function form_widgets(target, options) {
+    options = options || {}
     var form = $(target);
     var _type, element, opts, func, param, render, name;
     form.find('[widget]').each(function (index, el) {

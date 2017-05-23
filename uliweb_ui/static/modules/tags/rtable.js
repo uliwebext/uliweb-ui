@@ -161,7 +161,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
       if (r == 'remove') {
         var index, items = d.items
         for(var i=0, len=items.length; i<len; i++){
-          index = self.selected_rows.indexOf(items[i][this.idField])
+          index = self.selected_rows.indexOf(items[i][self.idField])
           if (index !== -1) self.selected_rows.splice(index, 1)
         }
       }
@@ -1400,7 +1400,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
   this.get_selected = function(){
     return this._data.get({
       filter:function(item){
-        return self.selected_rows.indexOf(item[this.idField]) !== -1
+        return self.selected_rows.indexOf(item[self.idField]) !== -1
       }
     })
   }
