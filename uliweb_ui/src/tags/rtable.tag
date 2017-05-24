@@ -2012,14 +2012,21 @@
       return
     }
     <!-- this.prevtag = opts.tag -->
-    return this.mountedTag = riot.mount(this.root.querySelector('div'), opts.tag, opts)[0]
+    var tag
+    var tags = riot.mount(this.root.querySelector('div'), opts.tag, opts)
+    if (tags)
+      tag = this.mountedTag = tags[0]
+    return tag
   });
 
   this.on('update', function() {
     var _opts = $.extend({}, opts)
+    var tags, tag
 
     if (this.mountedTag) this.mountedTag.unmount(true)
-    var tag = this.mountedTag = riot.mount(this.root.querySelector('div'), opts.tag, opts)[0]
+    tags = riot.mount(this.root.querySelector('div'), opts.tag, opts)
+    if (tags)
+      tag = this.mountedTag = tags[0]
     return tag
     <!-- if (this.prevtag && this.prevtag !== opts.tag) {
       this.prevtag = opts.tag
