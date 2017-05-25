@@ -126,17 +126,34 @@ var widgets_mapping = {
     }
 }
 
+function register_widgets(name, render) {
+  widgets_mapping[name] = render
+}
+
+/*
+ * options:
+ *   name: {
+ *     render: function(element)
+ *     option: render parameter used for default render function
+ *   }
+ */
 function form_widgets(target, options) {
+    options = options || {}
     var form = $(target);
-    var _type, element, opts, func, param;
-    opts = $.extend(true, {}, widgets_mapping, options || {});
+    var _type, element, opts, func, param, render, name;
     form.find('[widget]').each(function (index, el) {
         element = $(el);
+        name = element.attr('name')
         _type = element.attr('widget');
-        param = eval('(' + element.attr('options') + ')');
-        func = opts[_type];
-        if (func) {
-            func(element, param);
+        field_opt = options[name]
+        render = field_opt && field_opt.render
+        if (render) render(element)
+        else {
+          func = widgets_mapping[_type];
+          if (func) {
+            param = field_opt && field_opt.option || {}
+              func(element, param);
+          }
         }
     });
 }

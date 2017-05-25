@@ -69,7 +69,7 @@ var async_block_message = function (options, onSuccess) {
                     $.unblockUI({fadeout:200});
                     return;
                 } else{
-                    setTimeout(check_async, 1000);
+                    setTimeout(check_async, 5000);
                 }
             } else {
                 //失败时的处理情况
@@ -714,6 +714,21 @@ function dialog_validate_submit(dialog, options) {
 /*
  * open a remote dialog
  * need BootstrapDialog3
+ * options:
+ *  Callback:
+ *   onBeforeSubmit
+ *   onUpdated after updated content from remove
+ *   onOk if set, use should submit himself
+ *  Property:
+ *   fieldOptions used to render widget
+ *     eg: {'date':
+              option: {
+                format: 'YYYY-MM-DD hh:mm:ss',
+                showTime:true,
+                use24hour:true
+              },
+              render: function
+          }
  */
 
 function dialog(url, options) {
@@ -741,11 +756,15 @@ function dialog(url, options) {
               }
               var form = content.find('form')
               if (form.size() > 0)
-                form_widgets(form)
+                form_widgets(form, options.fieldOptions)
 
               //处理表单校验
               if (!options.disableValidate)
                 dialog_validate_submit(dialog, {ajax_submit:dialog_ajax_submit, onBeforeSubmit:onBeforeSubmit})
+
+              //add onUpdated callback
+              if (options.onUpdated)
+                options.onUpdated(dialog, dialog.getModalBody()) //content
             }
           })
 
@@ -952,17 +971,34 @@ var widgets_mapping = {
     }
 }
 
+function register_widgets(name, render) {
+  widgets_mapping[name] = render
+}
+
+/*
+ * options:
+ *   name: {
+ *     render: function(element)
+ *     option: render parameter used for default render function
+ *   }
+ */
 function form_widgets(target, options) {
+    options = options || {}
     var form = $(target);
-    var _type, element, opts, func, param;
-    opts = $.extend(true, {}, widgets_mapping, options || {});
+    var _type, element, opts, func, param, render, name;
     form.find('[widget]').each(function (index, el) {
         element = $(el);
+        name = element.attr('name')
         _type = element.attr('widget');
-        param = eval('(' + element.attr('options') + ')');
-        func = opts[_type];
-        if (func) {
-            func(element, param);
+        field_opt = options[name]
+        render = field_opt && field_opt.render
+        if (render) render(element)
+        else {
+          func = widgets_mapping[_type];
+          if (func) {
+            param = field_opt && field_opt.option || {}
+              func(element, param);
+          }
         }
     });
 }

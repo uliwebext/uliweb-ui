@@ -69,7 +69,7 @@ var async_block_message = function (options, onSuccess) {
                     $.unblockUI({fadeout:200});
                     return;
                 } else{
-                    setTimeout(check_async, 1000);
+                    setTimeout(check_async, 5000);
                 }
             } else {
                 //失败时的处理情况

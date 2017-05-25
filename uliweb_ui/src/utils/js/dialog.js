@@ -98,6 +98,21 @@ function dialog_validate_submit(dialog, options) {
 /*
  * open a remote dialog
  * need BootstrapDialog3
+ * options:
+ *  Callback:
+ *   onBeforeSubmit
+ *   onUpdated after updated content from remove
+ *   onOk if set, use should submit himself
+ *  Property:
+ *   fieldOptions used to render widget
+ *     eg: {'date':
+              option: {
+                format: 'YYYY-MM-DD hh:mm:ss',
+                showTime:true,
+                use24hour:true
+              },
+              render: function
+          }
  */
 
 function dialog(url, options) {
@@ -125,11 +140,15 @@ function dialog(url, options) {
               }
               var form = content.find('form')
               if (form.size() > 0)
-                form_widgets(form)
+                form_widgets(form, options.fieldOptions)
 
               //处理表单校验
               if (!options.disableValidate)
                 dialog_validate_submit(dialog, {ajax_submit:dialog_ajax_submit, onBeforeSubmit:onBeforeSubmit})
+
+              //add onUpdated callback
+              if (options.onUpdated)
+                options.onUpdated(dialog, dialog.getModalBody()) //content
             }
           })
 

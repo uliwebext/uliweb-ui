@@ -83,7 +83,7 @@
 
     </style>
 
-    <div class="query-condition">
+    <div class="query-condition" if={layout.length>0}>
         <form method="get" action="{ opts.url }">
             <div each={row, i in layout} show={i==0 || show} class={condition-row:true, condition-row-more:i>0}>
                 <div each={field in row} class="condition-cell">

@@ -529,7 +529,7 @@
       if (r == 'remove') {
         var index, items = d.items
         for(var i=0, len=items.length; i<len; i++){
-          index = self.selected_rows.indexOf(items[i].id)
+          index = self.selected_rows.indexOf(items[i][self.idField])
           if (index !== -1) self.selected_rows.splice(index, 1)
         }
       }
@@ -648,8 +648,8 @@
     this.bind()       //monitor data change
 
     if (opts.data) {
+      this._data.setOption(_opts)
       if (opts.tree) {
-        this._data.setOption(_opts)
         this._data.load_tree(d, {parentField:this.parentField,
           orderField:this.orderField, levelField:this.levelField,
           hasChildrenField:this.hasChildrenField, plain:true})
@@ -1534,7 +1534,7 @@
   }
 
   this.get_col_notation = function(row, col) {
-    var key = row.id + ':' + col.name
+    var key = row[this.idField] + ':' + col.name
     return this.notations[key] || null
   }
 
@@ -1632,7 +1632,7 @@
   this.opened = function(row) {
       var id , status
       if (row instanceof Object){
-        id = row.id
+        id = row[this.idField]
       } else
         id = row
       status = self.parents_expand_status[id]
@@ -1784,7 +1784,7 @@
     for(var i=0, len=rows.length; i<len; i++){
       row = rows[i]
       if (!self.onCheckable(row)) return
-      if (row instanceof Object) id = row.id
+      if (row instanceof Object) id = row[this.idField]
       else id = row
       if (this.selected_rows.indexOf(id) == -1) {
         if (this.onSelect(row)) {
@@ -1809,7 +1809,7 @@
       if (!Array.isArray(rows))
         rows = [rows]
       for (var i=0, len=rows.length; i<len; i++) {
-        if (rows[i] instanceof Object) id = rows[i].id
+        if (rows[i] instanceof Object) id = rows[i][this.idField]
         else id = rows[i]
         items.push(id)
       }
@@ -1842,7 +1842,7 @@
   this.is_selected = function (row) {
     var id
     if (!row) return
-    if (row instanceof Object) id = row.id
+    if (row instanceof Object) id = row[this.idField]
     else id = row
     return self.selected_rows.indexOf(id) !== -1
   }
@@ -1852,7 +1852,7 @@
   this.get_selected = function(){
     return this._data.get({
       filter:function(item){
-        return self.selected_rows.indexOf(item.id) !== -1
+        return self.selected_rows.indexOf(item[self.idField]) !== -1
       }
     })
   }
@@ -2012,14 +2012,21 @@
       return
     }
     <!-- this.prevtag = opts.tag -->
-    return this.mountedTag = riot.mount(this.root.querySelector('div'), opts.tag, opts)[0]
+    var tag
+    var tags = riot.mount(this.root.querySelector('div'), opts.tag, opts)
+    if (tags)
+      tag = this.mountedTag = tags[0]
+    return tag
   });
 
   this.on('update', function() {
     var _opts = $.extend({}, opts)
+    var tags, tag
 
     if (this.mountedTag) this.mountedTag.unmount(true)
-    var tag = this.mountedTag = riot.mount(this.root.querySelector('div'), opts.tag, opts)[0]
+    tags = riot.mount(this.root.querySelector('div'), opts.tag, opts)
+    if (tags)
+      tag = this.mountedTag = tags[0]
     return tag
     <!-- if (this.prevtag && this.prevtag !== opts.tag) {
       this.prevtag = opts.tag
