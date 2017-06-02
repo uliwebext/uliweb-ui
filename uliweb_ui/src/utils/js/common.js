@@ -6,7 +6,23 @@
  *           and jsmodules.js can be created via `uliweb jsmodule -a uliweb_ui`
  */
 
+/*
+ * add disable load control
+ * if you don't want to use load you should include resource yourself, and
+ * invoke load_disable() to disable load feature
+ */
+
+var _load_disable = false
+
+function load_disable() {
+  _load_disable = true
+}
+
 function load(module, callback){
+  if (_load_disable) {
+    callback()
+  }
+  else {
     head.load(["/static/jsmodules.js"], function(){
         var modules = [];
         if ($.isArray(module)) {
@@ -16,7 +32,7 @@ function load(module, callback){
         } else modules = jsmodules[module].slice()
         head.load(modules, callback);
     });
-
+  }
 }
 /*
  * show message on top center of window

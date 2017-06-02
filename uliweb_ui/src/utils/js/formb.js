@@ -147,7 +147,7 @@ function form_widgets(target, options) {
         _type = element.attr('widget');
         field_opt = options[name]
         render = field_opt && field_opt.render
-        if (render) render(element)
+        if (render) render.call(target, element)
         else {
           func = widgets_mapping[_type];
           if (func) {
