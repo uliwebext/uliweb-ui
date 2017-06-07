@@ -1,4 +1,12 @@
+body {
+  font-family: Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,\\5FAE\8F6F\96C5\9ED1,Arial,sans-serif;
+  color: #495060;
+  -webkit-font-smoothing: antialiased;
+}
 
+.badge {
+  font-weight: normal;
+}
 /* fix AdminLTE */
 .modal-content {
     border-radius: 4px;
