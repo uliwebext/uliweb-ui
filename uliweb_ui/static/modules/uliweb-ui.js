@@ -959,7 +959,7 @@ var widgets_mapping = {
             $.extend(true, opts, options || {});
             $(el).select2(opts);
             */
-            simple_select2(el)
+            simple_select2(el, options)
         });
     },
     datetime: function(el, options){
@@ -970,13 +970,13 @@ var widgets_mapping = {
             $(el).pikaday(opts);
         })
     },
-    /*file: function(el, options){
+    file: function(el, options){
         load(['ui.bootstrap-filestyle'], function(filestyle){
             var opts = {buttonText:'', buttonName:'btn-primary'};
             $.extend(true, opts, options || {});
             $(el).filestyle(opts);
         });
-    },*/
+    },
     image: function(el, options){
         load(['ui.bootstrap-filestyle'], function(filestyle){
             var opts = {buttonText:'', buttonName:'btn-primary',

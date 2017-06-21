@@ -98,7 +98,7 @@ var widgets_mapping = {
             $.extend(true, opts, options || {});
             $(el).select2(opts);
             */
-            simple_select2(el)
+            simple_select2(el, options)
         });
     },
     datetime: function(el, options){
