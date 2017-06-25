@@ -90,6 +90,7 @@
                    <span class="condition-label {nomore:i==0 &&!show}" style="min-width:{!show?0:labelWidth}px">{ fields[this.field].label || field }</span>
                    <input-field field={ fields[field] } data={data}
                      type={ fields[this.field].type || 'str' }
+                     options={ (opts.fields_options && opts.fields_options[this.field.name]) || {} }
                      style="min-width:{field.width || inputWidth}px">
                    </input-field>
                 </div>
@@ -126,6 +127,9 @@
       // 初始化fields.name
       opts.fields.forEach(function(v){
         self.fields[v['name']] = v
+        //fields_options 与 field.options 任选
+        if (opts.field_options && opts.field_options[v['name']])
+          self.fields[v['name']].options = opts.field_options[v['name']]
         if (v.type == 'select')
           v.placeholder = v.placeholder || '--- 请选择 ---'
         v._width = v.width ? v.width+'px' : (v.range?'auto':'100%')
@@ -239,8 +243,9 @@
 
       if (opts.type == 'select' && opts.field['data-url']){
         load('ui.select2', function(){
+          var _opts = $.extend({}, {width:'resolve'}, opts.field.options)
           var el = $('[name='+opts.field.name+']', self.root);
-          simple_select2(el, {width:'resolve'})
+          simple_select2(el, _opts)
         })
       }else if (opts.type == 'select') {
         var _opts = $.extend({}, {
@@ -255,7 +260,7 @@
             selectedClass: '',
             nonSelectedText: opts.field.placeholder || '请选择',
             maxHeight: 200
-            }, opts.field.opts || {})
+          }, opts.field.options)
 
         if (opts.field.relate_from) {
           if (!opts.field.choices_url) {
@@ -349,12 +354,12 @@
             el.multiselect('select', opts.data[opts.field.name])
         })
       } else if (opts.type == 'date') {
-        var _opts = {format: 'YYYY-MM-DD', showTime:false, i18n:i18n};
+        var _opts = $.extend({}, {format: 'YYYY-MM-DD', showTime:false, i18n:i18n}, opts.field.options);
         load('ui.pikaday', function(){
           $('[name='+opts.field.name+']').pikaday(_opts);
         })
       } else if (opts.type == 'datetime') {
-        var _opts = {format: 'YYYY-MM-DD HH:mm:ss', showTime:true, use24hour:true, i18n:i18n}
+        var _opts = $.extend({}, {format: 'YYYY-MM-DD HH:mm:ss', showTime:true, use24hour:true, i18n:i18n}, opts.field.options);
         load('ui.pikaday', function(){
           $('[name='+opts.field.name+']').pikaday(_opts);
         })
