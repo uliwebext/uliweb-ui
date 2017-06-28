@@ -66,7 +66,7 @@
   this.query_layout = this.query.layout || []
   this.query_data = this.query.data || {}
   this.query_url = opts.query_url || this.url
-  this.query_field_options = opts.query.field_options || {}
+  this.query_field_options = this.query.field_options || {}
   this.query_ajax = opts.query_ajax
   this.start = (this.page - 1) * this.limit
   this.footer_tools = opts.footer_tools || []
