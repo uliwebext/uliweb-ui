@@ -85,6 +85,7 @@
 
     <div class="query-condition" if={layout.length>0}>
         <form method="get" action="{ opts.url }">
+          <input type="hidden" name="limit" value={parent.limit}></input>
             <div each={row, i in layout} show={i==0 || show} class={condition-row:true, condition-row-more:i>0}>
                 <div each={field in row} class="condition-cell">
                    <span class="condition-label {nomore:i==0 &&!show}" style="min-width:{!show?0:labelWidth}px">{ fields[this.field].label || field }</span>

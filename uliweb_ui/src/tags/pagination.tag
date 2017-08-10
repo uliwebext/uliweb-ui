@@ -8,6 +8,8 @@
     .page_input input {height:20px;line-height:20px;margin:0;}
     .message {line-height: 34px;line:34px;margin:0 auto;}
     .btn.disabled {cursor:not-allowed;}
+    .pagination .page-limits {}
+    .pagination .page-limits button{border-radius: 0px;}
   </style>
 
   <ul if={theme=='long'} class="pagination">
@@ -27,6 +29,17 @@
     <a class="btn btn-default" disabled="{totalPages<=1 || page==1}" onclick={go(1)} title={first_title}><pagination-raw content={first}></pagination-raw></a>
     <a class="btn btn-default" disabled="{!has_prev}" onclick={go(page-1)} title={prev_title}><pagination-raw content={prev}></pagination-raw></a>
     <a class="btn btn-default page_input">第 <input type="text" onkeyup={page_input_click} value={page} style="width:40px"> 页/共{totalPages}页</input></a>
+    <div class="btn-group dropup page-limits">
+      <div class="dropdown">
+        <button class="btn btn-default" type="button" data-toggle="dropdown">
+          每页 {limit} 条
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li each={p in limits}><a href="#" onclick={change_limit(p)}>{p}</a></li>
+        </ul>
+      </div>
+    </div>
     <a class="btn btn-default" disabled="{!has_next}" onclick={go(page+1)} title={next_title}><pagination-raw content="{next}"></pagination-raw></a>
     <a class="btn btn-default" disabled="{totalPages<=1 || page==totalPages}" onclick={go(totalPages)} title={last_title}><pagination-raw content={last}></pagination-raw></a>
     <a if={refresh} class="btn btn-default" onclick={go(page, true)} title={refresh_title}><pagination-raw content={refresh}></pagination-raw></a>
@@ -56,6 +69,7 @@
       return data.rows
     })
   }    //页面事件回调,缺省使用data作为数据源
+  this.onlimit = opts.onlimit
   this.onpagechanged = opts.onpagechanged
 
   this._totalMessage = opts.totalMessage || '共 $pages 页 / $records 条记录'  //'Total $pages pages / $records records'
@@ -87,6 +101,7 @@
     this.url = opts.url           //数据展示URL
     this.total = opts.total
     this.page = opts.page
+    this.limit = opts.limit
     this.show()
   })
 
@@ -137,6 +152,18 @@
     }
   }
 
+  /* 切换每页条数
+  */
+  this.change_limit = function (p) {
+    f = function (e) {
+      e.preventDefault()
+      self.limit = p
+      if (self.onlimit)
+        self.onlimit(self.limit)
+    }
+    return f
+  }
+
   /* 分页跳转事件处理
    * @param page: 指定页号
    * @param force: 是否强制刷新
@@ -153,7 +180,7 @@
    */
   this.page_input_click = function(e) {
     if (e.keyCode == 13) {
-      var page = $(e.target).val()
+      var page = parseInt($(e.target).val())
       if (page)
         this.go_page(page)
     }

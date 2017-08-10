@@ -27,7 +27,8 @@
   <!-- footer 按钮 -->
   <div class="clearfix tools">
     <pagination if={pagination} data={data} url={url} page={page} total={total} observable={observable}
-      limit={limit} onpagechanged={onpagechanged} onbeforepage={onbeforepage} buttons={footer_tools} theme={page_theme}></pagination>
+      limit={limit} onpagechanged={onpagechanged} onbeforepage={onbeforepage} onlimit={onlimit}
+      buttons={footer_tools} theme={page_theme}></pagination>
     <div if={!pagination && footer_tools.length>0} class="pull-right {btn_group_class}">
       <button each={btn in footer_tools} data-is="rgrid-button" btn={btn}></button>
     </div>
@@ -57,6 +58,7 @@
   this.observable = opts.observable || riot.observable()
   this.page = opts.page || parseInt(query.get('page')) || 1
   this.limit = opts.limit || 10
+  this.limits = opts.limits || [10, 20, 30, 40, 50]
   this.total = opts.total || 0
   this.pagination = opts.pagination == undefined ? true : opts.pagination
   this.has_query = opts.query !== undefined
@@ -90,6 +92,14 @@
       return r.rows
     })
   }
+
+  /* 切换每页条数 */
+  this.onlimit = function (limit) {
+    self.limit = limit
+    self.load()
+  }
+
+
 
   this.onloaddata = function (parent) {
     var param = {parent:parent[opts.idField || 'id']}
@@ -228,7 +238,7 @@
     this.root.instance = this
     if (this.url && this.autoLoad) {
       this.table.show_loading(true)
-      setTimeout(function(){self.load()}, 100)
+      setTimeout(function(){self.load(self.url)}, 100)
     }
 
     this.observable.on('selected', function(row) {
@@ -254,6 +264,13 @@
     param = param || {}
     var _f = function(r){
       return r.rows
+    }
+
+    //如果传了URL才使用URL计算page, limit，否则使用原来的值
+    if (url) {
+      var query = new QueryString(self.url)
+      self.limit = parseInt(query.urlParams['limit']) || self.limit
+      self.page = parseInt(query.urlParams['page']) || self.page
     }
 
     self.url = url || self.url
