@@ -65,7 +65,7 @@ riot.tag2('query-condition', '<div class="query-condition" if="{layout.length>0}
 
       this.on('mount', function(){
         if (self.ajax) {
-          $(':submit', self.root).click(function (e) {
+          $(self.root).on('click', ':submit', function (e) {
             e.preventDefault()
             var d = serializeObject(self.root)
             var url = get_url(self.url, d)
