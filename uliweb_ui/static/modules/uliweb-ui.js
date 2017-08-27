@@ -786,14 +786,15 @@ function dialog(url, options) {
 
           return content
       },
-      draggable: true
+      draggable: true,
+      closeByBackdrop: false
     }, opts;
     opts = $.extend(true, {}, default_opts, options)
     var  okButton = {
         label: opts.okLabel===undefined ? '确定' : opts.okLabel,
         id: 'btnSave',
         cssClass: 'btn-primary btn-flat',
-        hotkey: 13,
+//        hotkey: 13,
         action: function(dialog){
           if (options.onOk) options.onOk(dialog)
           else {
