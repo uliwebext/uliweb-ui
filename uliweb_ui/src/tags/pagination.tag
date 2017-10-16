@@ -28,7 +28,7 @@
   <div if={theme=='simple'} class="{btn_group_class} pull-left pagination">
     <a class="btn btn-default" disabled="{totalPages<=1 || page==1}" onclick={go(1)} title={first_title}><pagination-raw content={first}></pagination-raw></a>
     <a class="btn btn-default" disabled="{!has_prev}" onclick={go(page-1)} title={prev_title}><pagination-raw content={prev}></pagination-raw></a>
-    <a class="btn btn-default page_input">第 <input type="text" onkeyup={page_input_click} value={page} style="width:40px"> 页/共{totalPages}页</input></a>
+    <a class="btn btn-default page_input">第 <input type="text" onkeypress={page_input_click} value={page} style="width:40px"> 页/共{totalPages}页</input></a>
     <div class="btn-group dropup page-limits">
       <div class="dropdown">
         <button class="btn btn-default" type="button" data-toggle="dropdown">
@@ -180,6 +180,7 @@
    */
   this.page_input_click = function(e) {
     if (e.keyCode == 13) {
+      e.preventDefault()
       var page = parseInt($(e.target).val())
       if (page)
         this.go_page(page)
