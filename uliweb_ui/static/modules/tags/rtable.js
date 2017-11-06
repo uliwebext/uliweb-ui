@@ -658,7 +658,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
       rowspan = 1
       for (j=0; j<subs_len; j++) {
         path = col.subs[j]
-        new_col = {}
+        new_col = $.extend({}, col)
         new_col.title = path.replace('%%', '/')
         if (j == subs_len - 1) {
 

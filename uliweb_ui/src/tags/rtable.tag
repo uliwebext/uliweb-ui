@@ -1052,7 +1052,7 @@
       rowspan = 1//Math.floor(max_level / subs_len)
       for (j=0; j<subs_len; j++) {
         path = col.subs[j]
-        new_col = {}
+        new_col = $.extend({}, col)
         new_col.title = path.replace('%%', '/')
         if (j == subs_len - 1) {
           //如果是最后一层，则rowspan为最大值减其余层
