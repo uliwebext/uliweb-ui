@@ -1434,7 +1434,7 @@
           last_colspan.width += col.width
           continue
         }
-        d = {
+        d = $.extend({}, col, {
           top:top,
           width:col.width,
           height:h,
@@ -1453,7 +1453,7 @@
           editor:col.editor,
           name:col.name,
           notation:this.get_col_notation(row, col)
-        }
+        })
 
         //记录上一次的colspan单元格
         last_colspan = d

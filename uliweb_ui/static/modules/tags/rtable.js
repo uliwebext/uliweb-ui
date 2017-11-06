@@ -1007,7 +1007,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
           last_colspan.width += col.width
           continue
         }
-        d = {
+        d = $.extend({}, col, {
           top:top,
           width:col.width,
           height:h,
@@ -1026,7 +1026,7 @@ riot.tag2('rtable', '<yield></yield> <div class="rtable-root {theme}" riot-style
           editor:col.editor,
           name:col.name,
           notation:this.get_col_notation(row, col)
-        }
+        })
 
         last_colspan = d
         if (opts.treeField == col.name && opts.tree) {
