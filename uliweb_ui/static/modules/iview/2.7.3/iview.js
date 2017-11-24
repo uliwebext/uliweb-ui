@@ -33018,7 +33018,7 @@ exports.default = {
 
 module.exports = { render: function render() {
     var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;
-    return _c('collapse-transition', [_c('ul', {
+    return _c('ul', {
       class: _vm.classes
     }, [_c('li', [_c('span', {
       class: _vm.arrowClasses,
@@ -33072,7 +33072,7 @@ module.exports = { render: function render() {
           "show-checkbox": _vm.showCheckbox
         }
       }) : _vm._e();
-    })], 2)])]);
+    })], 2)]);
   }, staticRenderFns: [] };
 
 /***/ }),
