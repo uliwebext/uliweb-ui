@@ -103,7 +103,7 @@ var widgets_mapping = {
     },
     datetime: function(el, options){
         load(['ui.moment', 'ui.pikaday'], function(){
-            var opts = {format: 'YYYY-MM-DD hh:mm:ss', showTime:true,
+            var opts = {format: 'YYYY-MM-DD HH:mm:ss', showTime:true,
               use24hour:true, i18n:i18n};
             $.extend(true, opts, options || {});
             $(el).pikaday(opts);
