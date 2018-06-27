@@ -54,6 +54,7 @@ riot.tag2('rgrid', '<query-condition if="{has_query}" rules="{query_rules}" url=
 
   this.onlimit = function (limit) {
     self.limit = limit
+    self.start = (this.page - 1) * this.limit
     self.load()
   }
 

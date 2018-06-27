@@ -96,6 +96,7 @@
   /* 切换每页条数 */
   this.onlimit = function (limit) {
     self.limit = limit
+    self.start = (this.page - 1) * this.limit
     self.load()
   }
 
