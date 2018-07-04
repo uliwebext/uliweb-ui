@@ -797,11 +797,19 @@ function getTarget(node) {
     return node instanceof window.Node ? node : document.querySelector(node);
 }
 
+function data(el, name) {
+    if (!el.dataset) {
+        return el.getAttribute('data-' + name);
+    } else {
+        return el.dataset[name];
+    }
+}
+
 var directive = {
     inserted: function inserted(el, _ref, vnode) {
         var value = _ref.value;
 
-        if (el.dataset.transfer !== 'true') return false;
+        if (data(el, 'transfer') !== 'true') return false;
         el.className = el.className ? el.className + ' v-transfer-dom' : 'v-transfer-dom';
         var parentNode = el.parentNode;
         if (!parentNode) return;
@@ -825,7 +833,7 @@ var directive = {
     componentUpdated: function componentUpdated(el, _ref2) {
         var value = _ref2.value;
 
-        if (el.dataset.transfer !== 'true') return false;
+        if (data(el, 'transfer') !== 'true') return false;
 
         var ref$1 = el.__transferDomData;
         if (!ref$1) return;
@@ -847,7 +855,7 @@ var directive = {
         }
     },
     unbind: function unbind(el) {
-        if (el.dataset.transfer !== 'true') return false;
+        if (data(el, 'transfer') !== 'true') return false;
         el.className = el.className.replace('v-transfer-dom', '');
         var ref$1 = el.__transferDomData;
         if (!ref$1) return;
@@ -5600,6 +5608,8 @@ var _index = __webpack_require__(91);
 
 var _index2 = _interopRequireDefault(_index);
 
+var _shim = __webpack_require__(533);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var components = {
@@ -5685,6 +5695,7 @@ var iview = (0, _extends3.default)({}, components, {
 var install = function install(Vue) {
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
+    if (install.installed) return;
     _index2.default.use(opts.locale);
     _index2.default.i18n(opts.i18n);
 
@@ -5703,8 +5714,10 @@ if (typeof window !== 'undefined' && window.Vue) {
     install(window.Vue);
 }
 
+(0, _shim.shim)();
+
 var API = (0, _extends3.default)({
-    version: '2.7.3',
+    version: '2.7.4',
     locale: _index2.default.use,
     i18n: _index2.default.i18n,
     install: install,
@@ -9013,7 +9026,7 @@ exports.default = {
     props: {
         type: {
             validator: function validator(value) {
-                return (0, _assist.oneOf)(value, ['text', 'textarea', 'password']);
+                return (0, _assist.oneOf)(value, ['text', 'textarea', 'password', 'url', 'email', 'date']);
             },
 
             default: 'text'
@@ -14876,7 +14889,7 @@ module.exports = { render: function render() {
     var _vm = this;var _h = _vm.$createElement;var _c = _vm._self._c || _h;
     return _c('div', {
       staticClass: "ivu-color-picker-alpha"
-    }, [_vm._m(0), _vm._v(" "), _c('div', {
+    }, [_vm._m(0, false, false), _vm._v(" "), _c('div', {
       staticClass: "ivu-color-picker-alpha-gradient",
       style: {
         background: _vm.gradientColor
@@ -18750,9 +18763,11 @@ module.exports = Component.exports
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
-exports.default = {};
+exports.default = {
+    name: 'DropdownMenu'
+};
 
 /***/ }),
 /* 330 */
@@ -24673,7 +24688,7 @@ module.exports = { render: function render() {
       on: {
         "click": _vm.prev
       }
-    }, [_vm._m(0)]), _vm._v(" "), _c('div', {
+    }, [_vm._m(0, false, false)]), _vm._v(" "), _c('div', {
       class: _vm.simplePagerClasses,
       attrs: {
         "title": _vm.currentPage + '/' + _vm.allPages
@@ -24700,7 +24715,7 @@ module.exports = { render: function render() {
       on: {
         "click": _vm.next
       }
-    }, [_vm._m(1)])]) : _c('ul', {
+    }, [_vm._m(1, false, false)])]) : _c('ul', {
       class: _vm.wrapClasses,
       style: _vm.styles
     }, [_vm.showTotal ? _c('span', {
@@ -24713,7 +24728,7 @@ module.exports = { render: function render() {
       on: {
         "click": _vm.prev
       }
-    }, [_vm._m(2)]), _vm._v(" "), _c('li', {
+    }, [_vm._m(2, false, false)]), _vm._v(" "), _c('li', {
       class: _vm.firstPageClasses,
       attrs: {
         "title": "1"
@@ -24731,7 +24746,7 @@ module.exports = { render: function render() {
       on: {
         "click": _vm.fastPrev
       }
-    }, [_vm._m(3)]) : _vm._e(), _vm._v(" "), _vm.currentPage - 2 > 1 ? _c('li', {
+    }, [_vm._m(3, false, false)]) : _vm._e(), _vm._v(" "), _vm.currentPage - 2 > 1 ? _c('li', {
       class: [_vm.prefixCls + '-item'],
       attrs: {
         "title": _vm.currentPage - 2
@@ -24784,7 +24799,7 @@ module.exports = { render: function render() {
       on: {
         "click": _vm.fastNext
       }
-    }, [_vm._m(4)]) : _vm._e(), _vm._v(" "), _vm.allPages > 1 ? _c('li', {
+    }, [_vm._m(4, false, false)]) : _vm._e(), _vm._v(" "), _vm.allPages > 1 ? _c('li', {
       class: _vm.lastPageClasses,
       attrs: {
         "title": _vm.allPages
@@ -24802,7 +24817,7 @@ module.exports = { render: function render() {
       on: {
         "click": _vm.next
       }
-    }, [_vm._m(5)]), _vm._v(" "), _c('Options', {
+    }, [_vm._m(5, false, false)]), _vm._v(" "), _c('Options', {
       attrs: {
         "show-sizer": _vm.showSizer,
         "page-size": _vm.currentPageSize,
@@ -31040,7 +31055,7 @@ exports.default = {
         isInsideHiddenElement: function isInsideHiddenElement() {
             var parentNode = this.$el.parentNode;
             while (parentNode && parentNode !== document.body) {
-                if (parentNode.style.display === 'none') {
+                if (parentNode.style && parentNode.style.display === 'none') {
                     return parentNode;
                 }
                 parentNode = parentNode.parentNode;
@@ -34076,6 +34091,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.Select = _select2.default;
 exports.Option = _option2.default;
 exports.OptionGroup = _optionGroup2.default;
+exports.default = _select2.default;
 
 /***/ }),
 /* 530 */
@@ -34174,6 +34190,63 @@ module.exports = { render: function render() {
       class: [_vm.prefixCls]
     }, [_vm._t("default")], 2)])]);
   }, staticRenderFns: [] };
+
+/***/ }),
+/* 533 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var shim = exports.shim = function shim() {
+  var lastTime = 0;
+  var vendors = ['webkit', 'moz'];
+  for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+    window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+    window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+  }
+
+  if (!window.requestAnimationFrame) {
+    window.requestAnimationFrame = function (callback, element) {
+      var currTime = new Date().getTime();
+      var timeToCall = Math.max(0, 16.7 - (currTime - lastTime));
+      var id = window.setTimeout(function () {
+        callback(currTime + timeToCall);
+      }, timeToCall);
+      lastTime = currTime + timeToCall;
+      return id;
+    };
+  }
+  if (!window.cancelAnimationFrame) {
+    window.cancelAnimationFrame = function (id) {
+      clearTimeout(id);
+    };
+  }
+
+  if ("performance" in window == false) {
+    window.performance = {};
+  }
+
+  Date.now = Date.now || function () {
+    return new Date().getTime();
+  };
+
+  if ("now" in window.performance == false) {
+
+    var nowOffset = Date.now();
+
+    if (performance.timing && performance.timing.navigationStart) {
+      nowOffset = performance.timing.navigationStart;
+    }
+
+    window.performance.now = function now() {
+      return Date.now() - nowOffset;
+    };
+  }
+};
 
 /***/ })
 /******/ ]);
