@@ -1,4 +1,5 @@
 # coding:utf-8
+from __future__ import print_function, absolute_import, unicode_literals
 import sys
 from uliweb.core.commands import Command, CommandManager, get_commands
 from optparse import make_option
@@ -37,7 +38,7 @@ class JsmoduleCommand(Command):
         from uliweb import json_dumps
 
         if not options.dest and not options.app:
-            print 'Error: Please use -d to specify output app'
+            print ('Error: Please use -d to specify output app')
             sys.exit(1)
 
         app = self.get_application(global_options)
@@ -60,7 +61,7 @@ class JsmoduleCommand(Command):
             m = s[0] + s[1]
             d[name] = [url_for_static(i) for i in m if not i.startswith('<!--')]
 
-        print 'jsmodules.js is saved in {} please check'.format(filename)
+        print ('jsmodules.js is saved in {} please check'.format(filename))
         with open(filename, 'wb') as f:
             f.write('var jsmodules = ')
             f.write(json_dumps(d))
@@ -101,7 +102,7 @@ class GulpPlugins(Command):
         import ConfigParser
 
         if not options.dest and not options.app:
-            print "Error: Please use -d to specify output app"
+            print ("Error: Please use -d to specify output app")
             sys.exit(1)
 
         app = self.get_application(global_options)
@@ -141,5 +142,5 @@ class GulpPlugins(Command):
         gulp_path = pkg.resource_filename("uliweb_ui","")
         import os
         terminal_command = "cd "+gulp_path+ " && gulp  --dist " + gulp_dist + " --settings " + gulp_settings
-        print ">>> {}".format(terminal_command)
+        print (">>> {}".format(terminal_command))
         os.system(terminal_command)
