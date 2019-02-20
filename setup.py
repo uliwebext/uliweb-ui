@@ -8,6 +8,7 @@ uliweb ui app
 # Fix for older setuptools
 import re
 import os
+import sys
 
 from setuptools import setup, find_packages
 from setuptools.command import build_py as b
@@ -79,6 +80,10 @@ def grep(attrname):
     strval, = re.findall(pattern, file_text)
     return strval
 
+if sys.version_info[0] == 2:
+    uliweb_mname = "uliweb"
+else:
+    uliweb_mname = "uliweb3"
 
 setup(
     name='uliweb-ui',
@@ -94,7 +99,7 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
-        'uliweb',
+        uliweb_mname,
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
