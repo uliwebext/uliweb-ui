@@ -1,7 +1,8 @@
-__version__ = '1.0'
-__url__ = ''
+__version__ = '0.1.0'
+__url__ = 'https://github.com/uliwebext/uliweb-ui'
 __author__ = 'limodou'
 __email__ = 'limodou@gmail.com'
+__license__ = 'BSD'
 
 def load_jquery(**kwargs):
     a = []
